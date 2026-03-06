@@ -16,206 +16,94 @@
     *{ box-sizing:border-box; }
     body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); }
     a{ color:inherit; text-decoration:none; }
-    .app{
-      min-height:100vh;
-      display:grid;
-      grid-template-columns: 260px 1fr;
-    }
-    .sidebar{
-      border-right:1px solid var(--border);
-      padding:18px 14px;
-      background:linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-    }
-    .brand{
-      display:flex; gap:10px; align-items:center; padding:10px 10px 14px;
-    }
-    .logo{
-      width:34px; height:34px; border-radius:10px;
-      background: radial-gradient(circle at 30% 30%, #60a5fa, #2563eb);
-      box-shadow: var(--shadow);
-    }
+    .app{ min-height:100vh; display:grid; grid-template-columns: 260px 1fr; }
+    .sidebar{ border-right:1px solid var(--border); padding:18px 14px; background:linear-gradient(180deg, #ffffff 0%, #fbfdff 100%); }
+    .brand{ display:flex; gap:10px; align-items:center; padding:10px 10px 14px; }
+    .logo{ width:34px; height:34px; border-radius:10px; background: radial-gradient(circle at 30% 30%, #60a5fa, #2563eb); box-shadow: var(--shadow); }
     .brand h1{ font-size:14px; margin:0; letter-spacing:.2px; }
     .brand p{ margin:2px 0 0; font-size:12px; color:var(--muted); }
-    .nav{
-      margin-top:8px;
-      display:flex; flex-direction:column; gap:6px;
-    }
-    .nav button{
-      all:unset;
-      cursor:pointer;
-      padding:10px 10px;
-      border-radius:12px;
-      display:flex; align-items:center; justify-content:space-between;
-      border:1px solid transparent;
-    }
+    .nav{ margin-top:8px; display:flex; flex-direction:column; gap:6px; }
+    .nav button{ all:unset; cursor:pointer; padding:10px 10px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; border:1px solid transparent; }
     .nav button:hover{ background:#f3f4f6; }
-    .nav button.active{
-      background:#eff6ff;
-      border-color:#bfdbfe;
-      color:#1d4ed8;
-    }
-    .content{
-      padding:20px;
-    }
-    .topbar{
-      display:flex; align-items:flex-start; justify-content:space-between;
-      gap:12px; margin-bottom:16px;
-    }
+    .nav button.active{ background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; }
+    .content{ padding:20px; }
+    .topbar{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:16px; }
     .title h2{ margin:0; font-size:22px; }
     .title p{ margin:6px 0 0; color:var(--muted); font-size:13px; max-width:720px; }
     .actions{ display:flex; gap:10px; }
-    .btn{
-      border:1px solid var(--border);
-      background:var(--card);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:600;
-      box-shadow: 0 1px 0 rgba(0,0,0,.03);
-    }
-    .btn.primary{
-      background:var(--primary);
-      border-color: var(--primary);
-      color:white;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:14px;
-    }
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding:14px;
-      min-height: 120px;
-    }
+    .btn{ border:1px solid var(--border); background:var(--card); padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:600; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .btn.primary{ background:var(--primary); border-color: var(--primary); color:white; }
+    .grid{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding:14px; min-height: 120px; }
     .card h3{ margin:0 0 6px; font-size:14px; }
     .card p{ margin:0; color:var(--muted); font-size:13px; line-height:1.35; }
-    .chip{
-      display:inline-flex; align-items:center; gap:8px;
-      border:1px solid var(--border);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:12px; color:var(--muted);
-      background:#fff;
-    }
+    .chip{ display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); padding:8px 10px; border-radius:999px; font-size:12px; color:var(--muted); background:#fff; }
     .chip strong{ color:var(--text); }
-    .row{
-      display:grid;
-      grid-template-columns: 1.2fr .9fr;
-      gap:14px;
-      align-items:start;
-    }
-    .builder{
-      display:grid;
-      grid-template-columns: 320px 1fr 360px;
-      gap:14px;
-      align-items:start;
-    }
+    .row{ display:grid; grid-template-columns: 1.2fr .9fr; gap:14px; align-items:start; }
+    .builder{ display:grid; grid-template-columns: 320px 1fr 360px; gap:14px; align-items:start; }
     .panel h3{ margin:0 0 10px; font-size:14px; }
     .field{ margin-bottom:12px; }
     label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
-    select, input[type="text"], textarea{
-      width:100%;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#fff;
-      font: inherit;
-      outline:none;
-    }
+    select, input[type="text"], textarea{ width:100%; padding:10px 10px; border-radius:12px; border:1px solid var(--border); background:#fff; font: inherit; outline:none; }
     textarea{ resize:vertical; min-height:90px; }
-    .seg{
-      display:flex; gap:8px; flex-wrap:wrap;
+
+    /* Custom input that appears below a dropdown */
+    .custom-input-wrap{ margin-top:6px; }
+    .custom-input-wrap input{
+      border:1px solid var(--primary);
+      border-radius:12px;
+      padding:9px 12px;
+      width:100%;
+      font:inherit;
+      outline:none;
+      animation: fadeIn .15s ease;
     }
-    .seg button{
-      all:unset;
-      cursor:pointer;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:#fff;
-      font-size:12px;
-    }
-    .seg button.on{
-      background:#eff6ff;
-      border-color:#bfdbfe;
-      color:#1d4ed8;
-      font-weight:700;
-    }
+    .custom-input-wrap input::placeholder{ color:var(--muted); }
+    @keyframes fadeIn{ from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+    .seg{ display:flex; gap:8px; flex-wrap:wrap; }
+    .seg button{ all:unset; cursor:pointer; padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:#fff; font-size:12px; }
+    .seg button.on{ background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; font-weight:700; }
     .checks{ display:grid; gap:8px; }
     .checks label{ display:flex; gap:10px; align-items:center; margin:0; color:var(--text); }
     .checks span{ font-size:13px; }
     input[type="checkbox"]{ width:16px; height:16px; }
-    .slider{
-      display:flex; gap:12px; align-items:center;
-    }
+    .slider{ display:flex; gap:12px; align-items:center; }
     input[type="range"]{ width:100%; }
-    .previewCard{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      padding:14px;
-      background:#fff;
-    }
-    .previewHeader{
-      display:flex; gap:10px; align-items:center; margin-bottom:8px;
-    }
-    .badge{
-      width:28px; height:28px; border-radius:10px;
-      display:grid; place-items:center;
-      font-weight:900;
-      color:white;
-    }
+    .previewCard{ border:1px solid var(--border); border-radius: var(--radius); padding:14px; background:#fff; }
+    .previewHeader{ display:flex; gap:10px; align-items:center; margin-bottom:8px; }
+    .badge{ width:28px; height:28px; border-radius:10px; display:grid; place-items:center; font-weight:900; color:white; }
     .badge.low{ background: var(--primary); }
     .badge.med{ background: var(--warn); }
     .badge.high{ background: var(--danger); }
     .previewTitle{ font-weight:800; }
     .previewMsg{ color:var(--muted); margin:0 0 12px; font-size:13px; line-height:1.4; }
     .previewBtns{ display:flex; gap:10px; }
-    .mini{
-      border:1px solid var(--border);
-      padding:10px 12px;
-      border-radius:12px;
-      background:#fff;
-      cursor:pointer;
-      font-weight:700;
-      font-size:13px;
-    }
+    .mini{ border:1px solid var(--border); padding:10px 12px; border-radius:12px; background:#fff; cursor:pointer; font-weight:700; font-size:13px; }
     .mini.primary{ background:var(--primary); border-color:var(--primary); color:white; }
-    .guide{
-      display:grid;
-      gap:10px;
-    }
-    .scoreRow{
-      display:flex; justify-content:space-between; align-items:center; gap:12px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#fff;
-    }
-    .meter{
-      height:8px; border-radius:999px; background:#e5e7eb; overflow:hidden; flex:1;
-      margin-left:10px;
-    }
+    .guide{ display:grid; gap:10px; }
+    .scoreRow{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:#fff; }
+    .meter{ height:8px; border-radius:999px; background:#e5e7eb; overflow:hidden; flex:1; margin-left:10px; }
     .meter > div{ height:100%; background:var(--good); width:50%; }
-    .codebox{
-      border:1px solid var(--border);
-      background:#0b1020;
-      color:#dbeafe;
-      border-radius: var(--radius);
-      padding:12px;
-      font-family: var(--mono);
-      font-size:12px;
-      line-height:1.45;
-      overflow:auto;
-      min-height: 220px;
-      white-space: pre;
-    }
+    .codebox{ border:1px solid var(--border); background:#0b1020; color:#dbeafe; border-radius: var(--radius); padding:12px; font-family: var(--mono); font-size:12px; line-height:1.45; overflow:auto; min-height: 220px; white-space: pre; }
     .hint{ color:var(--muted); font-size:12px; margin-top:8px; }
     .hidden{ display:none; }
 
+    /* Reference table toggle */
+    .ref-toggle-row{ display:flex; align-items:center; gap:8px; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); }
+    .ref-toggle-row label{ margin:0; font-size:12px; color:var(--muted); cursor:pointer; display:flex; align-items:center; gap:8px; }
+    .ref-toggle-row input[type="checkbox"]{ width:15px; height:15px; accent-color:var(--primary); cursor:pointer; }
+    .ref-table-wrap{ margin-top:10px; overflow:hidden; max-height:0; transition: max-height .3s ease, opacity .3s ease; opacity:0; }
+    .ref-table-wrap.open{ max-height:900px; opacity:1; }
+    .ref-table{ width:100%; border-collapse:collapse; font-size:11px; }
+    .ref-table thead th{ background:#f0f6ff; color:#1d4ed8; font-weight:700; padding:7px 8px; text-align:left; border-bottom:2px solid #bfdbfe; position:sticky; top:0; }
+    .ref-table tbody tr:nth-child(even){ background:#f9fafb; }
+    .ref-table tbody tr:hover{ background:#eff6ff; }
+    .ref-table td{ padding:6px 8px; vertical-align:top; border-bottom:1px solid var(--border); line-height:1.35; }
+    .ref-table td:first-child{ font-weight:700; color:var(--text); white-space:nowrap; }
+    .ref-table td:nth-child(2){ color:#065f46; }
+    .ref-table td:nth-child(3){ color:#991b1b; }
+    .ref-table-scroll{ max-height:400px; overflow-y:auto; border-radius:10px; border:1px solid var(--border); }
     @media (max-width: 1100px){
       .app{ grid-template-columns: 1fr; }
       .sidebar{ position:sticky; top:0; z-index:1; border-right:none; border-bottom:1px solid var(--border); }
@@ -226,450 +114,532 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>SENTINEL SDK</h1>
-          <p>Human-centered security notifications</p>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>SENTINEL SDK</h1>
+        <p>Human-centered security notifications</p>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="active" data-route="dashboard">Dashboard <span>↩</span></button>
+      <button data-route="builder">Builder <span>⚙</span></button>
+      <button data-route="export">Export <span>⇩</span></button>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard">
+      <div class="topbar">
+        <div class="title">
+          <h2>Dashboard</h2>
+          <p>Centralize research-backed notification design. Create a notification, preview user impact, then export implementation-ready snippets.</p>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="goCreate">+ Create Notification</button>
+          <button class="btn" id="goExport">Export</button>
         </div>
       </div>
 
-      <div class="nav">
-        <button class="active" data-route="dashboard">Dashboard <span>↩</span></button>
-        <button data-route="builder">Builder <span>⚙</span></button>
-        <button data-route="export">Export <span>⇩</span></button>
+      <div class="grid">
+        <div class="card"><h3>Create Notification</h3><p>Choose user group + security context, then tune clarity, urgency, motivation, and instructions.</p></div>
+        <div class="card"><h3>Framework Guidance</h3><p>Get suggestions grounded in HCI principles: clarity, necessity framing, and actionable instructions.</p></div>
+        <div class="card"><h3>SDK Integration</h3><p>Export Python snippets for consistent notifications across apps, teams, and environments.</p></div>
+      </div>
+    </section>
+
+    <!-- BUILDER -->
+    <section id="builder" class="hidden">
+      <div class="topbar">
+        <div class="title">
+          <h2>Notification Builder</h2>
+          <p>Design a user-centered notification by combining urgency & necessity framing, clarity, motivation, and instruction.</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="backDash">Dashboard</button>
+          <button class="btn primary" id="goExport2">Export</button>
+        </div>
       </div>
 
-    </aside>
+      <div class="builder">
+        <!-- left: configuration -->
+        <div class="card panel">
+          <h3>Configuration</h3>
 
-    <main class="content">
-
-      <!-- DASHBOARD -->
-      <section id="dashboard">
-        <div class="topbar">
-          <div class="title">
-            <h2>Dashboard</h2>
-            <p>Centralize research-backed notification design. Create a notification, preview user impact, then export implementation-ready snippets.</p>
-          </div>
-          <div class="actions">
-            <button class="btn primary" id="goCreate">+ Create Notification</button>
-            <button class="btn" id="goExport">Export</button>
-          </div>
-        </div>
-
-        <div class="grid">
-          <div class="card">
-            <h3>Create Notification</h3>
-            <p>Choose user group + security context, then tune clarity, urgency, motivation, and instructions.</p>
-          </div>
-          <div class="card">
-            <h3>Framework Guidance</h3>
-            <p>Get suggestions grounded in HCI principles: clarity, necessity framing, and actionable instructions.</p>
-          </div>
-          <div class="card">
-            <h3>SDK Integration</h3>
-            <p>Export Python snippets for consistent notifications across apps, teams, and environments.</p>
-          </div>
-        </div>
-
-        <div style="margin-top:14px" class="card">
-          <h3>Recent projects</h3>
-          <p style="margin-bottom:10px">Password Reset • Suspicious Login • Cache Clearing Reminder</p>
-          <div class="seg">
-            <button class="on" type="button">Password Reset</button>
-            <button type="button">Suspicious Login</button>
-            <button type="button">Cache Clearing</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- BUILDER -->
-      <section id="builder" class="hidden">
-        <div class="topbar">
-          <div class="title">
-            <h2>Notification Builder</h2>
-            <p>Design a user-centered notification by combining urgency & necessity framing, clarity, motivation, and instruction.</p>
-          </div>
-          <div class="actions">
-            <button class="btn" id="backDash">Dashboard</button>
-            <button class="btn primary" id="goExport2">Export</button>
-          </div>
-        </div>
-
-        <div class="builder">
-          <!-- left: config -->
-          <div class="card panel">
-            <h3>Configuration</h3>
-
-            <div class="field">
-              <label for="userGroup">User group</label>
-              <select id="userGroup">
-                <option>General user</option>
-                <option>Developer</option>
-                <option>IT admin</option>
-                <option>Student</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="context">Security context</label>
-              <select id="context">
-                <option value="weak_password">Weak password</option>
-                <option value="suspicious_login">Suspicious login</option>
-                <option value="cache_clear">Cache clearing</option>
-                <option value="software_update">Software update</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="titleInput">Notification title</label>
-              <input id="titleInput" type="text" value="Security alert" />
-            </div>
-
-            <div class="field">
-              <label for="msgInput">Notification message</label>
-              <textarea id="msgInput">Your password appears in a known breach. Update now to protect your account.</textarea>
-            </div>
-
-            <div class="field">
-              <label>Motivation framing</label>
-              <div class="seg" id="motivationSeg">
-                <button class="on" data-m="risk_avoidance" type="button">Risk avoidance</button>
-                <button data-m="personal_impact" type="button">Personal impact</button>
-                <button data-m="social_norm" type="button">Social norm</button>
-                <button data-m="compliance" type="button">Compliance</button>
-              </div>
-            </div>
-
-            <div class="field">
-              <label>Instruction design</label>
-              <div class="checks">
-                <label><input id="ckSteps" type="checkbox" checked /><span>Step-by-step instructions</span></label>
-                <label><input id="ckAction" type="checkbox" checked /><span>Direct action button</span></label>
-                <label><input id="ckExplain" type="checkbox" checked /><span>Explain the risk</span></label>
-                <label><input id="ckTime" type="checkbox" /><span>Time estimate</span></label>
-              </div>
-            </div>
-
-            <div class="field">
-              <label>Urgency</label>
-              <div class="slider">
-                <span style="font-size:12px;color:var(--muted)">Low</span>
-                <input id="urgency" type="range" min="0" max="100" value="55" />
-                <span style="font-size:12px;color:var(--muted)">High</span>
-              </div>
+          <!-- User Group -->
+          <div class="field">
+            <label for="userGroup">User group</label>
+            <select id="userGroup">
+              <option value="" disabled selected>Select user group…</option>
+              <option>General user</option>
+              <option>Developer</option>
+              <option>IT admin</option>
+              <option>Student</option>
+              <option value="__custom__">Custom…</option>
+            </select>
+            <div class="custom-input-wrap hidden" id="userGroupCustomWrap">
+              <input id="userGroupCustom" type="text" placeholder="Enter custom user group…" />
             </div>
           </div>
 
-          <!-- middle: live preview -->
-          <div class="card panel">
-            <h3>Live preview</h3>
-            <div class="previewCard">
-              <div class="previewHeader">
-                <div id="badge" class="badge med">!</div>
-                <div>
-                  <div class="previewTitle" id="pvTitle">Security alert</div>
-                  <div style="font-size:12px;color:var(--muted)" id="pvMeta">General user • Weak password</div>
-                </div>
-              </div>
-              <p class="previewMsg" id="pvMsg">Your password appears in a known breach. Update now to protect your account.</p>
-              <div class="previewBtns">
-                <button class="mini primary" id="primaryBtn">Update now</button>
-                <button class="mini" id="secondaryBtn">Remind me later</button>
-              </div>
-              <div class="hint" id="pvHint"></div>
+          <!-- Security Context -->
+          <div class="field">
+            <label for="context">Security context</label>
+            <select id="context">
+              <option value="" disabled selected>Select security context…</option>
+              <option value="weak_password">Weak password</option>
+              <option value="suspicious_login">Suspicious login</option>
+              <option value="cache_clear">Cache clearing</option>
+              <option value="software_update">Software update</option>
+              <option value="__custom__">Custom…</option>
+            </select>
+            <div class="custom-input-wrap hidden" id="contextCustomWrap">
+              <input id="contextCustom" type="text" placeholder="Enter custom security context…" />
             </div>
           </div>
 
-          <!-- right: framework guidance -->
-          <div class="card panel">
-            <h3>Framework guidance</h3>
-            <div class="guide">
-              <div class="scoreRow">
-                <div style="min-width:90px;font-weight:800">Clarity</div>
-                <div class="meter"><div id="mClarity"></div></div>
-                <div id="sClarity" style="min-width:42px;text-align:right;font-weight:800">82</div>
-              </div>
-              <div class="scoreRow">
-                <div style="min-width:90px;font-weight:800">Motivation</div>
-                <div class="meter"><div id="mMotivation"></div></div>
-                <div id="sMotivation" style="min-width:42px;text-align:right;font-weight:800">70</div>
-              </div>
-              <div class="scoreRow">
-                <div style="min-width:90px;font-weight:800">Urgency</div>
-                <div class="meter"><div id="mUrgency"></div></div>
-                <div id="sUrgency" style="min-width:42px;text-align:right;font-weight:800">55</div>
-              </div>
-              <div class="scoreRow">
-                <div style="min-width:90px;font-weight:800">Instruction</div>
-                <div class="meter"><div id="mInstruction"></div></div>
-                <div id="sInstruction" style="min-width:42px;text-align:right;font-weight:800">86</div>
-              </div>
+          <div class="field"><label for="titleInput">Notification title</label><input id="titleInput" type="text" value="" placeholder="Enter notification title…" /></div>
+          <div class="field"><label for="msgInput">Notification message</label><textarea id="msgInput" placeholder="Enter notification message…"></textarea></div>
 
-              <div class="card" style="box-shadow:none; border-style:dashed;">
-                <h3 style="margin:0 0 6px">Suggestions</h3>
-                <ul id="suggestions" style="margin:0; padding-left:18px; color:var(--muted); font-size:13px; line-height:1.4"></ul>
-              </div>
+          <div class="field"><label>Motivation framing</label>
+            <div class="seg" id="motivationSeg">
+              <button class="on" data-m="risk_avoidance" type="button">Risk avoidance</button>
+              <button data-m="personal_impact" type="button">Personal impact</button>
+              <button data-m="social_norm" type="button">Social norm</button>
+              <button data-m="compliance" type="button">Compliance</button>
+            </div>
+          </div>
+
+          <div class="field"><label>Instruction design</label>
+            <div class="checks">
+              <label><input id="ckSteps" type="checkbox" checked /><span>Step-by-step instructions</span></label>
+              <label><input id="ckAction" type="checkbox" checked /><span>Direct action button</span></label>
+              <label><input id="ckExplain" type="checkbox" checked /><span>Explain the risk</span></label>
+              <label><input id="ckTime" type="checkbox" /><span>Time estimate</span></label>
+              <label><input id="ckTransparency" type="checkbox" /><span>Explain why notification appeared (optional)</span></label>
+              <label><input id="ckConsequences" type="checkbox" /><span>Consequences if ignored (optional)</span></label>
+              <label><input id="ckDecision" type="checkbox" /><span>Decision support links (optional)</span></label>
+            </div>
+          </div>
+
+          <div class="field"><label>Urgency</label>
+            <div class="slider"><span style="font-size:12px;color:var(--muted)">Low</span><input id="urgency" type="range" min="0" max="100" value="55" /><span style="font-size:12px;color:var(--muted)">High</span></div>
+          </div>
+
+          <div class="field"><label>Mode of interaction</label>
+            <div class="seg" id="interactionSeg">
+              <button class="on" data-i="click_box" type="button">Click box</button>
+              <button data-i="checkbox" type="button">Sliding bar</button>
+              <button data-i="toggle" type="button">Toggle</button>
+            </div>
+            <div style="margin-top:8px; font-size:11px; color:var(--muted); line-height:1.4;" id="interactionPreviewNote">
+              Each option shows <em>Allow / Don't Allow</em> for the user.
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- EXPORT -->
-      <section id="export" class="hidden">
-        <div class="topbar">
-          <div class="title">
-            <h2>Export</h2>
-            <p>Copy SDK-ready Python scaffolding and keep notification design consistent across apps and teams.</p>
-          </div>
-          <div class="actions">
-            <button class="btn" id="backBuilder">Back to Builder</button>
-            <button class="btn primary" id="copyCode">Copy code</button>
+        <!-- middle: live preview -->
+        <div class="card panel">
+          <h3>Live preview</h3>
+          <div class="previewCard">
+            <div class="previewHeader">
+              <div id="badge" class="badge med">!</div>
+              <div>
+                <div class="previewTitle" id="pvTitle">Security alert</div>
+                <div style="font-size:12px;color:var(--muted)" id="pvMeta">General user • Weak password</div>
+              </div>
+            </div>
+            <p class="previewMsg" id="pvMsg">Your password appears in a known breach. Update now to protect your account.</p>
+
+            <!-- Click box mode -->
+            <div id="pvInteraction_click_box" class="previewBtns">
+              <button class="mini primary" id="primaryBtn">Allow</button>
+              <button class="mini">Don't Allow</button>
+            </div>
+
+            <!-- Sliding bar mode -->
+            <div id="pvInteraction_checkbox" style="display:none; margin-top:6px;">
+              <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px;">
+                <span>Allow</span><span>Don't Allow</span>
+              </div>
+              <input type="range" id="pvSlider" min="0" max="1" step="1" value="0"
+                style="width:100%; accent-color:var(--primary);" />
+              <div id="pvSliderLabel" style="text-align:center; font-size:12px; font-weight:700; color:var(--muted); margin-top:5px;">Allow</div>
+            </div>
+
+            <!-- Toggle mode -->
+            <div id="pvInteraction_toggle" style="display:none; margin-top:4px; display:none;">
+              <div style="display:flex; align-items:center; justify-content:space-between; background:#f3f4f6; border-radius:12px; padding:10px 14px; margin-bottom:8px;">
+                <span style="font-size:13px; font-weight:600;">Allow</span>
+                <label style="position:relative; width:42px; height:24px; cursor:pointer; margin:0;">
+                  <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute;" id="pvToggleAllow" />
+                  <span id="pvToggleAllowTrack" style="position:absolute;inset:0;background:#d1d5db;border-radius:999px;transition:background .2s;"></span>
+                  <span id="pvToggleAllowThumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s;"></span>
+                </label>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; background:#f3f4f6; border-radius:12px; padding:10px 14px;">
+                <span style="font-size:13px; font-weight:600;">Don't Allow</span>
+                <label style="position:relative; width:42px; height:24px; cursor:pointer; margin:0;">
+                  <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute;" id="pvToggleDeny" />
+                  <span id="pvToggleDenyTrack" style="position:absolute;inset:0;background:#d1d5db;border-radius:999px;transition:background .2s;"></span>
+                  <span id="pvToggleDenyThumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s;"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="hint" id="pvHint"></div>
           </div>
         </div>
 
-        <div class="row">
-          <div class="card panel">
-            <h3>Generated Python snippet</h3>
-            <div class="codebox" id="codebox"></div>
-            <div class="hint"></div>
-          </div>
+        <!-- right: framework guidance -->
+        <div class="card panel">
+          <h3>Framework guidance</h3>
+          <div class="guide">
+            <div class="scoreRow"><div style="min-width:90px;font-weight:800">Clarity</div><div class="meter"><div id="mClarity"></div></div><div id="sClarity" style="min-width:42px;text-align:right;font-weight:800">82</div></div>
+            <div class="scoreRow"><div style="min-width:90px;font-weight:800">Motivation</div><div class="meter"><div id="mMotivation"></div></div><div id="sMotivation" style="min-width:42px;text-align:right;font-weight:800">70</div></div>
+            <div class="scoreRow"><div style="min-width:90px;font-weight:800">Urgency</div><div class="meter"><div id="mUrgency"></div></div><div id="sUrgency" style="min-width:42px;text-align:right;font-weight:800">55</div></div>
+            <div class="scoreRow"><div style="min-width:90px;font-weight:800">Instruction</div><div class="meter"><div id="mInstruction"></div></div><div id="sInstruction" style="min-width:42px;text-align:right;font-weight:800">86</div></div>
+            <div class="scoreRow"><div style="min-width:90px;font-weight:800">Decision Support</div><div class="meter"><div id="mDecision"></div></div><div id="sDecision" style="min-width:42px;text-align:right;font-weight:800">60</div></div>
+            <div class="scoreRow"><div style="min-width:90px;font-weight:800">Trust / Transparency</div><div class="meter"><div id="mTrust"></div></div><div id="sTrust" style="min-width:42px;text-align:right;font-weight:800">65</div></div>
 
-          <div class="card panel">
-            <h3>Export settings</h3>
-            <div class="field">
-              <label>Language</label>
-              <select id="lang">
-                <option>Python</option>
-                <option disabled>TypeScript (soon)</option>
-              </select>
+            <div style="margin-top:10px;">
+              <h4 style="font-size:13px; margin-bottom:6px;">Instruction guidance</h4>
+              <ul style="padding-left:18px; font-size:12px; color:var(--muted); margin:0 0 10px 0;">
+                <li>Step-by-step instructions: <strong id="gSteps">✔</strong></li>
+                <li>Direct action button: <strong id="gAction">✔</strong></li>
+                <li>Explain the risk: <strong id="gExplain">✔</strong></li>
+                <li>Time estimate: <strong id="gTime">✖</strong></li>
+                <li>Explain why notification appeared: <strong id="gTransparency">✖</strong></li>
+                <li>Consequences if ignored: <strong id="gConsequences">✖</strong></li>
+                <li>Decision support links: <strong id="gDecision">✖</strong></li>
+              </ul>
             </div>
-            <div class="field">
-              <label>SDK style</label>
-              <select id="sdkStyle">
-                <option value="function">Function-based</option>
-                <option value="builder">Builder pattern</option>
-              </select>
-            </div>
-            <button class="btn" id="regen">Regenerate</button>
 
-            <div style="margin-top:14px" class="card" >
-              <h3 style="margin:0 0 6px"></h3>
-              <p></p>
+            <div class="card" style="box-shadow:none; border-style:dashed;">
+              <h3 style="margin:0 0 6px">Suggestions</h3>
+              <div id="interactionWarn" class="hidden" style="display:none; background:#fff7ed; border:1px solid #fed7aa; border-radius:10px; padding:9px 11px; margin-bottom:10px; font-size:12px; color:#92400e; line-height:1.45;">
+                <strong>⚠ Interaction mode:</strong> Click boxes are easy to dismiss without reading. Consider using a <strong>Checkbox</strong> or <strong>Toggle</strong> instead — these require a deliberate physical action, increasing engagement and the likelihood the user makes a thoughtful, more secure decision.
+              </div>
+              <ul id="suggestions" style="margin:0; padding-left:18px; color:var(--muted); font-size:13px; line-height:1.4"></ul>
             </div>
+
+            <!-- Reference table toggle -->
+            <div class="ref-toggle-row">
+              <label>
+                <input type="checkbox" id="ckRefTable" />
+                Show notification quality reference table
+              </label>
+            </div>
+            <div class="ref-table-wrap" id="refTableWrap">
+              <div class="ref-table-scroll">
+                <table class="ref-table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>✔ Good Attribute</th>
+                      <th>✖ Bad Attribute</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Clarity</td><td>Detailed explanation of how the issue was detected, vulnerability details, and remediation steps</td><td>Technical, ambiguous, or unclear warning messages</td></tr>
+                    <tr><td>Transparency</td><td>Explains why the warning occurred and what the threat is</td><td>No explanation of why the notification appeared</td></tr>
+                    <tr><td>Context</td><td>Provides context showing why the notification applies to the user</td><td>Lacks context, making the message feel irrelevant</td></tr>
+                    <tr><td>Decision Support</td><td>Helps inform decision-making rather than forcing users to quickly click a button</td><td>Pushes users to dismiss without understanding</td></tr>
+                    <tr><td>Guidance</td><td>Provides actionable guidance and remediation steps</td><td>No guidance on what users should do</td></tr>
+                    <tr><td>Risk Communication</td><td>Clearly states potential risks and consequences</td><td>Does not communicate risks clearly</td></tr>
+                    <tr><td>Consequences</td><td>Explains implications of ignoring the warning and may provide examples of consequences</td><td>Consequences are unclear or not mentioned</td></tr>
+                    <tr><td>User Understanding</td><td>Explains background information so users understand the issue</td><td>Assumes technical knowledge users may not have</td></tr>
+                    <tr><td>Encouraging Compliance</td><td>Clearly communicates the problem and highlights the safer or preferred action</td><td>Does not clearly communicate what action is preferred</td></tr>
+                    <tr><td>Tone</td><td>Uses constructive or positive framing rather than threats or legal intimidation</td><td>Creates annoyance or frustration that discourages engagement</td></tr>
+                    <tr><td>Trust & Legitimacy</td><td>Appears trustworthy and legitimate to users</td><td>Looks suspicious, spam-like, or untrustworthy</td></tr>
+                    <tr><td>Design & Interaction</td><td>Has a distinct design or interaction style that differentiates it from normal notifications</td><td>Looks identical to regular notifications</td></tr>
+                    <tr><td>Frequency</td><td>Reduces unnecessary warnings and only alerts when meaningful</td><td>Too many notifications with no meaningful follow-through</td></tr>
+                    <tr><td>User Workflow</td><td>Minimizes disruption and respects the user's workflow</td><td>Interrupts normal activities, leading users to ignore or disable notifications</td></tr>
+                    <tr><td>User Impact</td><td>Increases users' perception of security and their intention to continue using the app</td><td>Causes annoyance, leading users to ignore or dismiss warnings and develop poor security habits</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
         </div>
-      </section>
 
-    </main>
-  </div>
+      </div>
+    </section>
 
-  <script>
-    const routes = ["dashboard","builder","export"];
-    const navButtons = [...document.querySelectorAll(".nav button")];
+    <!-- EXPORT -->
+    <section id="export" class="hidden">
+      <div class="topbar">
+        <div class="title">
+          <h2>Export</h2>
+          <p>Copy code snippet for implementation in your app.</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="backDash2">Dashboard</button>
+        </div>
+      </div>
+      <div class="card">
+        <pre class="codebox" id="codeOutput">// Your generated notification code will appear here</pre>
+      </div>
+    </section>
 
-    function show(route){
-      routes.forEach(r => document.getElementById(r).classList.toggle("hidden", r !== route));
-      navButtons.forEach(b => b.classList.toggle("active", b.dataset.route === route));
-      if(route === "export") generateCode();
+  </main>
+</div>
+
+<script>
+  // State
+  const state = {
+    title: "",
+    message: "",
+    context: "",
+    userGroup: "",
+    motivation: "risk_avoidance",
+    steps:true, action:true, explain:true, time:false,
+    transparency:false, consequences:false, decision:false,
+    urgency:55,
+    interaction:"click_box"
+  };
+
+  // DOM Elements
+  const titleInput = document.getElementById("titleInput");
+  const msgInput = document.getElementById("msgInput");
+  const contextSelect = document.getElementById("context");
+  const userGroupSelect = document.getElementById("userGroup");
+  const motivationSeg = document.getElementById("motivationSeg");
+  const ckSteps = document.getElementById("ckSteps");
+  const ckAction = document.getElementById("ckAction");
+  const ckExplain = document.getElementById("ckExplain");
+  const ckTime = document.getElementById("ckTime");
+  const ckTransparency = document.getElementById("ckTransparency");
+  const ckConsequences = document.getElementById("ckConsequences");
+  const ckDecision = document.getElementById("ckDecision");
+  const urgencyInput = document.getElementById("urgency");
+
+  // Custom input elements
+  const userGroupCustomWrap = document.getElementById("userGroupCustomWrap");
+  const userGroupCustom = document.getElementById("userGroupCustom");
+  const contextCustomWrap = document.getElementById("contextCustomWrap");
+  const contextCustom = document.getElementById("contextCustom");
+
+  // Helper: resolve effective value for a dropdown that may have "Custom…"
+  function resolveDropdown(select, customInput) {
+    return select.value === "__custom__"
+      ? (customInput.value.trim() || "custom")
+      : select.value;
+  }
+
+  // User Group dropdown
+  userGroupSelect.addEventListener("change", e => {
+    const isCustom = e.target.value === "__custom__";
+    userGroupCustomWrap.classList.toggle("hidden", !isCustom);
+    if (isCustom) {
+      userGroupCustom.focus();
+      state.userGroup = userGroupCustom.value.trim() || "";
+    } else {
+      state.userGroup = e.target.value;
     }
+    render();
+  });
+  userGroupCustom.addEventListener("input", e => {
+    state.userGroup = e.target.value.trim() || "";
+    render();
+  });
 
-    navButtons.forEach(b => b.addEventListener("click", () => show(b.dataset.route)));
-    document.getElementById("goCreate").addEventListener("click", () => show("builder"));
-    document.getElementById("goExport").addEventListener("click", () => show("export"));
-    document.getElementById("goExport2").addEventListener("click", () => show("export"));
-    document.getElementById("backDash").addEventListener("click", () => show("dashboard"));
-    document.getElementById("backBuilder").addEventListener("click", () => show("builder"));
-
-    // State
-    const state = {
-      userGroup: "General user",
-      context: "weak_password",
-      title: "Security alert",
-      message: "Your password appears in a known breach. Update now to protect your account.",
-      motivation: "risk_avoidance",
-      steps: true, action: true, explain: true, time: false,
-      urgency: 55
-    };
-
-    // Elements
-    const userGroup = document.getElementById("userGroup");
-    const context = document.getElementById("context");
-    const titleInput = document.getElementById("titleInput");
-    const msgInput = document.getElementById("msgInput");
-    const urgency = document.getElementById("urgency");
-
-    function contextLabel(v){
-      return ({
-        weak_password:"Weak password",
-        suspicious_login:"Suspicious login",
-        cache_clear:"Cache clearing",
-        software_update:"Software update"
-      })[v] || v;
+  // Security Context dropdown
+  contextSelect.addEventListener("change", e => {
+    const isCustom = e.target.value === "__custom__";
+    contextCustomWrap.classList.toggle("hidden", !isCustom);
+    if (isCustom) {
+      contextCustom.focus();
+      state.context = contextCustom.value.trim() || "";
+    } else {
+      state.context = e.target.value;
     }
+    render();
+  });
+  contextCustom.addEventListener("input", e => {
+    state.context = e.target.value.trim() || "";
+    render();
+  });
 
-    function urgencyLevel(n){
-      if(n < 34) return "low";
-      if(n < 67) return "med";
-      return "high";
-    }
-
-    function computeScores(){
-      
-      const msgLen = state.message.trim().length;
-      const clarity = Math.max(40, Math.min(95, 55 + (msgLen > 40 ? 20 : 5) + (state.explain ? 10 : -10)));
-      const instruction = Math.max(30, Math.min(95, 40 + (state.steps?25:0) + (state.action?20:0) + (state.time?10:0)));
-      const motivation = ({risk_avoidance:70, personal_impact:78, social_norm:65, compliance:60})[state.motivation] || 65;
-      const urg = Math.round(state.urgency);
-      return {clarity:Math.round(clarity), instruction:Math.round(instruction), motivation, urgency:urg};
-    }
-
-    function render(){
-      
-      document.getElementById("pvTitle").textContent = state.title;
-      document.getElementById("pvMsg").textContent = state.message;
-      document.getElementById("pvMeta").textContent = `${state.userGroup} • ${contextLabel(state.context)}`;
-
-      const lvl = urgencyLevel(state.urgency);
-      const badge = document.getElementById("badge");
-      badge.className = `badge ${lvl}`;
-      badge.textContent = lvl === "low" ? "i" : (lvl === "med" ? "!" : "⚠");
-
-      document.getElementById("primaryBtn").textContent =
-        state.context === "cache_clear" ? "Clear cache" :
-        state.context === "software_update" ? "Update now" :
-        state.context === "suspicious_login" ? "Secure account" :
-        "Update now";
-
-      // hint line
-      const hintParts = [];
-      if(state.time) hintParts.push("Includes time estimate");
-      if(state.steps) hintParts.push("Step-by-step guidance enabled");
-      if(state.motivation === "personal_impact") hintParts.push("Personal-impact framing");
-      document.getElementById("pvHint").textContent = hintParts.join(" • ");
-
-      // Scores + meters + suggestions
-      const s = computeScores();
-      const setMeter = (id, val) => {
-        document.getElementById(id).style.width = `${val}%`;
-      };
-      document.getElementById("sClarity").textContent = s.clarity;
-      document.getElementById("sMotivation").textContent = s.motivation;
-      document.getElementById("sUrgency").textContent = s.urgency;
-      document.getElementById("sInstruction").textContent = s.instruction;
-      setMeter("mClarity", s.clarity);
-      setMeter("mMotivation", s.motivation);
-      setMeter("mUrgency", s.urgency);
-      setMeter("mInstruction", s.instruction);
-
-      const suggestions = [];
-      if(!state.time) suggestions.push("Add a time estimate to reduce perceived burden (e.g., “Takes ~2 minutes”).");
-      if(!state.steps) suggestions.push("Add step-by-step instructions to reduce uncertainty and improve completion.");
-      if(state.urgency > 80 && state.motivation === "compliance") suggestions.push("High urgency + compliance can feel coercive—consider clarity + personal impact framing.");
-      if(state.message.length < 35) suggestions.push("Increase clarity: specify the risk + what will happen if ignored.");
-      if(state.message.length > 170) suggestions.push("Shorten message; move details into “Learn more” or secondary text.");
-      if(suggestions.length === 0) suggestions.push("Looks balanced. Consider A/B testing with your target user group.");
-      const ul = document.getElementById("suggestions");
-      ul.innerHTML = suggestions.map(x => `<li>${x}</li>`).join("");
-    }
-
-    // Event wiring
-    userGroup.addEventListener("change", e => { state.userGroup = e.target.value; render(); });
-    context.addEventListener("change", e => { state.context = e.target.value; render(); });
-    titleInput.addEventListener("input", e => { state.title = e.target.value; render(); });
-    msgInput.addEventListener("input", e => { state.message = e.target.value; render(); });
-    urgency.addEventListener("input", e => { state.urgency = Number(e.target.value); render(); });
-
-    // Checkboxes
-    document.getElementById("ckSteps").addEventListener("change", e => { state.steps = e.target.checked; render(); });
-    document.getElementById("ckAction").addEventListener("change", e => { state.action = e.target.checked; render(); });
-    document.getElementById("ckExplain").addEventListener("change", e => { state.explain = e.target.checked; render(); });
-    document.getElementById("ckTime").addEventListener("change", e => { state.time = e.target.checked; render(); });
-
-    // Motivation seg
-    const seg = document.getElementById("motivationSeg");
-    seg.addEventListener("click", e => {
-      const btn = e.target.closest("button");
-      if(!btn) return;
-      state.motivation = btn.dataset.m;
-      [...seg.querySelectorAll("button")].forEach(b => b.classList.toggle("on", b === btn));
+  // Other event listeners
+  titleInput.addEventListener("input", e => {state.title=e.target.value; render();});
+  msgInput.addEventListener("input", e => {state.message=e.target.value; render();});
+  urgencyInput.addEventListener("input", e => {state.urgency=parseInt(e.target.value); render();});
+  [ckSteps, ckAction, ckExplain, ckTime, ckTransparency, ckConsequences, ckDecision].forEach(c=>{
+    c.addEventListener("change", e=>{state[c.id.replace('ck','').toLowerCase()]=c.checked; render();});
+  });
+  motivationSeg.querySelectorAll("button").forEach(b=>{
+    b.addEventListener("click", e=>{
+      motivationSeg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      state.motivation = b.dataset.m;
       render();
     });
+  });
 
-    function generateCode(){
-      const style = document.getElementById("sdkStyle").value;
-      const urgency = urgencyLevel(state.urgency);
-      const payload = {
-        title: state.title,
-        message: state.message,
-        urgency,
-        motivation: state.motivation,
-        user_group: state.userGroup,
-        context: state.context,
-        include_steps: state.steps,
-        include_action: state.action,
-        explain_risk: state.explain,
-        include_time_estimate: state.time
-      };
+  // Interaction mode
+  const interactionSeg = document.getElementById("interactionSeg");
+  interactionSeg.querySelectorAll("button").forEach(b=>{
+    b.addEventListener("click", e=>{
+      interactionSeg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      state.interaction = b.dataset.i;
+      render();
+    });
+  });
 
-      const codeFunction =
-`# sentinel_sdk.py (example usage)
-from sentinel import create_notification
+  // Navigation
+  document.querySelectorAll(".nav button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll("main > section").forEach(sec=>sec.classList.add("hidden"));
+      document.getElementById(btn.dataset.route).classList.remove("hidden");
+      document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+  document.getElementById("backDash").addEventListener("click", ()=>{document.getElementById("builder").classList.add("hidden");document.getElementById("dashboard").classList.remove("hidden");});
+  document.getElementById("backDash2").addEventListener("click", ()=>{document.getElementById("export").classList.add("hidden");document.getElementById("dashboard").classList.remove("hidden");});
+  document.getElementById("goCreate").addEventListener("click", ()=>{document.getElementById("dashboard").classList.add("hidden");document.getElementById("builder").classList.remove("hidden");});
+  document.getElementById("goExport").addEventListener("click", ()=>{document.getElementById("dashboard").classList.add("hidden");document.getElementById("export").classList.remove("hidden");renderCode();});
+  document.getElementById("goExport2").addEventListener("click", ()=>{document.getElementById("builder").classList.add("hidden");document.getElementById("export").classList.remove("hidden");renderCode();});
 
-notif = create_notification(
-    title=${JSON.stringify(payload.title)},
-    message=${JSON.stringify(payload.message)},
-    context=${JSON.stringify(payload.context)},
-    user_group=${JSON.stringify(payload.user_group)},
-    urgency=${JSON.stringify(payload.urgency)},
-    motivation=${JSON.stringify(payload.motivation)},
-    include_steps=${payload.include_steps},
-    include_action=${payload.include_action},
-    explain_risk=${payload.explain_risk},
-    include_time_estimate=${payload.include_time_estimate},
-)
+  // Render function
+  function render(){
+    document.getElementById("pvTitle").textContent = state.title || "Notification title";
+    document.getElementById("pvMsg").textContent = state.message || "Notification message will appear here.";
+    document.getElementById("pvMeta").textContent = `${state.userGroup || "User group"} • ${state.context || "Security context"}`;
 
-notif.show()`;
+    const lvl = state.urgency<35?"low":state.urgency<70?"med":"high";
+    const badge = document.getElementById("badge");
+    badge.className = `badge ${lvl}`;
+    badge.textContent = lvl==="low"?"i":lvl==="med"?"!":"⚠";
 
-      const codeBuilder =
-`# sentinel_sdk.py (example usage)
-from sentinel import NotificationBuilder
+    document.getElementById("primaryBtn").textContent = "Allow";
 
-notif = (
-  NotificationBuilder()
-    .title(${JSON.stringify(payload.title)})
-    .message(${JSON.stringify(payload.message)})
-    .context(${JSON.stringify(payload.context)})
-    .user_group(${JSON.stringify(payload.user_group)})
-    .urgency(${JSON.stringify(payload.urgency)})
-    .motivation(${JSON.stringify(payload.motivation)})
-    .instructions(steps=${payload.include_steps}, action=${payload.include_action}, time_estimate=${payload.include_time_estimate})
-    .explain_risk(${payload.explain_risk})
-    .build()
-)
-
-notif.show()`;
-
-      document.getElementById("codebox").textContent = (style === "builder") ? codeBuilder : codeFunction;
+    // Wire up sliding bar label (idempotent)
+    const pvSlider = document.getElementById("pvSlider");
+    if(pvSlider && !pvSlider._wired){
+      pvSlider._wired = true;
+      pvSlider.addEventListener("input", () => {
+        const label = document.getElementById("pvSliderLabel");
+        label.textContent = pvSlider.value === "0" ? "Allow" : "Don't Allow";
+        label.style.color = pvSlider.value === "0" ? "var(--primary)" : "var(--muted)";
+      });
     }
 
-    document.getElementById("regen").addEventListener("click", generateCode);
-    document.getElementById("sdkStyle").addEventListener("change", generateCode);
-
-    document.getElementById("copyCode").addEventListener("click", async () => {
-      try{
-        await navigator.clipboard.writeText(document.getElementById("codebox").textContent);
-        alert("Copied!");
-      }catch{
-        alert("Couldn’t auto-copy. Select the text and copy manually.");
+    // Wire up toggle visual behaviour (idempotent)
+    ["Allow","Deny"].forEach(id => {
+      const cb = document.getElementById("pvToggle" + id);
+      const track = document.getElementById("pvToggle" + id + "Track");
+      const thumb = document.getElementById("pvToggle" + id + "Thumb");
+      if(cb && !cb._wired){
+        cb._wired = true;
+        const color = id === "Allow" ? "var(--primary)" : "var(--danger)";
+        cb.addEventListener("change", () => {
+          track.style.background = cb.checked ? color : "#d1d5db";
+          thumb.style.transform = cb.checked ? "translateX(18px)" : "translateX(0)";
+        });
       }
     });
 
-    // init
-    render();
-    show("dashboard");
-  </script>
+    const hintParts = [];
+    if(state.time) hintParts.push("Includes time estimate");
+    if(state.steps) hintParts.push("Step-by-step guidance enabled");
+    if(state.motivation==="personal_impact") hintParts.push("Personal-impact framing");
+    document.getElementById("pvHint").textContent = hintParts.join(" • ");
+
+    const clamp = v=>Math.min(100,Math.max(0,v));
+    const s = {
+      clarity: clamp(70 + (state.message.length>50?10:0)),
+      motivation: clamp(state.motivation==="risk_avoidance"?75:65),
+      urgency: clamp(state.urgency),
+      instruction: clamp(50 + (state.steps?10:0) + (state.action?10:0) + (state.explain?10:0) + (state.time?5:0)),
+      decision: clamp(40 + (state.decision?20:0)),
+      trust: clamp(45 + (state.transparency?20:0) + (state.consequences?10:0))
+    };
+    const setMeter = (id,val)=>{document.getElementById(id).style.width=val+"%";};
+    document.getElementById("sClarity").textContent = s.clarity;
+    document.getElementById("sMotivation").textContent = s.motivation;
+    document.getElementById("sUrgency").textContent = s.urgency;
+    document.getElementById("sInstruction").textContent = s.instruction;
+    document.getElementById("sDecision").textContent = s.decision;
+    document.getElementById("sTrust").textContent = s.trust;
+    setMeter("mClarity",s.clarity);
+    setMeter("mMotivation",s.motivation);
+    setMeter("mUrgency",s.urgency);
+    setMeter("mInstruction",s.instruction);
+    setMeter("mDecision",s.decision);
+    setMeter("mTrust",s.trust);
+
+    document.getElementById("gSteps").textContent = state.steps?"✔":"✖";
+    document.getElementById("gAction").textContent = state.action?"✔":"✖";
+    document.getElementById("gExplain").textContent = state.explain?"✔":"✖";
+    document.getElementById("gTime").textContent = state.time?"✔":"✖";
+    document.getElementById("gTransparency").textContent = state.transparency?"✔":"✖";
+    document.getElementById("gConsequences").textContent = state.consequences?"✔":"✖";
+    document.getElementById("gDecision").textContent = state.decision?"✔":"✖";
+
+    const suggestions = [];
+    if(!state.time) suggestions.push("Add a time estimate to reduce perceived burden.");
+    if(!state.steps) suggestions.push("Include step-by-step instructions to reduce uncertainty.");
+    if(!state.action) suggestions.push("Provide a direct action button for immediate response.");
+    if(!state.explain) suggestions.push("Explain the risk to increase user understanding.");
+    if(!state.transparency) suggestions.push("Optionally explain why the notification appeared to build trust.");
+    if(!state.consequences) suggestions.push("Optionally mention consequences if ignored to motivate compliance.");
+    if(!state.decision) suggestions.push("Optionally provide decision support links to guide next steps.");
+    if(state.message.length<35) suggestions.push("Increase message clarity: specify risk and consequences.");
+    if(suggestions.length===0) suggestions.push("Looks balanced. Consider A/B testing for optimization.");
+    document.getElementById("suggestions").innerHTML = suggestions.map(x=>`<li>${x}</li>`).join("");
+
+    // Interaction mode preview
+    const modes = ["click_box","checkbox","toggle"];
+    modes.forEach(m => {
+      const el = document.getElementById("pvInteraction_" + m);
+      if(el) el.style.display = (m === state.interaction) ? (m === "toggle" ? "block" : m === "checkbox" ? "block" : "flex") : "none";
+    });
+
+    // Interaction mode warning
+    const warnEl = document.getElementById("interactionWarn");
+    if(state.interaction === "click_box"){
+      warnEl.style.display = "block";
+    } else {
+      warnEl.style.display = "none";
+    }
+  }
+
+  function renderCode(){
+    const code = `
+notif = create_notification(
+  title="${state.title}",
+  message="${state.message}",
+  context="${state.context}",
+  user_group="${state.userGroup}",
+  urgency=${state.urgency},
+  motivation="${state.motivation}",
+  include_steps=${state.steps},
+  include_action=${state.action},
+  explain_risk=${state.explain},
+  include_time_estimate=${state.time},
+  explain_transparency=${state.transparency},
+  consequences_if_ignored=${state.consequences},
+  decision_support=${state.decision},
+  interaction_mode="${state.interaction}"
+)
+    `.trim();
+    document.getElementById("codeOutput").textContent = code;
+  }
+
+  render();
+
+  // Reference table toggle
+  document.getElementById("ckRefTable").addEventListener("change", function() {
+    document.getElementById("refTableWrap").classList.toggle("open", this.checked);
+  });
+</script>
 </body>
 </html>
