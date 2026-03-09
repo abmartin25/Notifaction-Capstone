@@ -559,7 +559,7 @@
       motivation: clamp(state.motivation==="risk_avoidance"?75:65),
       urgency: clamp(state.urgency),
       instruction: clamp(50 + (state.steps?10:0) + (state.action?10:0) + (state.explain?10:0) + (state.time?5:0)),
-      decision: clamp(40 + (state.decision?20:0)),
+      decision: clamp(40 + (state.decision ? 20 : 0) + (state.preferredDecision ? 20 : 0)),
       trust: clamp(45 + (state.transparency?20:0) + (state.consequences?10:0))
     };
     const setMeter = (id,val)=>{document.getElementById(id).style.width=val+"%";};
