@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { saveTemplate, getTemplate, getAllTemplates, deleteTemplate } = require("./db");
 
 const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
@@ -16,6 +17,18 @@ const MIME_TYPES = {
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
 };
+
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => {
+      try { resolve(JSON.parse(body)); }
+      catch { reject(new Error("Invalid JSON")); }
+    });
+    req.on("error", reject);
+  });
+}
 
 function sendFile(res, filePath) {
   fs.readFile(filePath, (err, data) => {
@@ -35,6 +48,46 @@ function sendFile(res, filePath) {
     res.writeHead(200, { "Content-Type": contentType });
     res.end(data);
   });
+}
+
+// api routes
+async function handleApi(req, res, url) {
+  // GET /api/templates — list saved templates (id + name + timestamps)
+  if (req.method === "GET" && url === "/api/templates") {
+    const templates = getAllTemplates();
+    return sendJson(res, 200, templates);
+  }
+
+  // POST /api/templates — save/overwrite template
+  if (req.method === "POST" && url === "/api/templates") {
+    try {
+      const body = await readBody(req);
+      if (!body.name || typeof body.name !== "string" || !body.config) {
+        return sendJson(res, 400, { error: "name (string) and config (object) are required" });
+      }
+      const template = saveTemplate(body.name.trim(), body.config);
+      return sendJson(res, 200, template);
+    } catch (err) {
+      return sendJson(res, 400, { error: err.message });
+    }
+  }
+
+  // GET /api/templates/:id — load template with config
+  const matchId = url.match(/^\/api\/templates\/(\d+)$/);
+  if (matchId) {
+    if (req.method === "GET") {
+      const template = getTemplate(parseInt(matchId[1], 10));
+      if (!template) return sendJson(res, 404, { error: "Template not found" });
+      return sendJson(res, 200, template);
+    }
+    if (req.method === "DELETE") {
+      const deleted = deleteTemplate(parseInt(matchId[1], 10));
+      if (!deleted) return sendJson(res, 404, { error: "Template not found" });
+      return sendJson(res, 200, { success: true });
+    }
+  }
+
+  sendJson(res, 404, { error: "Unknown API route" });
 }
 
 const server = http.createServer((req, res) => {
