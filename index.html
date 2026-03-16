@@ -4,102 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SENTINEL SDK — Prototype</title>
-  <style>
-    :root{
-      --bg:#f9fafb; --card:#ffffff; --text:#111827; --muted:#6b7280;
-      --border:#e5e7eb; --primary:#2563eb; --warn:#f59e0b; --danger:#ef4444; --good:#10b981;
-      --shadow: 0 10px 20px rgba(0,0,0,.06);
-      --radius:16px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-    }
-    *{ box-sizing:border-box; }
-    body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); }
-    a{ color:inherit; text-decoration:none; }
-    .app{ min-height:100vh; display:grid; grid-template-columns: 260px 1fr; }
-    .sidebar{ border-right:1px solid var(--border); padding:18px 14px; background:linear-gradient(180deg, #ffffff 0%, #fbfdff 100%); }
-    .brand{ display:flex; gap:10px; align-items:center; padding:10px 10px 14px; }
-    .logo{ width:34px; height:34px; border-radius:10px; background: radial-gradient(circle at 30% 30%, #60a5fa, #2563eb); box-shadow: var(--shadow); }
-    .brand h1{ font-size:14px; margin:0; letter-spacing:.2px; }
-    .brand p{ margin:2px 0 0; font-size:12px; color:var(--muted); }
-    .nav{ margin-top:8px; display:flex; flex-direction:column; gap:6px; }
-    .nav button{ all:unset; cursor:pointer; padding:10px 10px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; border:1px solid transparent; }
-    .nav button:hover{ background:#f3f4f6; }
-    .nav button.active{ background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; }
-    .content{ padding:20px; }
-    .topbar{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:16px; }
-    .title h2{ margin:0; font-size:22px; }
-    .title p{ margin:6px 0 0; color:var(--muted); font-size:13px; max-width:720px; }
-    .actions{ display:flex; gap:10px; }
-    .btn{ border:1px solid var(--border); background:var(--card); padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:600; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
-    .btn.primary{ background:var(--primary); border-color: var(--primary); color:white; }
-    .grid{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; }
-    .card{ background:var(--card); border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding:14px; min-height: 120px; }
-    .card h3{ margin:0 0 6px; font-size:14px; }
-    .card p{ margin:0; color:var(--muted); font-size:13px; line-height:1.35; }
-    .chip{ display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); padding:8px 10px; border-radius:999px; font-size:12px; color:var(--muted); background:#fff; }
-    .chip strong{ color:var(--text); }
-    .row{ display:grid; grid-template-columns: 1.2fr .9fr; gap:14px; align-items:start; }
-    .builder{ display:grid; grid-template-columns: 320px 1fr 360px; gap:14px; align-items:start; }
-    .panel h3{ margin:0 0 10px; font-size:14px; }
-    .field{ margin-bottom:12px; }
-    label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
-    select, input[type="text"], textarea{ width:100%; padding:10px 10px; border-radius:12px; border:1px solid var(--border); background:#fff; font: inherit; outline:none; }
-    textarea{ resize:vertical; min-height:90px; }
-    .custom-input-wrap{ margin-top:6px; }
-    .custom-input-wrap input{ border:1px solid var(--primary); border-radius:12px; padding:9px 12px; width:100%; font:inherit; outline:none; animation: fadeIn .15s ease; }
-    .custom-input-wrap input::placeholder{ color:var(--muted); }
-    @keyframes fadeIn{ from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
-    .seg{ display:flex; gap:8px; flex-wrap:wrap; }
-    .seg button{ all:unset; cursor:pointer; padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:#fff; font-size:12px; }
-    .seg button.on{ background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; font-weight:700; }
-    .checks{ display:grid; gap:8px; }
-    .checks label{ display:flex; gap:10px; align-items:center; margin:0; color:var(--text); }
-    .checks span{ font-size:13px; }
-    input[type="checkbox"]{ width:16px; height:16px; }
-    .slider{ display:flex; gap:12px; align-items:center; }
-    input[type="range"]{ width:100%; }
-    .previewCard{ border:1px solid var(--border); border-radius: var(--radius); padding:14px; background:#fff; }
-    .previewHeader{ display:flex; gap:10px; align-items:center; margin-bottom:8px; }
-    .badge{ width:28px; height:28px; border-radius:10px; display:grid; place-items:center; font-weight:900; color:white; }
-    .badge.low{ background: var(--primary); }
-    .badge.med{ background: var(--warn); }
-    .badge.high{ background: var(--danger); }
-    .previewTitle{ font-weight:800; }
-    .previewMsg{ color:var(--muted); margin:0 0 12px; font-size:13px; line-height:1.4; }
-    .previewBtns{ display:flex; gap:10px; }
-    .mini{ border:1px solid var(--border); padding:10px 12px; border-radius:12px; background:#fff; cursor:pointer; font-weight:700; font-size:13px; }
-    .mini.primary{ background:var(--primary); border-color:var(--primary); color:white; }
-    .mini.selected-deny{ background:var(--danger); border-color:var(--danger); color:white; }
-    .guide{ display:grid; gap:10px; }
-    .scoreRow{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:#fff; }
-    .meter{ height:8px; border-radius:999px; background:#e5e7eb; overflow:hidden; flex:1; margin-left:10px; }
-    .meter > div{ height:100%; background:var(--good); width:50%; }
-    .codebox{ border:1px solid var(--border); background:#0b1020; color:#dbeafe; border-radius: var(--radius); padding:12px; font-family: var(--mono); font-size:12px; line-height:1.45; overflow:auto; min-height: 220px; white-space: pre; }
-    .hint{ color:var(--muted); font-size:12px; margin-top:8px; }
-    .hidden{ display:none; }
-    .ref-toggle-row{ display:flex; align-items:center; gap:8px; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); }
-    .ref-toggle-row label{ margin:0; font-size:12px; color:var(--muted); cursor:pointer; display:flex; align-items:center; gap:8px; }
-    .ref-toggle-row input[type="checkbox"]{ width:15px; height:15px; accent-color:var(--primary); cursor:pointer; }
-    .ref-table-wrap{ margin-top:10px; overflow:hidden; max-height:0; transition: max-height .3s ease, opacity .3s ease; opacity:0; }
-    .ref-table-wrap.open{ max-height:900px; opacity:1; }
-    .ref-table{ width:100%; border-collapse:collapse; font-size:11px; }
-    .ref-table thead th{ background:#f0f6ff; color:#1d4ed8; font-weight:700; padding:7px 8px; text-align:left; border-bottom:2px solid #bfdbfe; position:sticky; top:0; }
-    .ref-table tbody tr:nth-child(even){ background:#f9fafb; }
-    .ref-table tbody tr:hover{ background:#eff6ff; }
-    .ref-table td{ padding:6px 8px; vertical-align:top; border-bottom:1px solid var(--border); line-height:1.35; }
-    .ref-table td:first-child{ font-weight:700; color:var(--text); white-space:nowrap; }
-    .ref-table td:nth-child(2){ color:#065f46; }
-    .ref-table td:nth-child(3){ color:#991b1b; }
-    .ref-table-scroll{ max-height:400px; overflow-y:auto; border-radius:10px; border:1px solid var(--border); }
-    @media (max-width: 1100px){
-      .app{ grid-template-columns: 1fr; }
-      .sidebar{ position:sticky; top:0; z-index:1; border-right:none; border-bottom:1px solid var(--border); }
-      .builder{ grid-template-columns: 1fr; }
-      .grid{ grid-template-columns: 1fr; }
-      .row{ grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 <div class="app">
@@ -119,8 +24,6 @@
   </aside>
 
   <main class="content">
-
-    <!-- DASHBOARD -->
     <section id="dashboard">
       <div class="topbar">
         <div class="title">
@@ -133,18 +36,17 @@
         </div>
       </div>
       <div class="grid">
-        <div class="card"><h3>Create Notification</h3><p>Choose user group + security context, then tune clarity, urgency, motivation, and instructions.</p></div>
-        <div class="card"><h3>Framework Guidance</h3><p>Get suggestions grounded in HCI principles: clarity, necessity framing, and actionable instructions.</p></div>
+        <div class="card"><h3>Create Notification</h3><p>Choose user group and security context, then tune clarity, urgency, motivation, guidance, transparency, and user agency.</p></div>
+        <div class="card"><h3>Framework Guidance</h3><p>Review notification quality across clarity, context, trust, tone, decision support, workflow fit, and frequency.</p></div>
         <div class="card"><h3>SDK Integration</h3><p>Export Python snippets for consistent notifications across apps, teams, and environments.</p></div>
       </div>
     </section>
 
-    <!-- BUILDER -->
     <section id="builder" class="hidden">
       <div class="topbar">
         <div class="title">
           <h2>Notification Builder</h2>
-          <p>Design a user-centered notification by combining urgency & necessity framing, clarity, motivation, and instruction.</p>
+          <p>Design a user-centered notification by combining urgency and necessity framing, clarity, motivation, transparency, context, and guidance.</p>
         </div>
         <div class="actions">
           <button class="btn" id="backDash">Dashboard</button>
@@ -153,7 +55,6 @@
       </div>
 
       <div class="builder">
-        <!-- left: configuration -->
         <div class="card panel">
           <h3>Configuration</h3>
 
@@ -203,13 +104,15 @@
             <div class="checks">
               <label><input id="ckSteps" type="checkbox" checked /><span>Step-by-step instructions</span></label>
               <label><input id="ckAction" type="checkbox" checked /><span>Direct action button</span></label>
-              <label><input id="ckExplainVuln" type="checkbox" checked /><span>Explain the vulnerability</span></label>
-              <label><input id="ckExplain" type="checkbox" checked /><span>Explain the risk</span></label>
+              <label><input id="ckExplainVuln" type="checkbox" checked /><span>Vulnerability explanation</span></label>
+              <label><input id="ckExplain" type="checkbox" checked /><span>Risk explanation</span></label>
+              <label><input id="ckBackground" type="checkbox" checked /><span>Context and background about the risk</span></label>
               <label><input id="ckTime" type="checkbox" /><span>Time estimate</span></label>
               <label><input id="ckTransparency" type="checkbox" /><span>Explain why notification appeared</span></label>
               <label><input id="ckConsequences" type="checkbox" /><span>Consequences if ignored</span></label>
               <label><input id="ckDecision" type="checkbox" /><span>Decision support links</span></label>
               <label><input id="ckPreferredDecision" type="checkbox" /><span>Preferred decision</span></label>
+              <label><input id="ckAiTone" type="checkbox" /><span>AI tone review in framework guidance</span></label>
             </div>
           </div>
 
@@ -223,27 +126,56 @@
               <button data-i="checkbox" type="button">Sliding bar</button>
               <button data-i="toggle" type="button">Toggle</button>
             </div>
-            <div style="margin-top:8px; font-size:11px; color:var(--muted); line-height:1.4;">
-              Each option shows <em>Allow / Don't Allow</em> for the user.
-            </div>
+            <div class="sectionNote">Each option shows Allow and Don't Allow for the user. The framework will suggest safer interaction patterns if the current choice is too easy to dismiss.</div>
           </div>
 
           <div class="field">
             <label>User workflow</label>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:8px; line-height:1.4;">Where should this notification appear for the user?</div>
             <div class="seg" id="locationSeg">
               <button class="on" data-l="banner" type="button">Banner</button>
               <button data-l="popup" type="button">Pop-up</button>
               <button data-l="inline" type="button">Inline</button>
               <button data-l="modal" type="button">Modal</button>
             </div>
-            <div style="margin-top:8px; font-size:11px; color:var(--muted); line-height:1.4;" id="locationDesc">
-              Appears at the top or bottom of the screen; non-blocking.
+            <div class="sectionNote" id="locationDesc">Appears at the top or bottom of the screen; non-blocking.</div>
+          </div>
+
+          <div class="field">
+            <label>User agency</label>
+            <div class="seg" id="agencySeg">
+              <button class="on" data-a="must_do" type="button">Have to</button>
+              <button data-a="remind_later" type="button">Remind me later</button>
+              <button data-a="not_urgent" type="button">Not urgent</button>
+            </div>
+            <div class="sectionNote">This controls how much choice the user has and helps represent user impact and compliance pressure.</div>
+          </div>
+
+          <div class="field">
+            <label><input id="ckSchedule" type="checkbox" /> Manual deployment scheduling</label>
+            <div class="sectionNote">Set a deployment date, hours, and when users should see the notification.</div>
+            <div id="scheduleWrap" class="hidden">
+              <div class="schedule-grid subfield">
+                <div>
+                  <label for="deployDate">Deploy date</label>
+                  <input id="deployDate" type="date" />
+                </div>
+                <div>
+                  <label for="deployHour">Preferred hour</label>
+                  <input id="deployHour" type="time" value="09:00" />
+                </div>
+              </div>
+              <div class="subfield">
+                <label for="deployWindow">Hour range</label>
+                <input id="deployWindow" type="text" placeholder="Example: 09:00-12:00" />
+              </div>
+              <div class="checks subfield">
+                <label><input id="ckBootup" type="checkbox" /><span>Show on bootup</span></label>
+                <label><input id="ckDuringTask" type="checkbox" checked /><span>Show while user is doing the relevant task</span></label>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- middle: live preview -->
         <div class="card panel">
           <h3>Live preview</h3>
           <div class="previewCard">
@@ -256,13 +188,11 @@
             </div>
             <p class="previewMsg" id="pvMsg">Your password appears in a known breach. Update now to protect your account.</p>
 
-            <!-- Click box mode -->
             <div id="pvInteraction_click_box" class="previewBtns">
               <button class="mini primary" id="primaryBtn">Allow</button>
               <button class="mini" id="denyBtn">Don't Allow</button>
             </div>
 
-            <!-- Sliding bar mode -->
             <div id="pvInteraction_checkbox" style="display:none; margin-top:6px;">
               <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px;">
                 <span>Allow</span><span>Don't Allow</span>
@@ -271,7 +201,6 @@
               <div id="pvSliderLabel" style="text-align:center; font-size:12px; font-weight:700; color:var(--muted); margin-top:5px;">Allow</div>
             </div>
 
-            <!-- Toggle mode -->
             <div id="pvInteraction_toggle" style="display:none;">
               <div style="display:flex; align-items:center; justify-content:space-between; background:#f3f4f6; border-radius:12px; padding:10px 14px; margin-bottom:8px;">
                 <span style="font-size:13px; font-weight:600;">Allow</span>
@@ -291,33 +220,33 @@
               </div>
             </div>
 
+            <div class="previewBtns" id="agencyPreview" style="margin-top:10px;">
+              <button class="mini primary" id="agencyMainBtn">Have to</button>
+              <button class="mini secondary-accent" id="agencySecondaryBtn">Remind me later</button>
+              <button class="mini neutral-accent" id="agencyTertiaryBtn">Not urgent</button>
+            </div>
+
             <div class="hint" id="pvHint"></div>
+            <div class="info-strip" id="pvInfoStrip"></div>
+
             <div id="pvVulnWrap" style="display:none; margin-top:8px; position:relative; width:fit-content;">
               <span id="pvVulnTrigger" style="font-size:12px; color:var(--primary); text-decoration:underline dotted; cursor:default;">learn about vulnerability</span>
-              <div id="pvVulnTooltip" style="
-                display:none;
-                position:absolute;
-                bottom:calc(100% + 8px);
-                left:0;
-                width:220px;
-                background:#1e293b;
-                color:#e2e8f0;
-                font-size:12px;
-                line-height:1.5;
-                padding:10px 12px;
-                border-radius:10px;
-                box-shadow:0 4px 16px rgba(0,0,0,.2);
-                pointer-events:none;
-                z-index:10;
-              ">
+              <div id="pvVulnTooltip" style="display:none; position:absolute; bottom:calc(100% + 8px); left:0; width:220px; background:#1e293b; color:#e2e8f0; font-size:12px; line-height:1.5; padding:10px 12px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,.2); pointer-events:none; z-index:10;">
                 This notification was triggered because a vulnerability was detected in your account or system. Understanding the issue helps you take the right steps to stay protected.
+                <div style="position:absolute;top:100%;left:14px;border:6px solid transparent;border-top-color:#1e293b;"></div>
+              </div>
+            </div>
+
+            <div id="pvRiskWrap" style="display:none; margin-top:8px; position:relative; width:fit-content;">
+              <span id="pvRiskTrigger" style="font-size:12px; color:var(--primary); text-decoration:underline dotted; cursor:default;">learn about risk</span>
+              <div id="pvRiskTooltip" style="display:none; position:absolute; bottom:calc(100% + 8px); left:0; width:240px; background:#1e293b; color:#e2e8f0; font-size:12px; line-height:1.5; padding:10px 12px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,.2); pointer-events:none; z-index:10;">
+                Ignoring this issue may increase the chance of account compromise, data exposure, or disruption to the user's task depending on the context.
                 <div style="position:absolute;top:100%;left:14px;border:6px solid transparent;border-top-color:#1e293b;"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- right: framework guidance -->
         <div class="card panel">
           <h3>Framework guidance</h3>
           <div class="guide">
@@ -331,6 +260,11 @@
             <div class="card" style="box-shadow:none; border-style:dashed;">
               <h3 style="margin:0 0 6px">Suggestions</h3>
               <ul id="suggestions" style="margin:0; padding-left:18px; color:var(--muted); font-size:13px; line-height:1.4"></ul>
+            </div>
+
+            <div class="card" style="box-shadow:none; border-style:dashed;">
+              <h3 style="margin:0 0 6px">AI tone review</h3>
+              <p id="aiToneText" style="font-size:13px; color:var(--muted); line-height:1.45;">Enable AI tone review to simulate a framework-level tone check.</p>
             </div>
 
             <div class="ref-toggle-row">
@@ -367,11 +301,9 @@
             </div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- EXPORT -->
     <section id="export" class="hidden">
       <div class="topbar">
         <div class="title">
@@ -386,287 +318,10 @@
         <pre class="codebox" id="codeOutput">// Your generated notification code will appear here</pre>
       </div>
     </section>
-
   </main>
 </div>
 
-<script>
-  // State — explainVuln and explain are fully separate keys
-  const state = {
-    title: "", message: "", context: "", userGroup: "",
-    motivation: "risk_avoidance",
-    steps: true, action: true,
-    explainVuln: true,  // "Explain the vulnerability"
-    explain: true,      // "Explain the risk"
-    time: false, transparency: false, consequences: false, decision: false,
-    urgency: 55, interaction: "click_box", preferredDecision: false, location: "banner"
-  };
-
-  // DOM refs
-  const titleInput          = document.getElementById("titleInput");
-  const msgInput            = document.getElementById("msgInput");
-  const contextSelect       = document.getElementById("context");
-  const userGroupSelect     = document.getElementById("userGroup");
-  const motivationSeg       = document.getElementById("motivationSeg");
-  const urgencyInput        = document.getElementById("urgency");
-  const userGroupCustomWrap = document.getElementById("userGroupCustomWrap");
-  const userGroupCustom     = document.getElementById("userGroupCustom");
-  const contextCustomWrap   = document.getElementById("contextCustomWrap");
-  const contextCustom       = document.getElementById("contextCustom");
-
-  // Dropdowns with custom option
-  userGroupSelect.addEventListener("change", e => {
-    const isCustom = e.target.value === "__custom__";
-    userGroupCustomWrap.classList.toggle("hidden", !isCustom);
-    state.userGroup = isCustom ? "" : e.target.value;
-    if (isCustom) userGroupCustom.focus();
-    render();
-  });
-  userGroupCustom.addEventListener("input", e => { state.userGroup = e.target.value.trim(); render(); });
-
-  contextSelect.addEventListener("change", e => {
-    const isCustom = e.target.value === "__custom__";
-    contextCustomWrap.classList.toggle("hidden", !isCustom);
-    state.context = isCustom ? "" : e.target.value;
-    if (isCustom) contextCustom.focus();
-    render();
-  });
-  contextCustom.addEventListener("input", e => { state.context = e.target.value.trim(); render(); });
-
-  titleInput.addEventListener("input",   e => { state.title   = e.target.value; render(); });
-  msgInput.addEventListener("input",     e => { state.message = e.target.value; render(); });
-  urgencyInput.addEventListener("input", e => { state.urgency = parseInt(e.target.value); render(); });
-
-  // Checkboxes mapped to state keys 
-  [
-    ["ckSteps",       "steps"],
-    ["ckAction",      "action"],
-    ["ckExplainVuln", "explainVuln"],
-    ["ckExplain",     "explain"],
-    ["ckTime",        "time"],
-    ["ckTransparency","transparency"],
-    ["ckConsequences","consequences"],
-    ["ckDecision",        "decision"],
-    ["ckPreferredDecision","preferredDecision"],
-  ].forEach(([id, key]) => {
-    document.getElementById(id).addEventListener("change", e => { state[key] = e.target.checked; render(); });
-  });
-
-  // Motivation seg
-  motivationSeg.querySelectorAll("button").forEach(b => {
-    b.addEventListener("click", () => {
-      motivationSeg.querySelectorAll("button").forEach(x => x.classList.remove("on"));
-      b.classList.add("on");
-      state.motivation = b.dataset.m;
-      render();
-    });
-  });
-
-  // Interaction seg
-  const interactionSeg = document.getElementById("interactionSeg");
-  interactionSeg.querySelectorAll("button").forEach(b => {
-    b.addEventListener("click", () => {
-      interactionSeg.querySelectorAll("button").forEach(x => x.classList.remove("on"));
-      b.classList.add("on");
-      state.interaction = b.dataset.i;
-      render();
-    });
-  });
-
-  // Click box: only choose allow/don't allow
-  const primaryBtn = document.getElementById("primaryBtn");
-  const denyBtn    = document.getElementById("denyBtn");
-  let clickChoice  = null;
-
-  primaryBtn.addEventListener("click", () => { clickChoice = clickChoice === "allow" ? null : "allow"; updateClickBoxState(); });
-  denyBtn.addEventListener("click",    () => { clickChoice = clickChoice === "deny"  ? null : "deny";  updateClickBoxState(); });
-
-  function updateClickBoxState() {
-    const isAllow = clickChoice === "allow" || clickChoice === null;
-    primaryBtn.classList.toggle("primary",       isAllow);
-    primaryBtn.classList.toggle("selected-deny", false);
-    denyBtn.classList.toggle("selected-deny",    clickChoice === "deny");
-    denyBtn.classList.toggle("primary",          false);
-  }
-
-  // Toggle: only choose allow/don't allow
-  const pvToggleAllow      = document.getElementById("pvToggleAllow");
-  const pvToggleDeny       = document.getElementById("pvToggleDeny");
-  const pvToggleAllowTrack = document.getElementById("pvToggleAllowTrack");
-  const pvToggleAllowThumb = document.getElementById("pvToggleAllowThumb");
-  const pvToggleDenyTrack  = document.getElementById("pvToggleDenyTrack");
-  const pvToggleDenyThumb  = document.getElementById("pvToggleDenyThumb");
-
-  function applyToggleVisual(cb, track, thumb, color) {
-    track.style.background = cb.checked ? color : "#d1d5db";
-    thumb.style.transform  = cb.checked ? "translateX(18px)" : "translateX(0)";
-  }
-  pvToggleAllow.addEventListener("change", () => {
-    if (pvToggleAllow.checked) { pvToggleDeny.checked = false; applyToggleVisual(pvToggleDeny, pvToggleDenyTrack, pvToggleDenyThumb, "var(--danger)"); }
-    applyToggleVisual(pvToggleAllow, pvToggleAllowTrack, pvToggleAllowThumb, "var(--primary)");
-  });
-  pvToggleDeny.addEventListener("change", () => {
-    if (pvToggleDeny.checked) { pvToggleAllow.checked = false; applyToggleVisual(pvToggleAllow, pvToggleAllowTrack, pvToggleAllowThumb, "var(--primary)"); }
-    applyToggleVisual(pvToggleDeny, pvToggleDenyTrack, pvToggleDenyThumb, "var(--danger)");
-  });
-
-  // Location seg
-  const locationDescs = {
-    banner: "Appears at the top or bottom of the screen; non-blocking.",
-    popup:  "Appears in the center of the screen; requires user interaction.",
-    inline: "Appears within the page content; contextual and subtle.",
-    modal:  "Overlays the full screen; blocks all other interaction."
-  };
-  const locationSeg = document.getElementById("locationSeg");
-  locationSeg.querySelectorAll("button").forEach(b => {
-    b.addEventListener("click", () => {
-      locationSeg.querySelectorAll("button").forEach(x => x.classList.remove("on"));
-      b.classList.add("on");
-      state.location = b.dataset.l;
-      document.getElementById("locationDesc").textContent = locationDescs[b.dataset.l] || "";
-      render();
-    });
-  });
-
-  // Navigation
-  document.querySelectorAll(".nav button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll("main > section").forEach(sec => sec.classList.add("hidden"));
-      document.getElementById(btn.dataset.route).classList.remove("hidden");
-      document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-    });
-  });
-  document.getElementById("backDash").addEventListener("click",  () => { document.getElementById("builder").classList.add("hidden");  document.getElementById("dashboard").classList.remove("hidden"); });
-  document.getElementById("backDash2").addEventListener("click", () => { document.getElementById("export").classList.add("hidden");   document.getElementById("dashboard").classList.remove("hidden"); });
-  document.getElementById("goCreate").addEventListener("click",  () => { document.getElementById("dashboard").classList.add("hidden"); document.getElementById("builder").classList.remove("hidden"); });
-  document.getElementById("goExport").addEventListener("click",  () => { document.getElementById("dashboard").classList.add("hidden"); document.getElementById("export").classList.remove("hidden"); renderCode(); });
-  document.getElementById("goExport2").addEventListener("click", () => { document.getElementById("builder").classList.add("hidden");  document.getElementById("export").classList.remove("hidden"); renderCode(); });
-
-  function render() {
-    document.getElementById("pvTitle").textContent = state.title   || "Notification title";
-    document.getElementById("pvMsg").textContent   = state.message || "Notification message will appear here.";
-    document.getElementById("pvMeta").textContent  = `${state.userGroup || "User group"} • ${state.context || "Security context"}`;
-
-    const lvl   = state.urgency < 35 ? "low" : state.urgency < 70 ? "med" : "high";
-    const badge = document.getElementById("badge");
-    badge.className   = `badge ${lvl}`;
-    badge.textContent = lvl === "low" ? "i" : lvl === "med" ? "!" : "⚠";
-
-    // Sliding bar label 
-    const pvSlider = document.getElementById("pvSlider");
-    if (pvSlider && !pvSlider._wired) {
-      pvSlider._wired = true;
-      pvSlider.addEventListener("input", () => {
-        const lbl = document.getElementById("pvSliderLabel");
-        lbl.textContent = pvSlider.value === "0" ? "Allow" : "Don't Allow";
-        lbl.style.color = pvSlider.value === "0" ? "var(--primary)" : "var(--muted)";
-      });
-    }
-
-    // Vulnerability tooltip visibility
-    const pvVulnWrap = document.getElementById("pvVulnWrap");
-    pvVulnWrap.style.display = state.explainVuln ? "block" : "none";
-
-    // Wire hover once
-    const trigger = document.getElementById("pvVulnTrigger");
-    const tooltip = document.getElementById("pvVulnTooltip");
-    if (!trigger._wired) {
-      trigger._wired = true;
-      trigger.addEventListener("mouseenter", () => { tooltip.style.display = "block"; });
-      trigger.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
-    }
-
-    const hintParts = [];
-    if (state.time)                             hintParts.push("Includes time estimate");
-    if (state.steps)                            hintParts.push("Step-by-step guidance enabled");
-    if (state.motivation === "personal_impact") hintParts.push("Personal-impact framing");
-    document.getElementById("pvHint").textContent = hintParts.join(" • ");
-
-    // Scores
-    const clamp = v => Math.min(100, Math.max(0, v));
-    const s = {
-      clarity:     clamp(70 + (state.message.length > 50 ? 10 : 0)),
-      motivation:  clamp(state.motivation === "risk_avoidance" ? 75 : 65),
-      tone:        50,
-      instruction: clamp(50 + (state.steps ? 10 : 0) + (state.action ? 10 : 0) + (state.explain ? 10 : 0) + (state.time ? 5 : 0)),
-      decision:    clamp(40 + (state.decision ? 20 : 0) + (state.preferredDecision ? 20 : 0)),
-      trust:       clamp(45 + (state.transparency ? 20 : 0) + (state.consequences ? 10 : 0))
-    };
-    const setMeter = (id, val) => { document.getElementById(id).style.width = val + "%"; };
-    document.getElementById("sClarity").textContent     = s.clarity;
-    document.getElementById("sMotivation").textContent  = s.motivation;
-    document.getElementById("sTone").textContent        = s.tone;
-    document.getElementById("sInstruction").textContent = s.instruction;
-    document.getElementById("sDecision").textContent    = s.decision;
-    document.getElementById("sTrust").textContent       = s.trust;
-    setMeter("mClarity",     s.clarity);
-    setMeter("mMotivation",  s.motivation);
-    setMeter("mTone",        s.tone);
-    setMeter("mInstruction", s.instruction);
-    setMeter("mDecision",    s.decision);
-    setMeter("mTrust",       s.trust);
-
-    // Suggestions — each checkbox has its own independent entry
-    const suggestions = [];
-    if (state.interaction === "click_box")
-      suggestions.push("Interaction mode: Click boxes are easy to dismiss without reading. Consider using a Sliding Bar or Toggle instead — these require a deliberate action, increasing the likelihood of a thoughtful, more secure decision.");
-    if (!state.time)          suggestions.push("Add a time estimate to reduce perceived burden.");
-    if (!state.steps)         suggestions.push("Include step-by-step instructions to reduce uncertainty.");
-    if (!state.action)        suggestions.push("Provide a direct action button for immediate response.");
-    if (!state.explainVuln)   suggestions.push("Explain the vulnerability to increase clarity.");
-    if (!state.explain)       suggestions.push("Explain the risk to increase user understanding.");
-    if (!state.transparency)  suggestions.push("Explain why the notification appeared to build trust.");
-    if (!state.consequences)  suggestions.push("Mention consequences if ignored to motivate compliance.");
-    // Location vs urgency suggestions
-    const urgencyLevel = state.urgency < 45 ? "low" : state.urgency < 70 ? "med" : "high";
-    if (state.location === "banner" && urgencyLevel === "high")
-      suggestions.push("Location mismatch: This notification is high urgency but a banner is easy to miss. Consider a Pop-up or Modal to ensure users can't overlook it.");
-    if ((state.location === "popup" || state.location === "modal") && urgencyLevel === "low")
-      suggestions.push("Location mismatch: Pop-ups and Modals interrupt the user's workflow and should be reserved for high urgency notifications. Consider a Banner or Inline placement instead.");
-    if (!state.decision)           suggestions.push("Provide decision support links to guide next steps.");
-    if (!state.preferredDecision)  suggestions.push("Indicate the preferred decision to guide users toward the safer choice.");
-    if (state.message.length < 35) suggestions.push("Increase message clarity: specify risk and consequences.");
-    if (suggestions.length === 0)  suggestions.push("Looks balanced. Consider A/B testing for optimization.");
-    document.getElementById("suggestions").innerHTML = suggestions.map(x => `<li>${x}</li>`).join("");
-
-    // Interaction preview visibility
-    ["click_box", "checkbox", "toggle"].forEach(m => {
-      const el = document.getElementById("pvInteraction_" + m);
-      if (el) el.style.display = m === state.interaction
-        ? (m === "toggle" || m === "checkbox" ? "block" : "flex")
-        : "none";
-    });
-  }
-
-  function renderCode() {
-    document.getElementById("codeOutput").textContent =
-`notif = create_notification(
-  title="${state.title}",
-  message="${state.message}",
-  context="${state.context}",
-  user_group="${state.userGroup}",
-  urgency=${state.urgency},
-  motivation="${state.motivation}",
-  include_steps=${state.steps},
-  include_action=${state.action},
-  explain_vulnerability=${state.explainVuln},
-  explain_risk=${state.explain},
-  include_time_estimate=${state.time},
-  explain_transparency=${state.transparency},
-  consequences_if_ignored=${state.consequences},
-  decision_support=${state.decision},
-  preferred_decision=${state.preferredDecision},
-  interaction_mode="${state.interaction}",
-  notification_location="${state.location}"
-)`;
-  }
-
-  render();
-
-  document.getElementById("ckRefTable").addEventListener("change", function () {
-    document.getElementById("refTableWrap").classList.toggle("open", this.checked);
-  });
-</script>
+<script src="framework.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
