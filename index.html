@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -31,7 +32,8 @@
           <p>Centralize research-backed notification design. Create a notification, preview user impact, then export implementation-ready snippets.</p>
         </div>
         <div class="actions">
-          <button class="btn primary" id="goCreate">+ Create Notification</button>
+          <button class="btn primary" id="goCreate">+ New Notification</button>
+          <button class="btn" id="loadTemplate">Load Existing</button>
           <button class="btn" id="goExport">Export</button>
         </div>
       </div>
@@ -50,6 +52,7 @@
         </div>
         <div class="actions">
           <button class="btn" id="backDash">Dashboard</button>
+          <button class="btn" id="saveTemplate">Save</button>
           <button class="btn primary" id="goExport2">Export</button>
         </div>
       </div>
@@ -319,6 +322,32 @@
       </div>
     </section>
   </main>
+</div>
+
+<div id="saveModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; display:none; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:16px; padding:24px; width:360px; box-shadow:0 20px 40px rgba(0,0,0,.15);">
+    <h3 style="margin:0 0 6px; font-size:16px;">Save template</h3>
+    <p style="margin:0 0 16px; font-size:13px; color:#6b7280;">Give this notification configuration a name so you can load it later.</p>
+    <label style="font-size:12px; color:#6b7280; margin-bottom:6px; display:block;">Template name</label>
+    <input id="saveTemplateName" type="text" placeholder="e.g. Weak password — IT admin" style="width:100%; padding:10px; border-radius:12px; border:1px solid #e5e7eb; font:inherit; outline:none; margin-bottom:16px;" />
+    <div id="saveModalError" style="display:none; color:#ef4444; font-size:12px; margin-bottom:12px;"></div>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn" id="saveModalCancel">Cancel</button>
+      <button class="btn primary" id="saveModalConfirm">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="loadModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:16px; padding:24px; width:440px; max-height:80vh; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,.15);">
+    <h3 style="margin:0 0 6px; font-size:16px;">Load template</h3>
+    <p style="margin:0 0 16px; font-size:13px; color:#6b7280;">Select a saved template to continue editing.</p>
+    <div id="loadModalList" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:8px;"></div>
+    <div id="loadModalEmpty" style="display:none; color:#6b7280; font-size:13px; padding:20px 0; text-align:center;">No saved templates yet. Create and save a notification first.</div>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px; padding-top:16px; border-top:1px solid #e5e7eb;">
+      <button class="btn" id="loadModalCancel">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script src="framework.js"></script>
