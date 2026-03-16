@@ -1,3 +1,4 @@
+
 const state = {
   title: "",
   message: "",
@@ -487,6 +488,211 @@ function setupReferenceTableToggle() {
   });
 }
 
+function setupSaveLoad() {
+  document.getElementById("saveTemplate").addEventListener("click", () => {
+    const nameInput = document.getElementById("saveTemplateName");
+    nameInput.value = state.title || "";
+    document.getElementById("saveModalError").style.display = "none";
+    showModal("saveModal");
+    nameInput.focus();
+  });
+
+  document.getElementById("saveModalCancel").addEventListener("click", () => hideModal("saveModal"));
+
+  document.getElementById("saveModalConfirm").addEventListener("click", async () => {
+    const name = document.getElementById("saveTemplateName").value.trim();
+    const errorEl = document.getElementById("saveModalError");
+    if (!name) {
+      errorEl.textContent = "Please enter a template name.";
+      errorEl.style.display = "block";
+      return;
+    }
+    try {
+      const res = await fetch("/api/templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, config: { ...state } }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Save failed");
+      hideModal("saveModal");
+      flashSaveButton();
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = "block";
+    }
+  });
+
+  document.getElementById("saveTemplateName").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("saveModalConfirm").click();
+  });
+
+  document.getElementById("loadTemplate").addEventListener("click", async () => {
+    await populateLoadModal();
+    showModal("loadModal");
+  });
+
+  document.getElementById("loadModalCancel").addEventListener("click", () => hideModal("loadModal"));
+}
+
+async function populateLoadModal() {
+  const listEl  = document.getElementById("loadModalList");
+  const emptyEl = document.getElementById("loadModalEmpty");
+  listEl.innerHTML = '<p style="color:#6b7280;font-size:13px;">Loading…</p>';
+
+  try {
+    const res = await fetch("/api/templates");
+    const templates = await res.json();
+
+    listEl.innerHTML = "";
+
+    if (!templates.length) {
+      listEl.style.display = "none";
+      emptyEl.style.display = "block";
+      return;
+    }
+
+    listEl.style.display = "flex";
+    emptyEl.style.display = "none";
+
+    templates.forEach((t) => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid #e5e7eb; border-radius:12px; cursor:pointer; background:#fff; gap:10px;";
+
+      row.innerHTML = `
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.name}</div>
+          <div style="font-size:11px; color:#9ca3af; margin-top:2px;">Saved ${new Date(t.updated_at).toLocaleDateString()}</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-shrink:0;">
+          <button data-id="${t.id}" class="load-pick btn primary" style="padding:7px 12px; font-size:12px;">Load</button>
+          <button data-id="${t.id}" class="load-delete btn" style="padding:7px 12px; font-size:12px; color:#ef4444;">Delete</button>
+        </div>
+      `;
+
+      listEl.appendChild(row);
+    });
+
+    listEl.querySelectorAll(".load-pick").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        const res = await fetch(`/api/templates/${id}`);
+        const template = await res.json();
+        loadStateFromTemplate(template.config);
+        hideModal("loadModal");
+        showSection("builder");
+      });
+    });
+
+    listEl.querySelectorAll(".load-delete").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (!confirm("Delete this template?")) return;
+        await fetch(`/api/templates/${btn.dataset.id}`, { method: "DELETE" });
+        await populateLoadModal(); // refresh list
+      });
+    });
+
+  } catch (err) {
+    listEl.innerHTML = `<p style="color:#ef4444;font-size:13px;">Failed to load templates: ${err.message}</p>`;
+  }
+}
+
+function loadStateFromTemplate(config) {
+  Object.assign(state, config);
+
+  document.getElementById("titleInput").value  = state.title   || "";
+  document.getElementById("msgInput").value    = state.message || "";
+  document.getElementById("urgency").value     = state.urgency;
+
+  const ugSelect = document.getElementById("userGroup");
+  const ugOptions = Array.from(ugSelect.options).map((o) => o.value);
+  if (ugOptions.includes(state.userGroup)) {
+    ugSelect.value = state.userGroup;
+    document.getElementById("userGroupCustomWrap").classList.add("hidden");
+  } else {
+    ugSelect.value = "__custom__";
+    document.getElementById("userGroupCustomWrap").classList.remove("hidden");
+    document.getElementById("userGroupCustom").value = state.userGroup;
+  }
+
+  const ctxSelect = document.getElementById("context");
+  const ctxOptions = Array.from(ctxSelect.options).map((o) => o.value);
+  if (ctxOptions.includes(state.context)) {
+    ctxSelect.value = state.context;
+    document.getElementById("contextCustomWrap").classList.add("hidden");
+  } else {
+    ctxSelect.value = "__custom__";
+    document.getElementById("contextCustomWrap").classList.remove("hidden");
+    document.getElementById("contextCustom").value = state.context;
+  }
+
+  const checkboxMappings = [
+    ["ckSteps", "steps"], ["ckAction", "action"], ["ckExplainVuln", "explainVuln"],
+    ["ckExplain", "explain"], ["ckBackground", "background"], ["ckTime", "time"],
+    ["ckTransparency", "transparency"], ["ckConsequences", "consequences"],
+    ["ckDecision", "decision"], ["ckPreferredDecision", "preferredDecision"],
+    ["ckAiTone", "aiTone"], ["ckSchedule", "schedule"],
+    ["ckBootup", "bootup"], ["ckDuringTask", "duringTask"],
+  ];
+  checkboxMappings.forEach(([id, key]) => {
+    document.getElementById(id).checked = !!state[key];
+  });
+
+  document.getElementById("scheduleWrap").classList.toggle("hidden", !state.schedule);
+  document.getElementById("deployDate").value   = state.deployDate   || "";
+  document.getElementById("deployHour").value   = state.deployHour   || "09:00";
+  document.getElementById("deployWindow").value = state.deployWindow || "";
+
+  function restoreSeg(containerId, dataAttr, value) {
+    const container = document.getElementById(containerId);
+    container.querySelectorAll("button").forEach((b) => {
+      b.classList.toggle("on", b.dataset[dataAttr] === value);
+    });
+  }
+  restoreSeg("motivationSeg",  "m", state.motivation);
+  restoreSeg("interactionSeg", "i", state.interaction);
+  restoreSeg("locationSeg",    "l", state.location);
+  restoreSeg("agencySeg",      "a", state.agency);
+
+  const locationDescs = {
+    banner: "Appears at the top or bottom of the screen; non-blocking.",
+    popup:  "Appears in the center of the screen; requires user interaction.",
+    inline: "Appears within the page content; contextual and subtle.",
+    modal:  "Overlays the full screen; blocks all other interaction.",
+  };
+  document.getElementById("locationDesc").textContent = locationDescs[state.location] || "";
+
+  render();
+}
+
+
+function showModal(id) {
+  const el = document.getElementById(id);
+  el.style.display = "flex";
+}
+
+function hideModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+document.addEventListener("click", (e) => {
+  ["saveModal", "loadModal"].forEach((id) => {
+    const modal = document.getElementById(id);
+    if (e.target === modal) hideModal(id);
+  });
+});
+
+function flashSaveButton() {
+  const btn = document.getElementById("saveTemplate");
+  const original = btn.textContent;
+  btn.textContent = "Saved ✓";
+  btn.classList.add("primary");
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.classList.remove("primary");
+  }, 2000);
+}
+
 function init() {
   setupDropdowns();
   setupInputs();
@@ -494,6 +700,7 @@ function init() {
   setupNavigation();
   setupPreviewInteractions();
   setupReferenceTableToggle();
+  setupSaveLoad();
   render();
 }
 
