@@ -91,6 +91,12 @@ async function handleApi(req, res, url) {
 }
 
 const server = http.createServer((req, res) => {
+  const url = req.url.split("?")[0]; 
+
+  if (url.startsWith("/api/")) {
+    return handleApi(req, res, url);
+  }
+  
   const requestPath = req.url === "/" ? "/index.html" : req.url;
   const safePath = path.normalize(requestPath).replace(/^([.][.][/\\])+/, "");
   const filePath = path.join(ROOT, safePath);
