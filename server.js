@@ -38,19 +38,13 @@ function readBody(req) {
 function sendFile(res, filePath) {
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      res.writeHead(err.code === "ENOENT" ? 404 : 500, {
-        "Content-Type": "text/plain; charset=utf-8",
-      });
-      res.end(
-        err.code === "ENOENT" ? "404 Not Found" : "500 Internal Server Error",
-      );
+      const status = err.code === "ENOENT" ? 404 : 500;
+      res.writeHead(status, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end(status === 404 ? "404 Not Found" : "500 Internal Server Error");
       return;
     }
-
     const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || "application/octet-stream";
-
-    res.writeHead(200, { "Content-Type": contentType });
+    res.writeHead(200, { "Content-Type": MIME_TYPES[ext] || "application/octet-stream" });
     res.end(data);
   });
 }
@@ -95,14 +89,15 @@ async function handleApi(req, res, url) {
   sendJson(res, 404, { error: "Unknown API route" });
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
+  // strip query string
   const url = req.url.split("?")[0]; 
 
   if (url.startsWith("/api/")) {
     return handleApi(req, res, url);
   }
-  
-  const requestPath = req.url === "/" ? "/index.html" : req.url;
+
+  const requestPath = url === "/" ? "/index.html" : url;
   const safePath = path.normalize(requestPath).replace(/^([.][.][/\\])+/, "");
   const filePath = path.join(ROOT, safePath);
 
@@ -116,5 +111,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`SENTINEL SDK local server running at http://localhost:${PORT}`);
+  console.log(`SENTINEL SDK running at http://localhost:${PORT}`);
 });
