@@ -18,6 +18,11 @@ const MIME_TYPES = {
   ".ico": "image/x-icon",
 };
 
+function sendJson(res, status, data) {
+  res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+  res.end(JSON.stringify(data));
+}
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = "";
