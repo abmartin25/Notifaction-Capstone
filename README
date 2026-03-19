@@ -1,0 +1,17 @@
+~~ Notification Capstone ~~
+This work is for a WPI Capstone Project, and aims to function as a fully developed SDK.
+
+~~ Installation ~~
+Clone the repository:
+
+git clone https://github.com/abmartin25/Notifaction-Capstone.git
+cd Notification-Capstone
+
+Install Relevant Dependancies:
+This project requires the node.js runtime environment to be present, which is done via an external install
+https://nodejs.org/en
+
+~~ Usage ~~
+1. npm install better-sqlite3
+2. node server.js
+
