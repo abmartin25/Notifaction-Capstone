@@ -60,10 +60,10 @@
       <div class="builder">
         <div class="card panel">
           <h3>Configuration</h3>
-
-          <div class="field">
+          
+          <div class="field" data-type="dropdown">
             <label for="userGroup">User group</label>
-            <select id="userGroup">
+            <select id="userGroup" class="dropdown">
               <option value="" disabled selected>Select user group…</option>
               <option>General user</option>
               <option>Developer</option>
@@ -76,9 +76,9 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="field" data-type="dropdown">
             <label for="context">Security context</label>
-            <select id="context">
+            <select id="context" class="dropdown">
               <option value="" disabled selected>Select security context…</option>
               <option value="weak_password">Weak password</option>
               <option value="suspicious_login">Suspicious login</option>
@@ -120,7 +120,11 @@
           </div>
 
           <div class="field"><label>Urgency</label>
-            <div class="slider"><span style="font-size:12px;color:var(--muted)">Low</span><input id="urgency" type="range" min="0" max="100" value="55" /><span style="font-size:12px;color:var(--muted)">High</span></div>
+            <div class="seg" id="urgencySeg">
+              <button class="on" data-u="low" type="button">Low</button>
+              <button data-u="med" type="button">Medium</button>
+              <button data-u="high" type="button">High</button>
+            </div>
           </div>
 
           <div class="field"><label>Mode of interaction</label>

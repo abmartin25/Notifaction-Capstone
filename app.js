@@ -16,7 +16,6 @@ function setupNavigation() {
   });
 
   // Top Bar Navigation
-  // TODO May have messed with EXPORT
   document.querySelectorAll(".topbar .actions button").forEach((btn) => {
     const route = btn.dataset.route;
     if (route) {
@@ -61,7 +60,7 @@ function setupDefaultState() {
   decision: false,
   preferredDecision: false,
   aiTone: false,
-  urgency: 55,
+  urgency: "low",
   interaction: "click_box",
   location: "banner",
   agency: "must_do",
@@ -80,42 +79,34 @@ const state = setupDefaultState();
 const refs = {
   titleInput: document.getElementById("titleInput"),
   msgInput: document.getElementById("msgInput"),
-  userGroupSelect: document.getElementById("userGroup"),
   userGroupCustomWrap: document.getElementById("userGroupCustomWrap"),
-  userGroupCustom: document.getElementById("userGroupCustom"),  // IDK if both are needed
-  contextSelect: document.getElementById("context"),
+  userGroupCustom: document.getElementById("userGroupCustom"),  // TODO REMOVE
   contextCustomWrap: document.getElementById("contextCustomWrap"),
-  contextCustom: document.getElementById("contextCustom"),  //IDK if both are needed
+  contextCustom: document.getElementById("contextCustom"),  //TODO REMOVE
   motivationSelect: document.getElementById("motivationSeg"),
-  urgencySelect: document.getElementById("urgency"),
+  urgencySelect: document.getElementById("urgencySeg"),
   scheduleWrap: document.getElementById("scheduleWrap"),
 };
 
+
+// Setup Card-Panel
 function setupDropdowns() {
-  refs.userGroupSelect.addEventListener("change", (e) => {
-    const isCustom = e.target.value === "__custom__";
-    refs.userGroupCustomWrap.classList.toggle("hidden", !isCustom);
-    state.userGroup = isCustom ? "" : e.target.value;
-    if (isCustom) refs.userGroupCustom.focus();
-    render();
-  });
+  document.querySelectorAll(".field[data-type='dropdown']").forEach((dropdown) => {
+    const forAttr = dropdown.querySelector("label").getAttribute("for");
+    const customWrap = dropdown.querySelector(".custom-input-wrap");
+    customWrap.addEventListener("input", (e) => {
+      state[forAttr] = e.target.value.trim();
+      render();
+    });
 
-  refs.userGroupCustom.addEventListener("input", (e) => {
-    state.userGroup = e.target.value.trim();
-    render();
-  });
-
-  refs.contextSelect.addEventListener("change", (e) => {
-    const isCustom = e.target.value === "__custom__";
-    refs.contextCustomWrap.classList.toggle("hidden", !isCustom);
-    state.context = isCustom ? "" : e.target.value;
-    if (isCustom) refs.contextCustom.focus();
-    render();
-  });
-
-  refs.contextCustom.addEventListener("input", (e) => {
-    state.context = e.target.value.trim();
-    render();
+    const select = dropdown.querySelector(".dropdown");
+    select.addEventListener("change", (e) => {
+      const isCustom = e.target.value === "__custom__";
+      customWrap.classList.toggle("hidden", !isCustom);
+      state[forAttr] = isCustom ? "" : e.target.value;
+      if (isCustom) customWrap.querySelector("input").focus();
+        render();
+    });
   });
 }
 
@@ -127,11 +118,6 @@ function setupInputs() {
 
   refs.msgInput.addEventListener("input", (e) => {
     state.message = e.target.value;
-    render();
-  });
-
-  refs.urgencySelect.addEventListener("input", (e) => {
-    state.urgency = parseInt(e.target.value, 10);
     render();
   });
 
@@ -178,6 +164,7 @@ function setupInputs() {
 
 function setupSegmentedControls() {
   setupSegmentGroup("motivationSeg", "m", "motivation");
+  setupSegmentGroup("urgencySeg", "u", "urgency");
   setupSegmentGroup("interactionSeg", "i", "interaction");
   setupSegmentGroup("agencySeg", "a", "agency");
 
@@ -316,8 +303,7 @@ function render() {
   document.getElementById("pvMeta").textContent =
     `${state.userGroup || "User group"} • ${state.context || "Security context"}`;
 
-  const level =
-    state.urgency < 35 ? "low" : state.urgency < 70 ? "med" : "high";
+  const level = state.urgency;
   const badge = document.getElementById("badge");
   badge.className = `badge ${level}`;
   badge.textContent = level === "low" ? "i" : level === "med" ? "!" : "⚠";
@@ -604,7 +590,6 @@ function loadStateFromTemplate(config) {
 
   document.getElementById("titleInput").value  = state.title   || "";
   document.getElementById("msgInput").value    = state.message || "";
-  document.getElementById("urgency").value     = state.urgency;
 
   const ugSelect = document.getElementById("userGroup");
   const ugOptions = Array.from(ugSelect.options).map((o) => o.value);
@@ -652,6 +637,7 @@ function loadStateFromTemplate(config) {
     });
   }
   restoreSeg("motivationSeg",  "m", state.motivation);
+  restoreSeg("urgencySeg",     "u", state.urgency);
   restoreSeg("interactionSeg", "i", state.interaction);
   restoreSeg("locationSeg",    "l", state.location);
   restoreSeg("agencySeg",      "a", state.agency);
