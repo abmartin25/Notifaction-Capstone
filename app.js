@@ -72,6 +72,7 @@ function setupDefaultState() {
   bootup: false,
   duringTask: true,
   };
+  return state;
 }
 const state = setupDefaultState();
 
