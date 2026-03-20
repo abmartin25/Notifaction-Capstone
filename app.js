@@ -16,7 +16,6 @@ function setupNavigation() {
   });
 
   // Top Bar Navigation
-  // TODO May have messed with EXPORT
   document.querySelectorAll(".topbar .actions button").forEach((btn) => {
     const route = btn.dataset.route;
     if (route) {
@@ -91,31 +90,25 @@ const refs = {
   scheduleWrap: document.getElementById("scheduleWrap"),
 };
 
+
+// Setup Card-Panel
 function setupDropdowns() {
-  refs.userGroupSelect.addEventListener("change", (e) => {
-    const isCustom = e.target.value === "__custom__";
-    refs.userGroupCustomWrap.classList.toggle("hidden", !isCustom);
-    state.userGroup = isCustom ? "" : e.target.value;
-    if (isCustom) refs.userGroupCustom.focus();
-    render();
-  });
+  document.querySelectorAll(".field[data-type='dropdown']").forEach((dropdown) => {
+    const forAttr = dropdown.querySelector("label").getAttribute("for");
+    const customWrap = dropdown.querySelector(".custom-input-wrap");
+    customWrap.addEventListener("input", (e) => {
+      state[forAttr] = e.target.value.trim();
+      render();
+    });
 
-  refs.userGroupCustom.addEventListener("input", (e) => {
-    state.userGroup = e.target.value.trim();
-    render();
-  });
-
-  refs.contextSelect.addEventListener("change", (e) => {
-    const isCustom = e.target.value === "__custom__";
-    refs.contextCustomWrap.classList.toggle("hidden", !isCustom);
-    state.context = isCustom ? "" : e.target.value;
-    if (isCustom) refs.contextCustom.focus();
-    render();
-  });
-
-  refs.contextCustom.addEventListener("input", (e) => {
-    state.context = e.target.value.trim();
-    render();
+    const select = dropdown.querySelector(".dropdown");
+    select.addEventListener("change", (e) => {
+      const isCustom = e.target.value === "__custom__";
+      customWrap.classList.toggle("hidden", !isCustom);
+      state[forAttr] = isCustom ? "" : e.target.value;
+      if (isCustom) customWrap.querySelector("input").focus();
+        render();
+    });
   });
 }
 
