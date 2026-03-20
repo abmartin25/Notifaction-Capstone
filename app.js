@@ -110,17 +110,17 @@ function setupDropdowns() {
   });
 }
 
+function setupTextInputs() {
+  document.querySelectorAll(".field[data-type='textInput']").forEach((field) => {
+    const forAttr = field.querySelector("label").getAttribute("for");
+    field.addEventListener("input", (e) => {
+      state[forAttr] = e.target.value;
+      render();
+    });
+  });
+}
+
 function setupInputs() {
-  refs.titleInput.addEventListener("input", (e) => {
-    state.title = e.target.value;
-    render();
-  });
-
-  refs.msgInput.addEventListener("input", (e) => {
-    state.message = e.target.value;
-    render();
-  });
-
   const checkboxMappings = [
     ["ckSteps", "steps"],
     ["ckAction", "action"],
@@ -683,6 +683,7 @@ function flashSaveButton() {
 
 function init() {
   setupDropdowns();
+  // setupTextInputs();
   setupInputs();
   setupSegmentedControls();
   setupNavigation();
