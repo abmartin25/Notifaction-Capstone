@@ -590,7 +590,6 @@ function loadStateFromTemplate(config) {
 
   document.getElementById("titleInput").value  = state.title   || "";
   document.getElementById("msgInput").value    = state.message || "";
-  document.getElementById("urgency").value     = state.urgency;
 
   const ugSelect = document.getElementById("userGroup");
   const ugOptions = Array.from(ugSelect.options).map((o) => o.value);
