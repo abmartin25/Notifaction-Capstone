@@ -143,23 +143,22 @@ function buildSuggestions(state) {
 
   // Urgency, Location, & Agency Mismatch Suggestions
   // TODO Modify Urgency to Reflect Non-Slider
-  const urgencyLevel = state.urgency < 45 ? "low" : state.urgency < 70 ? "med" : "high";
-  if (state.location === "banner" && urgencyLevel === "high")
+  if (state.location === "banner" && state.urgency === "high")
     suggestions.push(
       "Location mismatch: This notification is high urgency but a banner is easy to miss. Consider a Pop-up or Modal.",
     );
 
-  if ((state.location === "popup" || state.location === "modal") && urgencyLevel === "low")
+  if ((state.location === "popup" || state.location === "modal") && state.urgency === "low")
     suggestions.push(
       "Location mismatch: Pop-ups and Modals should usually be reserved for high urgency notifications. Consider a Banner or Inline placement instead.",
     );
   
-  if (state.urgency >= 70 && state.agency === "not_urgent")
+  if (state.urgency === "high" && state.agency === "not_urgent")
     suggestions.push(
       "User agency mismatch: A high urgency notification should not default to Not urgent.",
     );
   
-  if (state.urgency < 40 && state.agency === "must_do")
+  if (state.urgency === "low" && state.agency === "must_do")
     suggestions.push(
       "User agency mismatch: A low urgency notification may feel too forceful if the user must act immediately.",
     );

@@ -120,7 +120,11 @@
           </div>
 
           <div class="field"><label>Urgency</label>
-            <div class="slider"><span style="font-size:12px;color:var(--muted)">Low</span><input id="urgency" type="range" min="0" max="100" value="55" /><span style="font-size:12px;color:var(--muted)">High</span></div>
+            <div class="seg" id="urgencySeg">
+              <button class="on" data-u="low" type="button">Low</button>
+              <button data-u="med" type="button">Medium</button>
+              <button data-u="high" type="button">High</button>
+            </div>
           </div>
 
           <div class="field"><label>Mode of interaction</label>
