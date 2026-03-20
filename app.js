@@ -76,7 +76,7 @@ function setupDefaultState() {
 const state = setupDefaultState();
 
 // Building of Notification Live Preview
-const notificationRefs = {
+const refs = {
   titleInput: document.getElementById("titleInput"),
   msgInput: document.getElementById("msgInput"),
   userGroupSelect: document.getElementById("userGroup"),
@@ -91,45 +91,45 @@ const notificationRefs = {
 };
 
 function setupDropdowns() {
-  notificationRefs.userGroupSelect.addEventListener("change", (e) => {
+  refs.userGroupSelect.addEventListener("change", (e) => {
     const isCustom = e.target.value === "__custom__";
-    notificationRefs.userGroupCustomWrap.classList.toggle("hidden", !isCustom);
+    refs.userGroupCustomWrap.classList.toggle("hidden", !isCustom);
     state.userGroup = isCustom ? "" : e.target.value;
-    if (isCustom) notificationRefs.userGroupCustom.focus();
+    if (isCustom) refs.userGroupCustom.focus();
     render();
   });
 
-  notificationRefs.userGroupCustom.addEventListener("input", (e) => {
+  refs.userGroupCustom.addEventListener("input", (e) => {
     state.userGroup = e.target.value.trim();
     render();
   });
 
-  notificationRefs.contextSelect.addEventListener("change", (e) => {
+  refs.contextSelect.addEventListener("change", (e) => {
     const isCustom = e.target.value === "__custom__";
-    notificationRefs.contextCustomWrap.classList.toggle("hidden", !isCustom);
+    refs.contextCustomWrap.classList.toggle("hidden", !isCustom);
     state.context = isCustom ? "" : e.target.value;
-    if (isCustom) notificationRefs.contextCustom.focus();
+    if (isCustom) refs.contextCustom.focus();
     render();
   });
 
-  notificationRefs.contextCustom.addEventListener("input", (e) => {
+  refs.contextCustom.addEventListener("input", (e) => {
     state.context = e.target.value.trim();
     render();
   });
 }
 
 function setupInputs() {
-  notificationRefs.titleInput.addEventListener("input", (e) => {
+  refs.titleInput.addEventListener("input", (e) => {
     state.title = e.target.value;
     render();
   });
 
-  notificationRefs.msgInput.addEventListener("input", (e) => {
+  refs.msgInput.addEventListener("input", (e) => {
     state.message = e.target.value;
     render();
   });
 
-  notificationRefs.urgencySelect.addEventListener("input", (e) => {
+  refs.urgencySelect.addEventListener("input", (e) => {
     state.urgency = parseInt(e.target.value, 10);
     render();
   });
@@ -155,7 +155,7 @@ function setupInputs() {
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
       if (key === "schedule") {
-        notificationRefs.scheduleWrap.classList.toggle("hidden", !state.schedule);
+        refs.scheduleWrap.classList.toggle("hidden", !state.schedule);
       }
       render();
     });
