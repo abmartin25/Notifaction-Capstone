@@ -1,5 +1,7 @@
-
-const state = {
+// Set default state for the notification configuration
+// TODO Add ability to call these from API
+function setupDefaultState() {
+  const state = {
   title: "",
   message: "",
   context: "",
@@ -26,7 +28,9 @@ const state = {
   deployWindow: "",
   bootup: false,
   duringTask: true,
-};
+  };
+}
+const state = setupDefaultState();
 
 const refs = {
   titleInput: document.getElementById("titleInput"),
