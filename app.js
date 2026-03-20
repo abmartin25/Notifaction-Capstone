@@ -1,3 +1,46 @@
+// Establish Navigation for UI
+function setupNavigation() {
+  document.querySelectorAll(".nav button").forEach((btn) => {
+    const route = btn.dataset.route;
+    if (route) {
+      btn.addEventListener("click", () => showSection(route));
+    }
+  });
+
+  // TODO Handle Framework Card
+  document.querySelectorAll(".grid .card").forEach((card) => {
+    const route = card.dataset.route;
+    if (route) {
+      card.addEventListener("click", () => showSection(route));
+    }
+  });
+
+  // Top Bar Navigation
+  // TODO May have messed with EXPORT
+  document.querySelectorAll(".topbar .actions button").forEach((btn) => {
+    const route = btn.dataset.route;
+    if (route) {
+      btn.addEventListener("click", () => showSection(route));
+    }
+  });
+}
+
+// Function that Shows the Appropriate Page of UI, While also Updating the State of the Nav Buttons
+function showSection(sectionId) {
+  document
+    .querySelectorAll("main > section")
+    .forEach((sec) => sec.classList.add("hidden"));
+    document.getElementById(sectionId).classList.remove("hidden");
+  
+  document
+    .querySelectorAll(".nav button")
+    .forEach((b) => b.classList.remove("active"));
+  const activeNav = document.querySelector(
+    `.nav button[data-route="${sectionId}"]`,
+  );
+  if (activeNav) activeNav.classList.add("active");
+}
+
 // Set default state for the notification configuration
 // TODO Add ability to call these from API
 function setupDefaultState() {
@@ -32,60 +75,61 @@ function setupDefaultState() {
 }
 const state = setupDefaultState();
 
-const refs = {
+// Building of Notification Live Preview
+const notificationRefs = {
   titleInput: document.getElementById("titleInput"),
   msgInput: document.getElementById("msgInput"),
-  contextSelect: document.getElementById("context"),
   userGroupSelect: document.getElementById("userGroup"),
-  motivationSeg: document.getElementById("motivationSeg"),
-  urgencyInput: document.getElementById("urgency"),
   userGroupCustomWrap: document.getElementById("userGroupCustomWrap"),
-  userGroupCustom: document.getElementById("userGroupCustom"),
+  userGroupCustom: document.getElementById("userGroupCustom"),  // IDK if both are needed
+  contextSelect: document.getElementById("context"),
   contextCustomWrap: document.getElementById("contextCustomWrap"),
-  contextCustom: document.getElementById("contextCustom"),
+  contextCustom: document.getElementById("contextCustom"),  //IDK if both are needed
+  motivationSelect: document.getElementById("motivationSeg"),
+  urgencySelect: document.getElementById("urgency"),
   scheduleWrap: document.getElementById("scheduleWrap"),
 };
 
 function setupDropdowns() {
-  refs.userGroupSelect.addEventListener("change", (e) => {
+  notificationRefs.userGroupSelect.addEventListener("change", (e) => {
     const isCustom = e.target.value === "__custom__";
-    refs.userGroupCustomWrap.classList.toggle("hidden", !isCustom);
+    notificationRefs.userGroupCustomWrap.classList.toggle("hidden", !isCustom);
     state.userGroup = isCustom ? "" : e.target.value;
-    if (isCustom) refs.userGroupCustom.focus();
+    if (isCustom) notificationRefs.userGroupCustom.focus();
     render();
   });
 
-  refs.userGroupCustom.addEventListener("input", (e) => {
+  notificationRefs.userGroupCustom.addEventListener("input", (e) => {
     state.userGroup = e.target.value.trim();
     render();
   });
 
-  refs.contextSelect.addEventListener("change", (e) => {
+  notificationRefs.contextSelect.addEventListener("change", (e) => {
     const isCustom = e.target.value === "__custom__";
-    refs.contextCustomWrap.classList.toggle("hidden", !isCustom);
+    notificationRefs.contextCustomWrap.classList.toggle("hidden", !isCustom);
     state.context = isCustom ? "" : e.target.value;
-    if (isCustom) refs.contextCustom.focus();
+    if (isCustom) notificationRefs.contextCustom.focus();
     render();
   });
 
-  refs.contextCustom.addEventListener("input", (e) => {
+  notificationRefs.contextCustom.addEventListener("input", (e) => {
     state.context = e.target.value.trim();
     render();
   });
 }
 
 function setupInputs() {
-  refs.titleInput.addEventListener("input", (e) => {
+  notificationRefs.titleInput.addEventListener("input", (e) => {
     state.title = e.target.value;
     render();
   });
 
-  refs.msgInput.addEventListener("input", (e) => {
+  notificationRefs.msgInput.addEventListener("input", (e) => {
     state.message = e.target.value;
     render();
   });
 
-  refs.urgencyInput.addEventListener("input", (e) => {
+  notificationRefs.urgencySelect.addEventListener("input", (e) => {
     state.urgency = parseInt(e.target.value, 10);
     render();
   });
@@ -111,7 +155,7 @@ function setupInputs() {
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
       if (key === "schedule") {
-        refs.scheduleWrap.classList.toggle("hidden", !state.schedule);
+        notificationRefs.scheduleWrap.classList.toggle("hidden", !state.schedule);
       }
       render();
     });
@@ -170,53 +214,6 @@ function setupSegmentGroup(containerId, datasetKey, stateKey) {
       render();
     });
   });
-}
-
-function setupNavigation() {
-  document.querySelectorAll(".nav button").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document
-        .querySelectorAll("main > section")
-        .forEach((sec) => sec.classList.add("hidden"));
-      document.getElementById(btn.dataset.route).classList.remove("hidden");
-      document
-        .querySelectorAll(".nav button")
-        .forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-    });
-  });
-
-  document
-    .getElementById("backDash")
-    .addEventListener("click", () => showSection("dashboard"));
-  document
-    .getElementById("backDash2")
-    .addEventListener("click", () => showSection("dashboard"));
-  document
-    .getElementById("goCreate")
-    .addEventListener("click", () => showSection("builder"));
-  document.getElementById("goExport").addEventListener("click", () => {
-    showSection("export");
-    renderCode();
-  });
-  document.getElementById("goExport2").addEventListener("click", () => {
-    showSection("export");
-    renderCode();
-  });
-}
-
-function showSection(sectionId) {
-  document
-    .querySelectorAll("main > section")
-    .forEach((sec) => sec.classList.add("hidden"));
-  document.getElementById(sectionId).classList.remove("hidden");
-  document
-    .querySelectorAll(".nav button")
-    .forEach((b) => b.classList.remove("active"));
-  const activeNav = document.querySelector(
-    `.nav button[data-route="${sectionId}"]`,
-  );
-  if (activeNav) activeNav.classList.add("active");
 }
 
 function setupPreviewInteractions() {
