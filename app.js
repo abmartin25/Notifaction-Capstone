@@ -76,19 +76,6 @@ function setupDefaultState() {
 const state = setupDefaultState();
 
 // Building of Notification Live Preview
-const refs = {
-  titleInput: document.getElementById("titleInput"),
-  msgInput: document.getElementById("msgInput"),
-  userGroupCustomWrap: document.getElementById("userGroupCustomWrap"),
-  userGroupCustom: document.getElementById("userGroupCustom"),  // TODO REMOVE
-  contextCustomWrap: document.getElementById("contextCustomWrap"),
-  contextCustom: document.getElementById("contextCustom"),  //TODO REMOVE
-  motivationSelect: document.getElementById("motivationSeg"),
-  urgencySelect: document.getElementById("urgencySeg"),
-  scheduleWrap: document.getElementById("scheduleWrap"),
-};
-
-
 // Setup Card-Panel (Configuration Panel)
 function setupDropdowns() {
   document.querySelectorAll(".field[data-type='dropdown']").forEach((dropdown) => {
@@ -144,7 +131,7 @@ function setupCheckboxInputs() {
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
       if (key === "schedule") {
-        refs.scheduleWrap.classList.toggle("hidden", !state.schedule);
+        document.getElementById("scheduleWrap").classList.toggle("hidden", !state.schedule);
       }
       render();
     });
@@ -618,12 +605,20 @@ function loadStateFromTemplate(config) {
   }
 
   const checkboxMappings = [
-    ["ckSteps", "steps"], ["ckAction", "action"], ["ckExplainVuln", "explainVuln"],
-    ["ckExplain", "explain"], ["ckBackground", "background"], ["ckTime", "time"],
-    ["ckTransparency", "transparency"], ["ckConsequences", "consequences"],
-    ["ckDecision", "decision"], ["ckPreferredDecision", "preferredDecision"],
-    ["ckAiTone", "aiTone"], ["ckSchedule", "schedule"],
-    ["ckBootup", "bootup"], ["ckDuringTask", "duringTask"],
+    ["ckInstructionSteps", "instructionSteps"],
+    ["ckDirectAction", "directAction"],
+    ["ckExplainVuln", "explainVuln"],
+    ["ckExplainRisk", "explainRisk"],
+    ["ckContextBackground", "contextBackground"],
+    ["ckTimeEst", "timeEst"],
+    ["ckTransparency", "transparency"],
+    ["ckConsequences", "consequences"],
+    ["ckSupportLinks", "supportLinks"],
+    ["ckPreferredDecision", "preferredDecision"],
+    ["ckAiTone", "aiTone"],
+    ["ckSchedule", "schedule"],
+    ["ckShowOnBootup", "showOnBootup"],
+    ["ckShowDuringTask", "showDuringTask"],
   ];
   checkboxMappings.forEach(([id, key]) => {
     document.getElementById(id).checked = !!state[key];
