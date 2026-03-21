@@ -136,7 +136,7 @@ function buildSuggestions(state) {
       "Add deployment scheduling controls to better manage notification frequency.",
     );
 
-  if (state.schedule && !state.bootup && !state.duringTask)
+  if (state.schedule && !state.showOnBootup && !state.showDuringTask)
     suggestions.push(
       "Choose when users should see the notification, such as on bootup or during the relevant task.",
     );
