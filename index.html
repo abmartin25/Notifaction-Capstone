@@ -91,10 +91,18 @@
             </div>
           </div>
 
-          <div class="field"><label for="titleInput">Notification title</label><input id="titleInput" type="text" value="" placeholder="Enter notification title…" /></div>
-          <div class="field"><label for="msgInput">Notification message</label><textarea id="msgInput" placeholder="Enter notification message…"></textarea></div>
+          <div class="field" data-type="textInput">
+            <label for="title">Notification title</label>
+            <input id="titleInput" type="text" value="" placeholder="Enter notification title…" />
+          </div>
 
-          <div class="field"><label>Motivation framing</label>
+          <div class="field" data-type="textInput">
+            <label for="msg">Notification message</label>
+            <textarea id="msgInput" placeholder="Enter notification message…"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Motivation framing</label>
             <div class="seg" id="motivationSeg">
               <button class="on" data-m="risk_avoidance" type="button">Risk avoidance</button>
               <button data-m="personal_impact" type="button">Personal impact</button>
@@ -103,23 +111,25 @@
             </div>
           </div>
 
-          <div class="field"><label>Instruction design</label>
+          <div class="field">
+            <label>Instruction design</label>
             <div class="checks">
-              <label><input id="ckSteps" type="checkbox" checked /><span>Step-by-step instructions</span></label>
-              <label><input id="ckAction" type="checkbox" checked /><span>Direct action button</span></label>
+              <label><input id="ckInstructionSteps" type="checkbox" checked /><span>Step-by-step instructions</span></label>
+              <label><input id="ckDirectAction" type="checkbox" checked /><span>Direct action button</span></label>
               <label><input id="ckExplainVuln" type="checkbox" checked /><span>Vulnerability explanation</span></label>
-              <label><input id="ckExplain" type="checkbox" checked /><span>Risk explanation</span></label>
-              <label><input id="ckBackground" type="checkbox" checked /><span>Context and background about the risk</span></label>
-              <label><input id="ckTime" type="checkbox" /><span>Time estimate</span></label>
+              <label><input id="ckExplainRisk" type="checkbox" checked /><span>Risk explanation</span></label>
+              <label><input id="ckContextBackground" type="checkbox" checked /><span>Context and background about the risk</span></label>
+              <label><input id="ckTimeEst" type="checkbox" /><span>Time estimate</span></label>
               <label><input id="ckTransparency" type="checkbox" /><span>Explain why notification appeared</span></label>
               <label><input id="ckConsequences" type="checkbox" /><span>Consequences if ignored</span></label>
-              <label><input id="ckDecision" type="checkbox" /><span>Decision support links</span></label>
+              <label><input id="ckSupportLinks" type="checkbox" /><span>Decision support links</span></label>
               <label><input id="ckPreferredDecision" type="checkbox" /><span>Preferred decision</span></label>
               <label><input id="ckAiTone" type="checkbox" /><span>AI tone review in framework guidance</span></label>
             </div>
           </div>
 
-          <div class="field"><label>Urgency</label>
+          <div class="field">
+            <label>Urgency</label>
             <div class="seg" id="urgencySeg">
               <button class="on" data-u="low" type="button">Low</button>
               <button data-u="med" type="button">Medium</button>
@@ -127,7 +137,8 @@
             </div>
           </div>
 
-          <div class="field"><label>Mode of interaction</label>
+          <div class="field">
+            <label>Mode of interaction</label>
             <div class="seg" id="interactionSeg">
               <button class="on" data-i="click_box" type="button">Click box</button>
               <button data-i="checkbox" type="button">Sliding bar</button>

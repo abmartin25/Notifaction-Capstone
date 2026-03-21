@@ -8,9 +8,9 @@ function evaluateNotification(state) {
   const clarity = clamp(
     55 +
       messageLengthBoost +
-      (state.steps ? 8 : 0) +
+      (state.instructionSteps ? 8 : 0) +
       (state.explainVuln ? 10 : 0) +
-      (state.explain ? 10 : 0),
+      (state.explainRisk ? 10 : 0),
   );
 
   const motivation = clamp(
@@ -27,17 +27,17 @@ function evaluateNotification(state) {
 
   const instruction = clamp(
     45 +
-      (state.steps ? 15 : 0) +
-      (state.action ? 10 : 0) +
-      (state.time ? 5 : 0) +
-      (state.background ? 8 : 0),
+      (state.instructionSteps ? 15 : 0) +
+      (state.directAction ? 10 : 0) +
+      (state.timeEst ? 5 : 0) +
+      (state.contextBackground ? 8 : 0),
   );
 
   const decision = clamp(
     35 +
-      (state.decision ? 20 : 0) +
+      (state.supportLinks ? 20 : 0) +
       (state.preferredDecision ? 20 : 0) +
-      (state.background ? 10 : 0),
+      (state.contextBackground ? 10 : 0),
   );
 
   const trust = clamp(
@@ -69,12 +69,12 @@ function buildSuggestions(state) {
   const suggestions = [];
 
   // Instruction Design Suggestions
-  if (!state.steps)
+  if (!state.instructionSteps)
     suggestions.push(
       "Include step-by-step instructions to strengthen clarity and guidance.",
     );
 
-  if (!state.action)
+  if (!state.directAction)
     suggestions.push(
       "Provide a direct action button for immediate response."
     );
@@ -84,17 +84,17 @@ function buildSuggestions(state) {
       "Add a vulnerability explanation hover pop-up to strengthen clarity of information.",
     );
     
-  if (!state.explain)
+  if (!state.explainRisk)
     suggestions.push(
       "Add a risk explanation hover pop-up to improve risk communication and user understanding.",
     );
 
-  if (!state.background)
+  if (!state.contextBackground)
     suggestions.push(
       "Provide context and background about the risk so the user has better decision support.",
     );
 
-  if (!state.time)
+  if (!state.timeEst)
     suggestions.push(
       "Add a time estimate to reduce perceived burden."
     );
@@ -109,7 +109,7 @@ function buildSuggestions(state) {
       "Mention consequences if ignored to improve motivation and risk communication.",
     );
 
-  if (!state.decision)
+  if (!state.supportLinks)
     suggestions.push(
       "Provide decision support links to guide next steps."
     );

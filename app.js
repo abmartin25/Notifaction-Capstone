@@ -49,15 +49,15 @@ function setupDefaultState() {
   context: "",
   userGroup: "",
   motivation: "risk_avoidance",
-  steps: true,
-  action: true,
+  instructionSteps: true,
+  directAction: true,
   explainVuln: true,
-  explain: true,
-  background: true,
-  time: false,
+  explainRisk: true,
+  contextBackground: true,
+  timeEst: false,
   transparency: false,
   consequences: false,
-  decision: false,
+  supportLinks: false,
   preferredDecision: false,
   aiTone: false,
   urgency: "low",
@@ -89,7 +89,7 @@ const refs = {
 };
 
 
-// Setup Card-Panel
+// Setup Card-Panel (Configuration Panel)
 function setupDropdowns() {
   document.querySelectorAll(".field[data-type='dropdown']").forEach((dropdown) => {
     const forAttr = dropdown.querySelector("label").getAttribute("for");
@@ -110,27 +110,28 @@ function setupDropdowns() {
   });
 }
 
+function setupTextInputs() {
+  document.querySelectorAll(".field[data-type='textInput']").forEach((field) => {
+    const forAttr = field.querySelector("label").getAttribute("for");
+    field.addEventListener("input", (e) => {
+      state[forAttr] = e.target.value;
+      render();
+    });
+  });
+}
+
+//This is fine to leave as ID based (one off, components get handled differently)
 function setupInputs() {
-  refs.titleInput.addEventListener("input", (e) => {
-    state.title = e.target.value;
-    render();
-  });
-
-  refs.msgInput.addEventListener("input", (e) => {
-    state.message = e.target.value;
-    render();
-  });
-
   const checkboxMappings = [
-    ["ckSteps", "steps"],
-    ["ckAction", "action"],
+    ["ckInstructionSteps", "instructionSteps"],
+    ["ckDirectAction", "directAction"],
     ["ckExplainVuln", "explainVuln"],
-    ["ckExplain", "explain"],
-    ["ckBackground", "background"],
-    ["ckTime", "time"],
+    ["ckExplainRisk", "explainRisk"],
+    ["ckContextBackground", "contextBackground"],
+    ["ckTimeEst", "timeEst"],
     ["ckTransparency", "transparency"],
     ["ckConsequences", "consequences"],
-    ["ckDecision", "decision"],
+    ["ckSupportLinks", "supportLinks"],
     ["ckPreferredDecision", "preferredDecision"],
     ["ckAiTone", "aiTone"],
     ["ckSchedule", "schedule"],
@@ -139,6 +140,7 @@ function setupInputs() {
   ];
 
   checkboxMappings.forEach(([id, key]) => {
+    console.log("Setting up checkbox:", id, key);
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
       if (key === "schedule") {
@@ -334,16 +336,16 @@ function syncTooltipVisibility() {
   document.getElementById("pvVulnWrap").style.display = state.explainVuln
     ? "block"
     : "none";
-  document.getElementById("pvRiskWrap").style.display = state.explain
+  document.getElementById("pvRiskWrap").style.display = state.explainRisk
     ? "block"
     : "none";
 }
 
 function syncHint() {
   const hintParts = [];
-  if (state.time) hintParts.push("Includes time estimate");
-  if (state.steps) hintParts.push("Step-by-step guidance enabled");
-  if (state.background) hintParts.push("Risk background included");
+  if (state.timeEst) hintParts.push("Includes time estimate");
+  if (state.instructionSteps) hintParts.push("Step-by-step guidance enabled");
+  if (state.contextBackground) hintParts.push("Risk background included");
   if (state.transparency) hintParts.push("Why this appeared is explained");
   document.getElementById("pvHint").textContent = hintParts.join(" • ");
 }
@@ -445,15 +447,15 @@ function renderCode() {
   user_group="${state.userGroup}",
   urgency=${state.urgency},
   motivation="${state.motivation}",
-  include_steps=${state.steps},
-  include_action=${state.action},
+  include_steps=${state.instructionSteps},
+  include_action=${state.directAction},
   explain_vulnerability=${state.explainVuln},
-  explain_risk=${state.explain},
-  include_background_context=${state.background},
-  include_time_estimate=${state.time},
+  explain_risk=${state.explainRisk},
+  include_background_context=${state.contextBackground},
+  include_time_estimate=${state.timeEst},
   explain_transparency=${state.transparency},
   consequences_if_ignored=${state.consequences},
-  decision_support=${state.decision},
+  decision_support=${state.supportLinks},
   preferred_decision=${state.preferredDecision},
   ai_tone_review=${state.aiTone},
   interaction_mode="${state.interaction}",
@@ -683,6 +685,7 @@ function flashSaveButton() {
 
 function init() {
   setupDropdowns();
+  setupTextInputs();
   setupInputs();
   setupSegmentedControls();
   setupNavigation();
