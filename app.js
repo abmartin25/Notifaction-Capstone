@@ -68,8 +68,8 @@ function setupDefaultState() {
   deployDate: "",
   deployHour: "09:00",
   deployWindow: "",
-  bootup: false,
-  duringTask: true,
+  showOnBootup: false,
+  showDuringTask: true,
   };
   return state;
 }
@@ -121,7 +121,7 @@ function setupTextInputs() {
 }
 
 //This is fine to leave as ID based (one off, components get handled differently)
-function setupInputs() {
+function setupCheckboxInputs() {
   const checkboxMappings = [
     ["ckInstructionSteps", "instructionSteps"],
     ["ckDirectAction", "directAction"],
@@ -135,8 +135,8 @@ function setupInputs() {
     ["ckPreferredDecision", "preferredDecision"],
     ["ckAiTone", "aiTone"],
     ["ckSchedule", "schedule"],
-    ["ckBootup", "bootup"],
-    ["ckDuringTask", "duringTask"],
+    ["ckShowOnBootup", "showOnBootup"],
+    ["ckShowDuringTask", "showDuringTask"],
   ];
 
   checkboxMappings.forEach(([id, key]) => {
@@ -149,7 +149,9 @@ function setupInputs() {
       render();
     });
   });
+}
 
+function setupDeploymentInputs() {
   document.getElementById("deployDate").addEventListener("input", (e) => {
     state.deployDate = e.target.value;
     render();
@@ -359,8 +361,8 @@ function syncInfoStrip() {
     pills.push(`Deploy ${state.deployDate}`);
   if (state.schedule && state.deployWindow)
     pills.push(`Window ${state.deployWindow}`);
-  if (state.schedule && state.bootup) pills.push("Shown on bootup");
-  if (state.schedule && state.duringTask) pills.push("Shown during task");
+  if (state.schedule && state.showOnBootup) pills.push("Shown on bootup");
+  if (state.schedule && state.showDuringTask) pills.push("Shown during task");
   infoStrip.innerHTML = pills
     .map((pill) => `<span class="pill">${pill}</span>`)
     .join("");
@@ -465,8 +467,8 @@ function renderCode() {
   deploy_date="${state.deployDate}",
   deploy_hour="${state.deployHour}",
   deploy_window="${state.deployWindow}",
-  show_on_bootup=${state.bootup},
-  show_during_task=${state.duringTask}
+  show_on_bootup=${state.showOnBootup},
+  show_during_task=${state.showDuringTask}
 )`;
 }
 
@@ -686,7 +688,8 @@ function flashSaveButton() {
 function init() {
   setupDropdowns();
   setupTextInputs();
-  setupInputs();
+  setupCheckboxInputs();
+  setupDeploymentInputs();
   setupSegmentedControls();
   setupNavigation();
   setupPreviewInteractions();
