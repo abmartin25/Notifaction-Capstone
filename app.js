@@ -127,7 +127,6 @@ function setupCheckboxInputs() {
   ];
 
   checkboxMappings.forEach(([id, key]) => {
-    console.log("Setting up checkbox:", id, key);
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
       if (key === "schedule") {
