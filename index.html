@@ -168,21 +168,21 @@
             <div class="sectionNote">This controls how much choice the user has and helps represent user impact and compliance pressure.</div>
           </div>
 
-          <div class="field">
+          <div class="field" data-type="deploymentInputs">
             <label><input id="ckSchedule" type="checkbox" /> Manual deployment scheduling</label>
             <div class="sectionNote">Set a deployment date, hours, and when users should see the notification.</div>
             <div id="scheduleWrap" class="hidden">
               <div class="schedule-grid subfield">
-                <div>
+                <div data-type="input">
                   <label for="deployDate">Deploy date</label>
                   <input id="deployDate" type="date" />
                 </div>
-                <div>
+                <div data-type="input">
                   <label for="deployHour">Preferred hour</label>
                   <input id="deployHour" type="time" value="09:00" />
                 </div>
               </div>
-              <div class="subfield">
+              <div class="subfield" data-type="input">
                 <label for="deployWindow">Hour range</label>
                 <input id="deployWindow" type="text" placeholder="Example: 09:00-12:00" />
               </div>

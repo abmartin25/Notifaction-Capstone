@@ -138,17 +138,13 @@ function setupCheckboxInputs() {
 }
 
 function setupDeploymentInputs() {
-  document.getElementById("deployDate").addEventListener("input", (e) => {
-    state.deployDate = e.target.value;
-    render();
-  });
-  document.getElementById("deployHour").addEventListener("input", (e) => {
-    state.deployHour = e.target.value;
-    render();
-  });
-  document.getElementById("deployWindow").addEventListener("input", (e) => {
-    state.deployWindow = e.target.value;
-    render();
+  document.querySelectorAll(".field[data-type='deploymentInputs'] [data-type='input']").forEach((input) => {
+    const forAttr = input.querySelector("label").getAttribute("for");
+    console.log("Wiring deployment input:", forAttr);
+    input.querySelector("input").addEventListener("input", (e) => {
+      state[forAttr] = e.target.value;
+      render();
+    });
   });
 }
 
