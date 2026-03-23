@@ -40,40 +40,10 @@ function showSection(sectionId) {
   if (activeNav) activeNav.classList.add("active");
 }
 
+// I ant to split off all of the creating the notification/preview stuff to its own js
 // Set default state for the notification configuration
 // TODO Add ability to call these from API
-function setupDefaultState() {
-  const state = {
-  title: "",
-  message: "",
-  context: "",
-  userGroup: "",
-  motivation: "risk_avoidance",
-  instructionSteps: true,
-  directAction: true,
-  explainVuln: true,
-  explainRisk: true,
-  contextBackground: true,
-  timeEst: false,
-  transparency: false,
-  consequences: false,
-  supportLinks: false,
-  preferredDecision: false,
-  aiTone: false,
-  urgency: "low",
-  interaction: "click_box",
-  location: "banner",
-  agency: "must_do",
-  schedule: false,
-  deployDate: "",
-  deployHour: "09:00",
-  deployWindow: "",
-  showOnBootup: false,
-  showDuringTask: true,
-  };
-  return state;
-}
-const state = setupDefaultState();
+const state = getDefaultState();
 
 // Building of Notification Live Preview
 // Setup Card-Panel (Configuration Panel)
@@ -134,62 +104,53 @@ function setupCheckboxInputs() {
       }
       render();
     });
+    if (state[key]) {
+      document.getElementById(id).checked = true;
+    }
   });
 }
 
 function setupDeploymentInputs() {
   document.querySelectorAll(".field[data-type='deploymentInputs'] [data-type='input']").forEach((input) => {
     const forAttr = input.querySelector("label").getAttribute("for");
-    console.log("Wiring deployment input:", forAttr);
     input.querySelector("input").addEventListener("input", (e) => {
       state[forAttr] = e.target.value;
       render();
     });
   });
 }
-
+ 
 function setupSegmentedControls() {
-  setupSegmentGroup("motivationSeg", "m", "motivation");
-  setupSegmentGroup("urgencySeg", "u", "urgency");
-  setupSegmentGroup("interactionSeg", "i", "interaction");
-  setupSegmentGroup("agencySeg", "a", "agency");
-
+  document.querySelectorAll(".field[data-type='segmentGroup']").forEach((field) => {
+    const forContainer = field.querySelector("div.seg").id.slice(0, -3);
+    field.querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", () => {
+        field
+          .querySelectorAll("button")
+          .forEach((b) => b.classList.remove("on"));
+        button.classList.add("on");
+        state[forContainer] = button.dataset[forContainer.charAt(0)];
+        
+        if (forContainer === "location") {
+          document.querySelector(".sectionNote").textContent =
+            locationDescs[button.dataset[forContainer.charAt(0)]] || "";
+        }
+        
+        console.log(`Segment group ${forContainer} changed to ${state[forContainer]}`);
+        render();
+      });
+    })
+  });
+  
   const locationDescs = {
     banner: "Appears at the top or bottom of the screen; non-blocking.",
     popup: "Appears in the center of the screen; requires user interaction.",
     inline: "Appears within the page content; contextual and subtle.",
     modal: "Overlays the full screen; blocks all other interaction.",
   };
-
-  const locationSeg = document.getElementById("locationSeg");
-  locationSeg.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", () => {
-      locationSeg
-        .querySelectorAll("button")
-        .forEach((b) => b.classList.remove("on"));
-      button.classList.add("on");
-      state.location = button.dataset.l;
-      document.getElementById("locationDesc").textContent =
-        locationDescs[button.dataset.l] || "";
-      render();
-    });
-  });
 }
 
-function setupSegmentGroup(containerId, datasetKey, stateKey) {
-  const container = document.getElementById(containerId);
-  container.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", () => {
-      container
-        .querySelectorAll("button")
-        .forEach((b) => b.classList.remove("on"));
-      button.classList.add("on");
-      state[stateKey] = button.dataset[datasetKey];
-      render();
-    });
-  });
-}
-
+// TODO
 function setupPreviewInteractions() {
   const primaryBtn = document.getElementById("primaryBtn");
   const denyBtn = document.getElementById("denyBtn");
@@ -281,6 +242,8 @@ function wireTooltip(triggerId, tooltipId) {
   }
 }
 
+// Render the interactive preview
+// Potentially change this to not have to refresh entire thing but subsections depending on type of change
 function render() {
   document.getElementById("pvTitle").textContent =
     state.title || "Notification title";
@@ -383,12 +346,12 @@ function syncAgencyPreview() {
 }
 
 function syncInteractionPreview() {
-  ["click_box", "checkbox", "toggle"].forEach((mode) => {
+  ["click_box", "slider", "toggle"].forEach((mode) => {
     const element = document.getElementById(`pvInteraction_${mode}`);
     if (!element) return;
     element.style.display =
       mode === state.interaction
-        ? mode === "toggle" || mode === "checkbox"
+        ? mode === "toggle" || mode === "slider"
           ? "block"
           : "flex"
         : "none";

@@ -101,7 +101,7 @@
             <textarea id="msgInput" placeholder="Enter notification message…"></textarea>
           </div>
 
-          <div class="field">
+          <div class="field" data-type="segmentGroup">
             <label>Motivation framing</label>
             <div class="seg" id="motivationSeg">
               <button class="on" data-m="risk_avoidance" type="button">Risk avoidance</button>
@@ -114,11 +114,11 @@
           <div class="field">
             <label>Instruction design</label>
             <div class="checks">
-              <label><input id="ckInstructionSteps" type="checkbox" checked /><span>Step-by-step instructions</span></label>
-              <label><input id="ckDirectAction" type="checkbox" checked /><span>Direct action button</span></label>
-              <label><input id="ckExplainVuln" type="checkbox" checked /><span>Vulnerability explanation</span></label>
-              <label><input id="ckExplainRisk" type="checkbox" checked /><span>Risk explanation</span></label>
-              <label><input id="ckContextBackground" type="checkbox" checked /><span>Context and background about the risk</span></label>
+              <label><input id="ckInstructionSteps" type="checkbox" /><span>Step-by-step instructions</span></label>
+              <label><input id="ckDirectAction" type="checkbox" /><span>Direct action button</span></label>
+              <label><input id="ckExplainVuln" type="checkbox" /><span>Vulnerability explanation</span></label>
+              <label><input id="ckExplainRisk" type="checkbox" /><span>Risk explanation</span></label>
+              <label><input id="ckContextBackground" type="checkbox" /><span>Context and background about the risk</span></label>
               <label><input id="ckTimeEst" type="checkbox" /><span>Time estimate</span></label>
               <label><input id="ckTransparency" type="checkbox" /><span>Explain why notification appeared</span></label>
               <label><input id="ckConsequences" type="checkbox" /><span>Consequences if ignored</span></label>
@@ -128,7 +128,7 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="field" data-type="segmentGroup">
             <label>Urgency</label>
             <div class="seg" id="urgencySeg">
               <button class="on" data-u="low" type="button">Low</button>
@@ -137,17 +137,17 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="field" data-type="segmentGroup">
             <label>Mode of interaction</label>
             <div class="seg" id="interactionSeg">
               <button class="on" data-i="click_box" type="button">Click box</button>
-              <button data-i="checkbox" type="button">Sliding bar</button>
+              <button data-i="slider" type="button">Sliding bar</button>
               <button data-i="toggle" type="button">Toggle</button>
             </div>
             <div class="sectionNote">Each option shows Allow and Don't Allow for the user. The framework will suggest safer interaction patterns if the current choice is too easy to dismiss.</div>
           </div>
 
-          <div class="field">
+          <div class="field" data-type="segmentGroup">
             <label>User workflow</label>
             <div class="seg" id="locationSeg">
               <button class="on" data-l="banner" type="button">Banner</button>
@@ -158,7 +158,7 @@
             <div class="sectionNote" id="locationDesc">Appears at the top or bottom of the screen; non-blocking.</div>
           </div>
 
-          <div class="field">
+          <div class="field" data-type="segmentGroup">
             <label>User agency</label>
             <div class="seg" id="agencySeg">
               <button class="on" data-a="must_do" type="button">Have to</button>
@@ -194,10 +194,10 @@
           </div>
         </div>
 
-        <div class="card panel">
+        <div class="card panel" data-type="livePreviewWindow">
           <h3>Live preview</h3>
           <div class="previewCard">
-            <div class="previewHeader">
+            <div class="previewHeader" data-type="header">
               <div id="badge" class="badge med">!</div>
               <div>
                 <div class="previewTitle" id="pvTitle">Security alert</div>
@@ -211,7 +211,7 @@
               <button class="mini" id="denyBtn">Don't Allow</button>
             </div>
 
-            <div id="pvInteraction_checkbox" style="display:none; margin-top:6px;">
+            <div id="pvInteraction_slider" style="display:none; margin-top:6px;">
               <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px;">
                 <span>Allow</span><span>Don't Allow</span>
               </div>
@@ -366,6 +366,7 @@
 </div>
 
 <script src="framework.js"></script>
+<script src="default_state.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
