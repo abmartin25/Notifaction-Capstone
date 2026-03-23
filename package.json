@@ -1,5 +1,16 @@
 {
+  "name": "sentinel-app",
+  "version": "1.0.0",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server.js"
+  },
   "dependencies": {
     "better-sqlite3": "^12.8.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.3",
+    "electron": "^30.0.0"
   }
 }
