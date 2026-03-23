@@ -132,7 +132,7 @@ function setupSegmentedControls() {
         state[forContainer] = button.dataset[forContainer.charAt(0)];
         
         if (forContainer === "location") {
-          document.querySelector(".sectionNote").textContent =
+          field.querySelector(".sectionNote").textContent =
             locationDescs[button.dataset[forContainer.charAt(0)]] || "";
         }
         
