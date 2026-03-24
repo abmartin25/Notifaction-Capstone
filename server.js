@@ -1,6 +1,9 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const express = require("express");
+const app = express();
+const {PythonShell} = require('python-shell');
 const { saveTemplate, getTemplate, getAllTemplates, deleteTemplate } = require("./db");
 
 const PORT = process.env.PORT || 3000;
@@ -70,6 +73,9 @@ async function handleApi(req, res, url) {
       return sendJson(res, 400, { error: err.message });
     }
   }
+
+  // Passing to PythonShell
+  // if 
 
   // GET /api/templates/:id — load template with config
   const matchId = url.match(/^\/api\/templates\/(\d+)$/);
