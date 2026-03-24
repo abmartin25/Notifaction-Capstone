@@ -13,5 +13,10 @@ https://nodejs.org/en
 
 ~~ Usage ~~
 1. npm install better-sqlite3
-2. node server.js
+2. npm install --save-dev electron@latest
+3. npm install express --save
+4. npm install python-shell
+5. npm start
+-> If there is a NODE_MODULE_VERSION mismatch try
+6. npx electron-rebuild
 
