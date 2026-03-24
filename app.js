@@ -67,19 +67,47 @@ function setupDropdowns() {
   });
 }
 
+function syncDropdowns() {
+  document.querySelectorAll(".field[data-type='dropdown']").forEach((dropdown) => {
+    const forAttr = dropdown.querySelector("label").getAttribute("for");
+    const customWrap = dropdown.querySelector(".custom-input-wrap");
+    const select = dropdown.querySelector(".dropdown");
+    const currentValue = state[forAttr] || getDefaultState()[forAttr];  // Double-Blind to Default
+    const dropdownOption = Array.from(select.options).find((o) => o.value === currentValue);
+    if (dropdownOption) {
+      select.value = currentValue;
+    } else {
+      select.value = "__custom__";
+      customWrap.classList.remove("hidden");
+      customWrap.querySelector("input").value = currentValue;
+    }
+    render();
+  });
+}
+
 function setupTextInputs() {
   document.querySelectorAll(".field[data-type='textInput']").forEach((field) => {
     const forAttr = field.querySelector("label").getAttribute("for");
     field.addEventListener("input", (e) => {
       state[forAttr] = e.target.value;
+      // console.log(`Text input ${forAttr} changed to ${state[forAttr]}`);
       render();
     });
   });
 }
 
+function syncTextInputs() {
+  document.querySelectorAll(".field[data-type='textInput']").forEach((field) => {
+    const forAttr = field.querySelector("label").getAttribute("for");
+    const currentValue = state[forAttr] || getDefaultState()[forAttr];  // Double-Blind to Default
+    const select = field.querySelector("textarea, input");
+    if (select) select.value = currentValue;
+    render();
+  });
+}
+
 //This is fine to leave as ID based (one off, components get handled differently)
-function setupCheckboxInputs() {
-  const checkboxMappings = [
+const checkboxMappings = [
     ["ckInstructionSteps", "instructionSteps"],
     ["ckDirectAction", "directAction"],
     ["ckExplainVuln", "explainVuln"],
@@ -96,6 +124,7 @@ function setupCheckboxInputs() {
     ["ckShowDuringTask", "showDuringTask"],
   ];
 
+function setupCheckboxInputs() {
   checkboxMappings.forEach(([id, key]) => {
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
@@ -104,22 +133,26 @@ function setupCheckboxInputs() {
       }
       render();
     });
-    if (state[key]) {
-      document.getElementById(id).checked = true;
-    }
   });
 }
 
-function setupDeploymentInputs() {
-  document.querySelectorAll(".field[data-type='deploymentInputs'] [data-type='input']").forEach((input) => {
-    const forAttr = input.querySelector("label").getAttribute("for");
-    input.querySelector("input").addEventListener("input", (e) => {
-      state[forAttr] = e.target.value;
-      render();
-    });
+function syncCheckboxInputs() {
+  checkboxMappings.forEach(([id, key]) => {
+    document.getElementById(id).checked = state[key];
+    if (key === "schedule") {
+      document.getElementById("scheduleWrap").classList.toggle("hidden", !state.schedule);
+    }
+    render();
   });
 }
- 
+
+const locationDescs = {
+    banner: "Appears at the top or bottom of the screen; non-blocking.",
+    popup: "Appears in the center of the screen; requires user interaction.",
+    inline: "Appears within the page content; contextual and subtle.",
+    modal: "Overlays the full screen; blocks all other interaction.",
+};
+
 function setupSegmentedControls() {
   document.querySelectorAll(".field[data-type='segmentGroup']").forEach((field) => {
     const forContainer = field.querySelector("div.seg").id.slice(0, -3);
@@ -141,13 +174,61 @@ function setupSegmentedControls() {
       });
     })
   });
-  
-  const locationDescs = {
-    banner: "Appears at the top or bottom of the screen; non-blocking.",
-    popup: "Appears in the center of the screen; requires user interaction.",
-    inline: "Appears within the page content; contextual and subtle.",
-    modal: "Overlays the full screen; blocks all other interaction.",
-  };
+}
+
+function syncSegmentedControls() {
+  document.querySelectorAll(".field[data-type='segmentGroup']").forEach((field) => {
+    const forContainer = field.querySelector("div.seg").id.slice(0, -3);
+    const currentValue = state[forContainer] || getDefaultState()[forContainer];  // Double-Blind to Default
+
+    field.querySelectorAll("button").forEach((b) => b.classList.remove("on"));
+
+    const buttonToActivate = field.querySelector(`button[data-${forContainer.charAt(0)}="${currentValue}"]`);
+    if (buttonToActivate) buttonToActivate.classList.add("on");
+
+    if (forContainer === "location") {
+      field.querySelector(".sectionNote").textContent =
+        locationDescs[currentValue] || locationDescs[getDefaultState().location];
+    }
+    render();
+  });
+}
+
+function setupDeploymentInputs() {
+  document.querySelectorAll(".field[data-type='deploymentInputs'] [data-type='input']").forEach((input) => {
+    const forAttr = input.querySelector("label").getAttribute("for");
+    input.querySelector("input").addEventListener("input", (e) => {
+      state[forAttr] = e.target.value;
+      render();
+    });
+  });
+}
+
+function syncDeploymentInputs() {
+  document.querySelectorAll(".field[data-type='deploymentInputs'] [data-type='input']").forEach((input) => {
+    const forAttr = input.querySelector("label").getAttribute("for");
+    const inputLocation = input.querySelector("input");
+    const currentValue = state[forAttr] || getDefaultState()[forAttr];  // Double-Blind to Default
+    if (inputLocation) inputLocation.value = currentValue;
+    render();
+  });
+}
+
+// Summary functions for simplicity
+function setupConfigPanel() {
+  setupDropdowns();
+  setupTextInputs();
+  setupCheckboxInputs();
+  setupSegmentedControls();
+  setupDeploymentInputs();
+}
+
+function syncConfigPanel() {
+  syncDropdowns();
+  syncTextInputs();
+  syncCheckboxInputs();
+  syncSegmentedControls();
+  syncDeploymentInputs();
 }
 
 // TODO
@@ -425,6 +506,8 @@ function setupReferenceTableToggle() {
   });
 }
 
+
+// Save/Load Functionality
 function setupSaveLoad() {
   document.getElementById("saveTemplate").addEventListener("click", () => {
     const nameInput = document.getElementById("saveTemplateName");
@@ -536,77 +619,8 @@ async function populateLoadModal() {
 
 function loadStateFromTemplate(config) {
   Object.assign(state, config);
-
-  document.getElementById("titleInput").value  = state.title   || "";
-  document.getElementById("msgInput").value    = state.message || "";
-
-  const ugSelect = document.getElementById("userGroup");
-  const ugOptions = Array.from(ugSelect.options).map((o) => o.value);
-  if (ugOptions.includes(state.userGroup)) {
-    ugSelect.value = state.userGroup;
-    document.getElementById("userGroupCustomWrap").classList.add("hidden");
-  } else {
-    ugSelect.value = "__custom__";
-    document.getElementById("userGroupCustomWrap").classList.remove("hidden");
-    document.getElementById("userGroupCustom").value = state.userGroup;
-  }
-
-  const ctxSelect = document.getElementById("context");
-  const ctxOptions = Array.from(ctxSelect.options).map((o) => o.value);
-  if (ctxOptions.includes(state.context)) {
-    ctxSelect.value = state.context;
-    document.getElementById("contextCustomWrap").classList.add("hidden");
-  } else {
-    ctxSelect.value = "__custom__";
-    document.getElementById("contextCustomWrap").classList.remove("hidden");
-    document.getElementById("contextCustom").value = state.context;
-  }
-
-  const checkboxMappings = [
-    ["ckInstructionSteps", "instructionSteps"],
-    ["ckDirectAction", "directAction"],
-    ["ckExplainVuln", "explainVuln"],
-    ["ckExplainRisk", "explainRisk"],
-    ["ckContextBackground", "contextBackground"],
-    ["ckTimeEst", "timeEst"],
-    ["ckTransparency", "transparency"],
-    ["ckConsequences", "consequences"],
-    ["ckSupportLinks", "supportLinks"],
-    ["ckPreferredDecision", "preferredDecision"],
-    ["ckAiTone", "aiTone"],
-    ["ckSchedule", "schedule"],
-    ["ckShowOnBootup", "showOnBootup"],
-    ["ckShowDuringTask", "showDuringTask"],
-  ];
-  checkboxMappings.forEach(([id, key]) => {
-    document.getElementById(id).checked = !!state[key];
-  });
-
-  document.getElementById("scheduleWrap").classList.toggle("hidden", !state.schedule);
-  document.getElementById("deployDate").value   = state.deployDate   || "";
-  document.getElementById("deployHour").value   = state.deployHour   || "09:00";
-  document.getElementById("deployWindow").value = state.deployWindow || "";
-
-  function restoreSeg(containerId, dataAttr, value) {
-    const container = document.getElementById(containerId);
-    container.querySelectorAll("button").forEach((b) => {
-      b.classList.toggle("on", b.dataset[dataAttr] === value);
-    });
-  }
-  restoreSeg("motivationSeg",  "m", state.motivation);
-  restoreSeg("urgencySeg",     "u", state.urgency);
-  restoreSeg("interactionSeg", "i", state.interaction);
-  restoreSeg("locationSeg",    "l", state.location);
-  restoreSeg("agencySeg",      "a", state.agency);
-
-  const locationDescs = {
-    banner: "Appears at the top or bottom of the screen; non-blocking.",
-    popup:  "Appears in the center of the screen; requires user interaction.",
-    inline: "Appears within the page content; contextual and subtle.",
-    modal:  "Overlays the full screen; blocks all other interaction.",
-  };
-  document.getElementById("locationDesc").textContent = locationDescs[state.location] || "";
-
+  // console.log("Loaded template config:", config);
+  syncConfigPanel();
   render();
 }
 
@@ -639,9 +653,8 @@ function flashSaveButton() {
 }
 
 function init() {
-  setupDropdowns();
-  setupTextInputs();
-  setupCheckboxInputs();
+  setupConfigPanel();
+  syncConfigPanel();
   setupDeploymentInputs();
   setupSegmentedControls();
   setupNavigation();
