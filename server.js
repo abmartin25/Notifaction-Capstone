@@ -1,7 +1,15 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const { saveTemplate, getTemplate, getAllTemplates, deleteTemplate } = require("./db");
+const express = require("express");
+const app = express();
+const {PythonShell} = require('python-shell');
+const {
+  saveTemplate,
+  getTemplate,
+  getAllTemplates,
+  deleteTemplate,
+} = require("./db");
 
 const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
@@ -28,8 +36,11 @@ function readBody(req) {
     let body = "";
     req.on("data", (chunk) => (body += chunk));
     req.on("end", () => {
-      try { resolve(JSON.parse(body)); }
-      catch { reject(new Error("Invalid JSON")); }
+      try {
+        resolve(JSON.parse(body));
+      } catch {
+        reject(new Error("Invalid JSON"));
+      }
     });
     req.on("error", reject);
   });
@@ -44,14 +55,16 @@ function sendFile(res, filePath) {
       return;
     }
     const ext = path.extname(filePath).toLowerCase();
-    res.writeHead(200, { "Content-Type": MIME_TYPES[ext] || "application/octet-stream" });
+    res.writeHead(200, {
+      "Content-Type": MIME_TYPES[ext] || "application/octet-stream",
+    });
     res.end(data);
   });
 }
 
 // api routes
 async function handleApi(req, res, url) {
-  // GET /api/templates — list saved templates (id + name + timestamps)
+  // GET /api/templates — list saved templates
   if (req.method === "GET" && url === "/api/templates") {
     const templates = getAllTemplates();
     return sendJson(res, 200, templates);
@@ -62,7 +75,9 @@ async function handleApi(req, res, url) {
     try {
       const body = await readBody(req);
       if (!body.name || typeof body.name !== "string" || !body.config) {
-        return sendJson(res, 400, { error: "name (string) and config (object) are required" });
+        return sendJson(res, 400, {
+          error: "name (string) and config (object) are required",
+        });
       }
       const template = saveTemplate(body.name.trim(), body.config);
       return sendJson(res, 200, template);
@@ -70,6 +85,9 @@ async function handleApi(req, res, url) {
       return sendJson(res, 400, { error: err.message });
     }
   }
+
+  // Passing to PythonShell
+  // if 
 
   // GET /api/templates/:id — load template with config
   const matchId = url.match(/^\/api\/templates\/(\d+)$/);
@@ -90,8 +108,7 @@ async function handleApi(req, res, url) {
 }
 
 const server = http.createServer(async (req, res) => {
-  // strip query string
-  const url = req.url.split("?")[0]; 
+  const url = req.url.split("?")[0];
 
   if (url.startsWith("/api/")) {
     return handleApi(req, res, url);
@@ -111,5 +128,9 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`SENTINEL SDK running at http://localhost:${PORT}`);
+
+  // Let Electron know the server is ready
+  if (process.send) {
+    process.send("server-ready");
+  }
 });
