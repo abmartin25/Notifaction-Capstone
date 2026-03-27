@@ -14,4 +14,12 @@ https://nodejs.org/en
 ~~ Usage ~~
 1. python sentinel.py for users
 2. python sentinel.py   --debug for debugging by SDK devs
+~~ OLD ~~
+1. npm install better-sqlite3
+2. npm install --save-dev electron@latest
+3. npm install express --save
+4. npm install python-shell
+5. npm start
+-> If there is a NODE_MODULE_VERSION mismatch try
+6. npx electron-rebuild
 
