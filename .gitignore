@@ -1,7 +1,0 @@
-# ignore node_modules and dist folders, environment variables, log files, and the database file
-node_modules/
-dist/
-.env
-*.log
-sentinel.db
-package-lock.json
