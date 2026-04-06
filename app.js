@@ -291,6 +291,7 @@ function render() {
   syncHint();
   syncInfoStrip();
   syncActionButtonsByAgency();
+  syncInstructionSteps();
   syncInteractionPreview();
   syncGuidance();
 }
@@ -438,6 +439,54 @@ function renderCode() {
   show_on_bootup=${state.showOnBootup},
   show_during_task=${state.showDuringTask}
 )`;
+}
+
+function getInstructionSteps(context) {
+  const map = {
+    weak_password: [
+      "Open your account security settings.",
+      "Choose a new password that is unique.",
+      "Save the change and sign in again if prompted.",
+    ],
+    suspicious_login: [
+      "Review the recent login attempt.",
+      "Change your password if the activity was not you.",
+      "Enable extra account protection if available.",
+    ],
+    cache_clear: [
+      "Open your browser settings.",
+      "Go to privacy or history options.",
+      "Clear cached data for the recent session.",
+    ],
+    software_update: [
+      "Open system or application update settings.",
+      "Review the available update.",
+      "Install the update and restart if required.",
+    ],
+  };
+
+  return (
+    map[context] || [
+      "Review the notification details.",
+      "Take the recommended protective action.",
+      "Confirm the change was completed.",
+    ]
+  );
+}
+
+function syncInstructionSteps() {
+  const wrap = document.getElementById("pvStepsWrap");
+  const list = document.getElementById("pvStepsList");
+
+  if (!state.instructionSteps) {
+    wrap.style.display = "none";
+    list.innerHTML = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  const steps = getInstructionSteps(state.context);
+  list.innerHTML = steps.map((step) => `<li>${step}</li>`).join("");
 }
 
 function setupReferenceTableToggle() {
