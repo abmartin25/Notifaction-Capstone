@@ -292,6 +292,7 @@ function render() {
   syncInfoStrip();
   syncActionButtonsByAgency();
   syncInstructionSteps();
+  syncVulnerabilityText();
   syncInteractionPreview();
   syncGuidance();
 }
@@ -495,6 +496,29 @@ function setupReferenceTableToggle() {
       .getElementById("refTableWrap")
       .classList.toggle("open", this.checked);
   });
+}
+
+function getVulnerabilityExplanation(context) {
+  const map = {
+    weak_password:
+      "A weak password is easier for attackers to guess or crack, especially if it has been reused or exposed before.",
+    suspicious_login:
+      "A suspicious login may indicate that someone else is attempting to access your account from an unfamiliar device or location.",
+    cache_clear:
+      "Stored browser cache can retain sensitive content, which may be accessible later on a shared or exposed device.",
+    software_update:
+      "Outdated software may contain known weaknesses that attackers can exploit if updates are not installed.",
+  };
+
+  return (
+    map[context] ||
+    "A security weakness was detected that may increase exposure if it is not addressed."
+  );
+}
+
+function syncVulnerabilityText() {
+  const tooltip = document.getElementById("pvVulnTooltip");
+  tooltip.textContent = getVulnerabilityExplanation(state.context);
 }
 
 function setupSaveLoad() {
