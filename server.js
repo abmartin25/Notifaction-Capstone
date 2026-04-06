@@ -128,7 +128,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-
   // Let Electron know the server is ready
   if (process.send) {
     process.send("server-ready");

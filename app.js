@@ -43,6 +43,7 @@ function showSection(sectionId) {
 // I ant to split off all of the creating the notification/preview stuff to its own js
 // Set default state for the notification configuration
 // TODO Add ability to call these from API
+import { getDefaultState } from "./default_state.js";
 const state = getDefaultState();
 
 // Building of Notification Live Preview

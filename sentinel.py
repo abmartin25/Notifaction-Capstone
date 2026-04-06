@@ -20,6 +20,9 @@ ELECTRON_MAIN = ROOT / "electron-main.js"
 # OS Detection
 OS_NAME = platform.system().lower()  # "windows", "darwin" (mac), "linux", etc.
 
+# TIMEOUT for server startup (seconds)
+SERVER_START_TIMEOUT = 5
+
 
 #Default notification state  
 DEFAULT_STATE = {
@@ -144,7 +147,7 @@ class ProcessManager:
 
         if OS_NAME == "windows":
             self._server = subprocess.Popen(
-                [sys.executable, "node", str(SERVER_SCRIPT)],
+                ["node", str(SERVER_SCRIPT)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
@@ -156,15 +159,16 @@ class ProcessManager:
                 stderr=subprocess.STDOUT,
                 text=True,
             )
-        # Wait until the server ready
-        for _ in range(20):
-            line = self._server.stdout.readline()
-            if "running at" in line.lower():
-                print(f"[sentinel] {line.strip()}")
-                return True
-            time.sleep(0.1)
-        return True  # assume ready after timeout
-
+        # Check server timeout for issues
+        # Check if the process is done every second
+        for _ in range(SERVER_START_TIMEOUT):
+            ret_code = self._server.poll()
+            if ret_code is not None:
+                print(f"Process finished with return code: {ret_code}")
+                return False
+            time.sleep(1)
+        return True
+            
     def start_electron(self) -> bool:
         """Launch the Electron desktop app."""
         print("[sentinel] Launching Electron app...")
@@ -307,8 +311,12 @@ def main():
     if args.debug:
         # Dev/team only — server without Electron, use the browser
         pm.start_server()
-        print("[sentinel] Debug server running at http://localhost:3000")
-        print("[sentinel] Press Ctrl+C to stop.")
+        if not pm._server:
+            print("[sentinel] Failed to start server.")
+            return
+        else: 
+            print("[sentinel] Debug server running at http://localhost:3000")
+            print("[sentinel] Press Ctrl+C to stop.")
         try:
             while True:
                 time.sleep(1)

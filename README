@@ -21,5 +21,5 @@ https://nodejs.org/en
 4. npm install python-shell
 5. npm start
 -> If there is a NODE_MODULE_VERSION mismatch try
-6. npx electron-rebuild
+6. npx electron-rebuild -f -w better-sqlite3 ?
 
