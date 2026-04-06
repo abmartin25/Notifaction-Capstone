@@ -118,6 +118,14 @@
       margin-top: 2px;
     }
 
+    .previewTransparency {
+      display: none;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
     .previewMsg {
       font-size: 13px;
       line-height: 1.45;
@@ -140,6 +148,10 @@
       font-weight: 700;
       cursor: pointer;
       transition: transform .15s ease, opacity .15s ease, background .15s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .mini:hover {
@@ -211,6 +223,7 @@
       width: 42px;
       height: 24px;
       flex-shrink: 0;
+      cursor: pointer;
     }
 
     .toggle-track {
@@ -312,11 +325,50 @@
       border-top-color: #1e293b;
     }
 
-    .footer-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
+    .content-block {
+      display: none;
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .context-block {
+      background: #f9fafb;
+      color: var(--muted);
+    }
+
+    .consequences-block {
+      color: #991b1b;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      line-height: 1.45;
+    }
+
+    .steps-block {
+      background: #f9fafb;
+    }
+
+    .steps-title {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .steps-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .support-links {
+      display: none;
       flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
     }
 
     @keyframes slideIn {
@@ -341,6 +393,7 @@
         <div>
           <div class="previewTitle" id="ntTitle">Security alert</div>
           <div class="previewMeta" id="ntMeta">General user • Weak password</div>
+          <div class="previewTransparency" id="ntTransparency"></div>
         </div>
       </div>
 
@@ -348,9 +401,19 @@
         Your password appears in a known breach. Update now to protect your account.
       </p>
 
+      <div id="ntContextWrap" class="content-block context-block"></div>
+
+      <div id="ntConsequencesWrap" class="content-block consequences-block"></div>
+
+      <div id="ntStepsWrap" class="content-block steps-block">
+        <div class="steps-title">Next steps</div>
+        <ol id="ntStepsList" class="steps-list"></ol>
+      </div>
+
       <div id="ntInteraction_click_box" class="previewBtns">
         <button class="mini primary" id="ntPrimaryBtn">Allow</button>
-        <button class="mini" id="ntDenyBtn">Don't Allow</button>
+        <button class="mini secondary-accent" id="ntRemindBtn" style="display:none;">Remind me later</button>
+        <button class="mini" id="ntDenyBtn" style="display:none;">Don't Allow</button>
       </div>
 
       <div id="ntInteraction_slider" class="slider-wrap">
@@ -380,27 +443,18 @@
         </div>
       </div>
 
-      <div class="footer-actions" id="ntAgencyActions">
-        <button class="mini primary" id="ntAgencyMainBtn">Have to</button>
-        <button class="mini secondary-accent" id="ntAgencySecondaryBtn">Remind me later</button>
-        <button class="mini neutral-accent" id="ntAgencyTertiaryBtn">Not urgent</button>
-      </div>
-
       <div class="hint" id="ntHint"></div>
-      <div class="info-strip" id="ntInfoStrip"></div>
 
-      <div id="ntVulnWrap" class="tooltip-wrap">
+      <div class="support-links" id="ntSupportLinksWrap"></div>
+
+      <div class="tooltip-wrap" id="ntVulnWrap">
         <span id="ntVulnTrigger" class="tooltip-trigger">learn about vulnerability</span>
-        <div id="ntVulnTooltip" class="tooltip-box">
-          This notification was triggered because a vulnerability was detected in your account or system. Understanding the issue helps you take the right steps to stay protected.
-        </div>
+        <div id="ntVulnTooltip" class="tooltip-box"></div>
       </div>
 
-      <div id="ntRiskWrap" class="tooltip-wrap">
+      <div class="tooltip-wrap" id="ntRiskWrap">
         <span id="ntRiskTrigger" class="tooltip-trigger">learn about risk</span>
-        <div id="ntRiskTooltip" class="tooltip-box">
-          Ignoring this issue may increase the chance of account compromise, data exposure, or disruption depending on the context.
-        </div>
+        <div id="ntRiskTooltip" class="tooltip-box"></div>
       </div>
     </div>
   </div>
