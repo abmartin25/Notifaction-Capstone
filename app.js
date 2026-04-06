@@ -170,17 +170,23 @@ function setupSegmentedControls() {
 // TODO
 function setupPreviewInteractions() {
   const primaryBtn = document.getElementById("primaryBtn");
+  const remindBtn = document.getElementById("remindBtn");
   const denyBtn = document.getElementById("denyBtn");
   let clickChoice = null;
 
   primaryBtn.addEventListener("click", () => {
     clickChoice = clickChoice === "allow" ? null : "allow";
-    updateClickBoxState(primaryBtn, denyBtn, clickChoice);
+    updateClickBoxState(primaryBtn, remindBtn, denyBtn, clickChoice);
+  });
+
+  remindBtn.addEventListener("click", () => {
+    clickChoice = clickChoice === "remind" ? null : "remind";
+    updateClickBoxState(primaryBtn, remindBtn, denyBtn, clickChoice);
   });
 
   denyBtn.addEventListener("click", () => {
     clickChoice = clickChoice === "deny" ? null : "deny";
-    updateClickBoxState(primaryBtn, denyBtn, clickChoice);
+    updateClickBoxState(primaryBtn, remindBtn, denyBtn, clickChoice);
   });
 
   const pvToggleAllow = document.getElementById("pvToggleAllow");
@@ -230,12 +236,18 @@ function setupPreviewInteractions() {
   wireTooltip("pvRiskTrigger", "pvRiskTooltip");
 }
 
-function updateClickBoxState(primaryBtn, denyBtn, clickChoice) {
-  const isAllow = clickChoice === "allow" || clickChoice === null;
-  primaryBtn.classList.toggle("primary", isAllow);
-  primaryBtn.classList.toggle("selected-deny", false);
+function updateClickBoxState(primaryBtn, remindBtn, denyBtn, clickChoice) {
+  primaryBtn.classList.toggle(
+    "primary",
+    clickChoice === "allow" || clickChoice === null,
+  );
+  primaryBtn.classList.remove("selected-deny");
+
+  remindBtn.classList.toggle("primary", clickChoice === "remind");
+  remindBtn.classList.toggle("secondary-accent", clickChoice !== "remind");
+
   denyBtn.classList.toggle("selected-deny", clickChoice === "deny");
-  denyBtn.classList.toggle("primary", false);
+  denyBtn.classList.remove("primary");
 }
 
 function applyToggleVisual(checkbox, track, thumb, color) {
@@ -278,7 +290,7 @@ function render() {
   syncTooltipVisibility();
   syncHint();
   syncInfoStrip();
-  syncAgencyPreview();
+  syncActionButtonsByAgency();
   syncInteractionPreview();
   syncGuidance();
 }
@@ -330,35 +342,29 @@ function syncInfoStrip() {
     .join("");
 }
 
-function syncAgencyPreview() {
-  const mainBtn = document.getElementById("agencyMainBtn");
-  const secondaryBtn = document.getElementById("agencySecondaryBtn");
-  const tertiaryBtn = document.getElementById("agencyTertiaryBtn");
+function syncActionButtonsByAgency() {
+  const primaryBtn = document.getElementById("primaryBtn");
+  const remindBtn = document.getElementById("remindBtn");
+  const denyBtn = document.getElementById("denyBtn");
 
-  mainBtn.textContent =
-    state.agency === "must_do"
-      ? "Have to"
-      : state.agency === "remind_later"
-        ? "Remind me later"
-        : "Not urgent";
+  if (!primaryBtn || !remindBtn || !denyBtn) return;
 
-  secondaryBtn.style.display =
-    state.agency === "must_do" ? "inline-block" : "none";
-  tertiaryBtn.style.display =
-    state.agency === "must_do"
-      ? "inline-block"
-      : state.agency === "remind_later"
-        ? "inline-block"
-        : "none";
+  primaryBtn.style.display = "inline-block";
+  remindBtn.style.display = "none";
+  denyBtn.style.display = "none";
 
-  if (state.agency === "remind_later") {
-    secondaryBtn.textContent = "Have to";
-    tertiaryBtn.textContent = "Not urgent";
+  if (state.agency === "must_do") {
+    primaryBtn.textContent = "Allow";
+  } else if (state.agency === "remind_later") {
+    primaryBtn.textContent = "Allow";
+    remindBtn.style.display = "inline-block";
+    remindBtn.textContent = "Remind me later";
   } else if (state.agency === "not_urgent") {
-    tertiaryBtn.textContent = "Have to";
-  } else {
-    secondaryBtn.textContent = "Remind me later";
-    tertiaryBtn.textContent = "Not urgent";
+    primaryBtn.textContent = "Allow";
+    remindBtn.style.display = "inline-block";
+    remindBtn.textContent = "Remind me later";
+    denyBtn.style.display = "inline-block";
+    denyBtn.textContent = "Don't Allow";
   }
 }
 
