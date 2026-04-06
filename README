@@ -12,8 +12,12 @@ This project requires the node.js runtime environment to be present, which is do
 https://nodejs.org/en
 
 ~~ Usage ~~
-1. python sentinel.py for users
-2. python sentinel.py   --debug for debugging by SDK devs
+1. Electron:
+  npx electron-rebuild -f -w better-sqlite3
+  python sentinel.py for users
+2. Debugging:
+  npm rebuild better-sqlite3 --update-binary
+  python sentinel.py   --debug 
 ~~ OLD ~~
 1. npm install better-sqlite3
 2. npm install --save-dev electron@latest
