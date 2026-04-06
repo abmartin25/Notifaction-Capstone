@@ -294,6 +294,8 @@ function render() {
   syncInstructionSteps();
   syncVulnerabilityText();
   syncRiskText();
+  syncContextBackground();
+  syncConsequences();
   syncInteractionPreview();
   syncGuidance();
 }
@@ -543,6 +545,67 @@ function getRiskExplanation(context) {
 function syncRiskText() {
   const tooltip = document.getElementById("pvRiskTooltip");
   tooltip.textContent = getRiskExplanation(state.context);
+}
+
+function getContextBackground(context) {
+  const map = {
+    weak_password:
+      "Passwords are often targeted through reuse, guessing, and breach exposure. Stronger passwords reduce that risk.",
+    suspicious_login:
+      "Login activity from unusual devices or locations can be a sign that account access should be reviewed quickly.",
+    cache_clear:
+      "Cached browser data may improve convenience, but it can also preserve sensitive material longer than intended.",
+    software_update:
+      "Security updates are released to correct known weaknesses and reduce exposure over time.",
+  };
+
+  return (
+    map[context] ||
+    "This issue relates to a broader security risk that may affect account safety, device protection, or data exposure."
+  );
+}
+
+function syncContextBackground() {
+  const wrap = document.getElementById("pvContextWrap");
+
+  if (!state.contextBackground) {
+    wrap.style.display = "none";
+    wrap.textContent = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  wrap.textContent = getContextBackground(state.context);
+}
+
+function getConsequencesText(context) {
+  const map = {
+    weak_password: "If ignored, the account may remain easier to compromise.",
+    suspicious_login:
+      "If ignored, unauthorized access may continue without being reviewed.",
+    cache_clear:
+      "If ignored, sensitive content may remain stored on the device.",
+    software_update:
+      "If ignored, the system may remain exposed to known issues.",
+  };
+
+  return (
+    map[context] ||
+    "If ignored, the issue may continue to increase security exposure."
+  );
+}
+
+function syncConsequences() {
+  const wrap = document.getElementById("pvConsequencesWrap");
+
+  if (!state.consequences) {
+    wrap.style.display = "none";
+    wrap.textContent = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  wrap.textContent = getConsequencesText(state.context);
 }
 
 function setupSaveLoad() {
