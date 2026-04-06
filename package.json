@@ -13,6 +13,8 @@
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.3",
+    "@playwright/test": "^1.59.1",
+    "chai": "^6.2.2",
     "electron": "^30.0.0"
   }
 }
