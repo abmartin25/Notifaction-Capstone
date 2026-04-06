@@ -371,6 +371,56 @@
       margin-top: 10px;
     }
 
+    .notification-overlay {
+        width: 100%;
+        min-height: calc(100vh - 24px);
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        background: transparent;
+    }
+
+    .modal-layout .notification-overlay {
+        min-height: calc(100vh - 24px);
+        justify-content: center;
+        align-items: center;
+        background: rgba(17, 24, 39, 0.38);
+        border-radius: 18px;
+    }
+
+    .modal-layout .notification-card {
+        width: min(560px, 92vw);
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    .banner-layout .notification-overlay {
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .banner-layout .notification-card {
+        width: min(520px, 96vw);
+    }
+
+    .popup-layout .notification-overlay {
+        justify-content: center;
+        align-items: center;
+    }
+
+    .popup-layout .notification-card {
+        width: min(420px, 92vw);
+    }
+
+    .toast-layout .notification-overlay {
+        justify-content: flex-end;
+        align-items: flex-end;
+    }
+
+    .toast-layout .notification-card {
+        width: min(380px, 92vw);
+    }
+
     @keyframes slideIn {
       from {
         opacity: 0;
@@ -383,82 +433,82 @@
     }
   </style>
 </head>
-<body>
-  <div class="notification-shell">
-    <div class="notification-card">
-      <button class="close-btn" id="closeNotificationBtn" aria-label="Close notification">×</button>
+    <body>
+    <div class="notification-shell" id="notificationShell">
+        <div class="notification-overlay" id="notificationOverlay">
+        <div class="notification-card" id="notificationCard">
+            <button class="close-btn" id="closeNotificationBtn" aria-label="Close notification">×</button>
 
-      <div class="previewHeader">
-        <div id="badge" class="badge med">!</div>
-        <div>
-          <div class="previewTitle" id="ntTitle">Security alert</div>
-          <div class="previewMeta" id="ntMeta">General user • Weak password</div>
-          <div class="previewTransparency" id="ntTransparency"></div>
+            <div class="previewHeader">
+            <div id="badge" class="badge med">!</div>
+            <div>
+                <div class="previewTitle" id="ntTitle">Security alert</div>
+                <div class="previewMeta" id="ntMeta">General user • Weak password</div>
+                <div class="previewTransparency" id="ntTransparency"></div>
+            </div>
+            </div>
+
+            <p class="previewMsg" id="ntMsg">
+            Your password appears in a known breach. Update now to protect your account.
+            </p>
+
+            <div id="ntContextWrap" class="content-block context-block"></div>
+            <div id="ntConsequencesWrap" class="content-block consequences-block"></div>
+
+            <div id="ntStepsWrap" class="content-block steps-block">
+            <div class="steps-title">Next steps</div>
+            <ol id="ntStepsList" class="steps-list"></ol>
+            </div>
+
+            <div id="ntInteraction_click_box" class="previewBtns">
+            <button class="mini primary" id="ntPrimaryBtn">Allow</button>
+            <button class="mini secondary-accent" id="ntRemindBtn" style="display:none;">Remind me later</button>
+            <button class="mini" id="ntDenyBtn" style="display:none;">Don't Allow</button>
+            </div>
+
+            <div id="ntInteraction_slider" class="slider-wrap">
+            <div class="slider-top">
+                <span>Allow</span>
+                <span>Don't Allow</span>
+            </div>
+            <input type="range" id="ntSlider" min="0" max="1" step="1" value="0" />
+            <div class="slider-label" id="ntSliderLabel">Allow</div>
+            </div>
+
+            <div id="ntInteraction_toggle" style="display:none;">
+            <div class="toggle-row">
+                <span class="toggle-label">Allow</span>
+                <div class="toggle-shell" id="ntToggleAllowShell">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+                </div>
+            </div>
+
+            <div class="toggle-row">
+                <span class="toggle-label">Don't Allow</span>
+                <div class="toggle-shell" id="ntToggleDenyShell">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+                </div>
+            </div>
+            </div>
+
+            <div class="hint" id="ntHint"></div>
+            <div class="support-links" id="ntSupportLinksWrap"></div>
+
+            <div class="tooltip-wrap" id="ntVulnWrap">
+            <span id="ntVulnTrigger" class="tooltip-trigger">learn about vulnerability</span>
+            <div id="ntVulnTooltip" class="tooltip-box"></div>
+            </div>
+
+            <div class="tooltip-wrap" id="ntRiskWrap">
+            <span id="ntRiskTrigger" class="tooltip-trigger">learn about risk</span>
+            <div id="ntRiskTooltip" class="tooltip-box"></div>
+            </div>
         </div>
-      </div>
-
-      <p class="previewMsg" id="ntMsg">
-        Your password appears in a known breach. Update now to protect your account.
-      </p>
-
-      <div id="ntContextWrap" class="content-block context-block"></div>
-
-      <div id="ntConsequencesWrap" class="content-block consequences-block"></div>
-
-      <div id="ntStepsWrap" class="content-block steps-block">
-        <div class="steps-title">Next steps</div>
-        <ol id="ntStepsList" class="steps-list"></ol>
-      </div>
-
-      <div id="ntInteraction_click_box" class="previewBtns">
-        <button class="mini primary" id="ntPrimaryBtn">Allow</button>
-        <button class="mini secondary-accent" id="ntRemindBtn" style="display:none;">Remind me later</button>
-        <button class="mini" id="ntDenyBtn" style="display:none;">Don't Allow</button>
-      </div>
-
-      <div id="ntInteraction_slider" class="slider-wrap">
-        <div class="slider-top">
-          <span>Allow</span>
-          <span>Don't Allow</span>
         </div>
-        <input type="range" id="ntSlider" min="0" max="1" step="1" value="0" />
-        <div class="slider-label" id="ntSliderLabel">Allow</div>
-      </div>
-
-      <div id="ntInteraction_toggle" style="display:none;">
-        <div class="toggle-row">
-          <span class="toggle-label">Allow</span>
-          <div class="toggle-shell" id="ntToggleAllowShell">
-            <div class="toggle-track"></div>
-            <div class="toggle-thumb"></div>
-          </div>
-        </div>
-
-        <div class="toggle-row">
-          <span class="toggle-label">Don't Allow</span>
-          <div class="toggle-shell" id="ntToggleDenyShell">
-            <div class="toggle-track"></div>
-            <div class="toggle-thumb"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hint" id="ntHint"></div>
-
-      <div class="support-links" id="ntSupportLinksWrap"></div>
-
-      <div class="tooltip-wrap" id="ntVulnWrap">
-        <span id="ntVulnTrigger" class="tooltip-trigger">learn about vulnerability</span>
-        <div id="ntVulnTooltip" class="tooltip-box"></div>
-      </div>
-
-      <div class="tooltip-wrap" id="ntRiskWrap">
-        <span id="ntRiskTrigger" class="tooltip-trigger">learn about risk</span>
-        <div id="ntRiskTooltip" class="tooltip-box"></div>
-      </div>
     </div>
-  </div>
 
-  <script src="notification.js"></script>
-</body>
+    <script src="notification.js"></script>
+    </body>
 </html>

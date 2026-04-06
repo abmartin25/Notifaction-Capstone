@@ -324,6 +324,34 @@ function syncTooltipVisibility() {
     : "none";
 }
 
+function setupInlineNotificationReceiver() {
+  if (!window.electronAPI?.onInlineNotification) return;
+
+  window.electronAPI.onInlineNotification((data) => {
+    const host = document.getElementById("inlineNotificationHost");
+    if (!host) return;
+
+    host.classList.remove("hidden");
+
+    host.innerHTML = `
+      <div class="previewCard">
+        <div class="previewHeader">
+          <div class="badge ${data.urgency || "low"}">
+            ${data.urgency === "high" ? "⚠" : data.urgency === "med" ? "!" : "i"}
+          </div>
+          <div>
+            <div class="previewTitle">${data.title || "Security alert"}</div>
+            <div style="font-size:12px;color:var(--muted)">
+              ${data.userGroup || "User group"} • ${data.context || "Security context"}
+            </div>
+          </div>
+        </div>
+        <p class="previewMsg">${data.message || "Notification message will appear here."}</p>
+      </div>
+    `;
+  });
+}
+
 function syncHint() {
   const hintParts = [];
   if (state.timeEst) hintParts.push("Includes time estimate");
@@ -1082,6 +1110,7 @@ function init() {
   setupSaveLoad();
   setupNotificationLaunch();
   setupCustomContentToggles();
+  setupInlineNotificationReceiver();
   setupCustomContentInputs();
   render();
 }

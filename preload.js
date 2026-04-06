@@ -9,4 +9,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
       callback(data);
     });
   },
+  onInlineNotification: (callback) => {
+    ipcRenderer.on("show-inline-notification", (_event, data) => {
+      callback(data);
+    });
+  },
 });

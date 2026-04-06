@@ -407,6 +407,28 @@ function setInstructionSteps(state) {
   list.innerHTML = steps.map((step) => `<li>${step}</li>`).join("");
 }
 
+function applyLocationStyling(state) {
+  const shell = document.getElementById("notificationShell");
+  if (!shell) return;
+
+  shell.classList.remove(
+    "toast-layout",
+    "banner-layout",
+    "popup-layout",
+    "modal-layout",
+  );
+
+  if (state.location === "banner") {
+    shell.classList.add("banner-layout");
+  } else if (state.location === "popup") {
+    shell.classList.add("popup-layout");
+  } else if (state.location === "modal") {
+    shell.classList.add("modal-layout");
+  } else {
+    shell.classList.add("toast-layout");
+  }
+}
+
 function setSupportLinks(state) {
   const wrap = document.getElementById("ntSupportLinksWrap");
 
@@ -444,6 +466,7 @@ function applyNotificationState(state) {
   setTransparency(state);
   setContextBackground(state);
   setConsequences(state);
+  applyLocationStyling(state);
   setInstructionSteps(state);
   setSupportLinks(state);
 }
