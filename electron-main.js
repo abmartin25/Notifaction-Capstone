@@ -1,9 +1,10 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain, screen } = require("electron");
 const path = require("path");
 const { fork } = require("child_process");
 
 let mainWindow;
 let serverProcess;
+let notificationWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -28,6 +29,46 @@ function createWindow() {
   });
 }
 
+function createNotificationWindow(notificationData) {
+  if (notificationWindow && !notificationWindow.isDestroyed()) {
+    notificationWindow.close();
+  }
+
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+
+  notificationWindow = new BrowserWindow({
+    width: 380,
+    height: 260,
+    x: width - 400,
+    y: height - 300,
+    frame: false,
+    resizable: false,
+    movable: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    transparent: true,
+    show: false,
+    hasShadow: true,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+
+  notificationWindow.loadFile(path.join(__dirname, "notification.html"));
+
+  notificationWindow.once("ready-to-show", () => {
+    notificationWindow.show();
+    notificationWindow.webContents.send("notification-data", notificationData);
+  });
+
+  notificationWindow.on("closed", () => {
+    notificationWindow = null;
+  });
+}
+
 function startServer() {
   return new Promise((resolve, reject) => {
     serverProcess = fork(path.join(__dirname, "server.js"));
@@ -40,7 +81,6 @@ function startServer() {
 
     serverProcess.on("error", reject);
 
-    // if server doesn't send a ready message yet
     setTimeout(resolve, 1500);
   });
 }
@@ -48,6 +88,10 @@ function startServer() {
 app.whenReady().then(async () => {
   await startServer();
   createWindow();
+
+  ipcMain.on("show-notification", (_event, notificationData) => {
+    createNotificationWindow(notificationData);
+  });
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

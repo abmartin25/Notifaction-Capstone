@@ -29,8 +29,8 @@ function showSection(sectionId) {
   document
     .querySelectorAll("main > section")
     .forEach((sec) => sec.classList.add("hidden"));
-    document.getElementById(sectionId).classList.remove("hidden");
-  
+  document.getElementById(sectionId).classList.remove("hidden");
+
   document
     .querySelectorAll(".nav button")
     .forEach((b) => b.classList.remove("active"));
@@ -48,30 +48,37 @@ const state = getDefaultState();
 // Building of Notification Live Preview
 // Setup Card-Panel (Configuration Panel)
 function setupDropdowns() {
-  document.querySelectorAll(".field[data-type='dropdown']").forEach((dropdown) => {
-    const forAttr = dropdown.querySelector("label").getAttribute("for");
-    const customWrap = dropdown.querySelector(".custom-input-wrap");
-    customWrap.addEventListener("input", (e) => {
-      state[forAttr] = e.target.value.trim();
-      render();
-    });
-
-    const select = dropdown.querySelector(".dropdown");
-    select.addEventListener("change", (e) => {
-      const isCustom = e.target.value === "__custom__";
-      customWrap.classList.toggle("hidden", !isCustom);
-      state[forAttr] = isCustom ? "" : e.target.value;
-      if (isCustom) customWrap.querySelector("input").focus();
+  document
+    .querySelectorAll(".field[data-type='dropdown']")
+    .forEach((dropdown) => {
+      const forAttr = dropdown.querySelector("label").getAttribute("for");
+      const customWrap = dropdown.querySelector(".custom-input-wrap");
+      customWrap.addEventListener("input", (e) => {
+        state[forAttr] = e.target.value.trim();
         render();
+      });
+
+      const select = dropdown.querySelector(".dropdown");
+      select.addEventListener("change", (e) => {
+        const isCustom = e.target.value === "__custom__";
+        customWrap.classList.toggle("hidden", !isCustom);
+        state[forAttr] = isCustom ? "" : e.target.value;
+        if (isCustom) customWrap.querySelector("input").focus();
+        render();
+      });
     });
-  });
 }
 
 function setupTextInputs() {
-  document.querySelectorAll(".field[data-type='textInput']").forEach((field) => {
-    const forAttr = field.querySelector("label").getAttribute("for");
-    field.addEventListener("input", (e) => {
-      state[forAttr] = e.target.value;
+  const mappings = [
+    ["titleInput", "title"],
+    ["msgInput", "message"],
+  ];
+
+  mappings.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    el.addEventListener("input", (e) => {
+      state[key] = e.target.value;
       render();
     });
   });
@@ -100,7 +107,9 @@ function setupCheckboxInputs() {
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
       if (key === "schedule") {
-        document.getElementById("scheduleWrap").classList.toggle("hidden", !state.schedule);
+        document
+          .getElementById("scheduleWrap")
+          .classList.toggle("hidden", !state.schedule);
       }
       render();
     });
@@ -111,37 +120,45 @@ function setupCheckboxInputs() {
 }
 
 function setupDeploymentInputs() {
-  document.querySelectorAll(".field[data-type='deploymentInputs'] [data-type='input']").forEach((input) => {
-    const forAttr = input.querySelector("label").getAttribute("for");
-    input.querySelector("input").addEventListener("input", (e) => {
-      state[forAttr] = e.target.value;
-      render();
-    });
-  });
-}
- 
-function setupSegmentedControls() {
-  document.querySelectorAll(".field[data-type='segmentGroup']").forEach((field) => {
-    const forContainer = field.querySelector("div.seg").id.slice(0, -3);
-    field.querySelectorAll("button").forEach((button) => {
-      button.addEventListener("click", () => {
-        field
-          .querySelectorAll("button")
-          .forEach((b) => b.classList.remove("on"));
-        button.classList.add("on");
-        state[forContainer] = button.dataset[forContainer.charAt(0)];
-        
-        if (forContainer === "location") {
-          field.querySelector(".sectionNote").textContent =
-            locationDescs[button.dataset[forContainer.charAt(0)]] || "";
-        }
-        
-        console.log(`Segment group ${forContainer} changed to ${state[forContainer]}`);
+  document
+    .querySelectorAll(
+      ".field[data-type='deploymentInputs'] [data-type='input']",
+    )
+    .forEach((input) => {
+      const forAttr = input.querySelector("label").getAttribute("for");
+      input.querySelector("input").addEventListener("input", (e) => {
+        state[forAttr] = e.target.value;
         render();
       });
-    })
-  });
-  
+    });
+}
+
+function setupSegmentedControls() {
+  document
+    .querySelectorAll(".field[data-type='segmentGroup']")
+    .forEach((field) => {
+      const forContainer = field.querySelector("div.seg").id.slice(0, -3);
+      field.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          field
+            .querySelectorAll("button")
+            .forEach((b) => b.classList.remove("on"));
+          button.classList.add("on");
+          state[forContainer] = button.dataset[forContainer.charAt(0)];
+
+          if (forContainer === "location") {
+            field.querySelector(".sectionNote").textContent =
+              locationDescs[button.dataset[forContainer.charAt(0)]] || "";
+          }
+
+          console.log(
+            `Segment group ${forContainer} changed to ${state[forContainer]}`,
+          );
+          render();
+        });
+      });
+    });
+
   const locationDescs = {
     banner: "Appears at the top or bottom of the screen; non-blocking.",
     popup: "Appears in the center of the screen; requires user interaction.",
@@ -434,45 +451,56 @@ function setupSaveLoad() {
     nameInput.focus();
   });
 
-  document.getElementById("saveModalCancel").addEventListener("click", () => hideModal("saveModal"));
+  document
+    .getElementById("saveModalCancel")
+    .addEventListener("click", () => hideModal("saveModal"));
 
-  document.getElementById("saveModalConfirm").addEventListener("click", async () => {
-    const name = document.getElementById("saveTemplateName").value.trim();
-    const errorEl = document.getElementById("saveModalError");
-    if (!name) {
-      errorEl.textContent = "Please enter a template name.";
-      errorEl.style.display = "block";
-      return;
-    }
-    try {
-      const res = await fetch("/api/templates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, config: { ...state } }),
-      });
-      if (!res.ok) throw new Error((await res.json()).error || "Save failed");
-      hideModal("saveModal");
-      flashSaveButton();
-    } catch (err) {
-      errorEl.textContent = err.message;
-      errorEl.style.display = "block";
-    }
-  });
+  document
+    .getElementById("saveModalConfirm")
+    .addEventListener("click", async () => {
+      const name = document.getElementById("saveTemplateName").value.trim();
+      const errorEl = document.getElementById("saveModalError");
+      if (!name) {
+        errorEl.textContent = "Please enter a template name.";
+        errorEl.style.display = "block";
+        return;
+      }
+      try {
+        const res = await fetch("/api/templates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, config: { ...state } }),
+        });
+        if (!res.ok) throw new Error((await res.json()).error || "Save failed");
+        hideModal("saveModal");
+        flashSaveButton();
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = "block";
+      }
+    });
 
-  document.getElementById("saveTemplateName").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") document.getElementById("saveModalConfirm").click();
-  });
+  document
+    .getElementById("saveTemplateName")
+    .addEventListener("keydown", (e) => {
+      if (e.key === "Enter")
+        document.getElementById("saveModalConfirm").click();
+    });
 
-  document.getElementById("loadTemplate").addEventListener("click", async () => {
-    await populateLoadModal();
-    showModal("loadModal");
-  });
+  document
+    .getElementById("loadTemplate")
+    .addEventListener("click", async () => {
+      await populateLoadModal();
+      showModal("loadModal");
+    });
 
-  document.getElementById("loadModalCancel").addEventListener("click", () => hideModal("loadModal"));
+  document
+    .getElementById("loadModalCancel")
+    .addEventListener("click", () => hideModal("loadModal"));
 }
 
 async function populateLoadModal() {
-  const listEl  = document.getElementById("loadModalList");
+  const listEl = document.getElementById("loadModalList");
   const emptyEl = document.getElementById("loadModalEmpty");
   listEl.innerHTML = '<p style="color:#6b7280;font-size:13px;">Loading…</p>';
 
@@ -493,7 +521,8 @@ async function populateLoadModal() {
 
     templates.forEach((t) => {
       const row = document.createElement("div");
-      row.style.cssText = "display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid #e5e7eb; border-radius:12px; cursor:pointer; background:#fff; gap:10px;";
+      row.style.cssText =
+        "display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid #e5e7eb; border-radius:12px; cursor:pointer; background:#fff; gap:10px;";
 
       row.innerHTML = `
         <div style="flex:1; min-width:0;">
@@ -528,7 +557,6 @@ async function populateLoadModal() {
         await populateLoadModal(); // refresh list
       });
     });
-
   } catch (err) {
     listEl.innerHTML = `<p style="color:#ef4444;font-size:13px;">Failed to load templates: ${err.message}</p>`;
   }
@@ -537,8 +565,8 @@ async function populateLoadModal() {
 function loadStateFromTemplate(config) {
   Object.assign(state, config);
 
-  document.getElementById("titleInput").value  = state.title   || "";
-  document.getElementById("msgInput").value    = state.message || "";
+  document.getElementById("titleInput").value = state.title || "";
+  document.getElementById("msgInput").value = state.message || "";
 
   const ugSelect = document.getElementById("userGroup");
   const ugOptions = Array.from(ugSelect.options).map((o) => o.value);
@@ -582,9 +610,11 @@ function loadStateFromTemplate(config) {
     document.getElementById(id).checked = !!state[key];
   });
 
-  document.getElementById("scheduleWrap").classList.toggle("hidden", !state.schedule);
-  document.getElementById("deployDate").value   = state.deployDate   || "";
-  document.getElementById("deployHour").value   = state.deployHour   || "09:00";
+  document
+    .getElementById("scheduleWrap")
+    .classList.toggle("hidden", !state.schedule);
+  document.getElementById("deployDate").value = state.deployDate || "";
+  document.getElementById("deployHour").value = state.deployHour || "09:00";
   document.getElementById("deployWindow").value = state.deployWindow || "";
 
   function restoreSeg(containerId, dataAttr, value) {
@@ -593,23 +623,23 @@ function loadStateFromTemplate(config) {
       b.classList.toggle("on", b.dataset[dataAttr] === value);
     });
   }
-  restoreSeg("motivationSeg",  "m", state.motivation);
-  restoreSeg("urgencySeg",     "u", state.urgency);
+  restoreSeg("motivationSeg", "m", state.motivation);
+  restoreSeg("urgencySeg", "u", state.urgency);
   restoreSeg("interactionSeg", "i", state.interaction);
-  restoreSeg("locationSeg",    "l", state.location);
-  restoreSeg("agencySeg",      "a", state.agency);
+  restoreSeg("locationSeg", "l", state.location);
+  restoreSeg("agencySeg", "a", state.agency);
 
   const locationDescs = {
     banner: "Appears at the top or bottom of the screen; non-blocking.",
-    popup:  "Appears in the center of the screen; requires user interaction.",
+    popup: "Appears in the center of the screen; requires user interaction.",
     inline: "Appears within the page content; contextual and subtle.",
-    modal:  "Overlays the full screen; blocks all other interaction.",
+    modal: "Overlays the full screen; blocks all other interaction.",
   };
-  document.getElementById("locationDesc").textContent = locationDescs[state.location] || "";
+  document.getElementById("locationDesc").textContent =
+    locationDescs[state.location] || "";
 
   render();
 }
-
 
 function showModal(id) {
   const el = document.getElementById(id);
@@ -638,6 +668,22 @@ function flashSaveButton() {
   }, 2000);
 }
 
+function setupNotificationLaunch() {
+  const btn = document.getElementById("launchNotification");
+
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    console.log("Launching notification with state:", state);
+
+    if (window.electronAPI?.sendNotification) {
+      window.electronAPI.sendNotification(state);
+    } else {
+      console.warn("Electron API not available");
+    }
+  });
+}
+
 function init() {
   setupDropdowns();
   setupTextInputs();
@@ -648,6 +694,7 @@ function init() {
   setupPreviewInteractions();
   setupReferenceTableToggle();
   setupSaveLoad();
+  setupNotificationLaunch();
   render();
 }
 
