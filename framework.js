@@ -20,9 +20,7 @@ function evaluateNotification(state) {
   );
 
   const tone = clamp(
-    45 + 
-      (state.aiTone ? 18 : 0) + 
-      (state.message.length > 20 ? 5 : 0),
+    45 + (state.aiTone ? 18 : 0) + (state.message.length > 20 ? 5 : 0),
   );
 
   const instruction = clamp(
@@ -75,15 +73,13 @@ function buildSuggestions(state) {
     );
 
   if (!state.directAction)
-    suggestions.push(
-      "Provide a direct action button for immediate response."
-    );
+    suggestions.push("Provide a direct action button for immediate response.");
 
   if (!state.explainVuln)
     suggestions.push(
       "Add a vulnerability explanation hover pop-up to strengthen clarity of information.",
     );
-    
+
   if (!state.explainRisk)
     suggestions.push(
       "Add a risk explanation hover pop-up to improve risk communication and user understanding.",
@@ -95,10 +91,8 @@ function buildSuggestions(state) {
     );
 
   if (!state.timeEst)
-    suggestions.push(
-      "Add a time estimate to reduce perceived burden."
-    );
-  
+    suggestions.push("Add a time estimate to reduce perceived burden.");
+
   if (!state.transparency)
     suggestions.push(
       "Explain why the notification appeared to improve transparency, trust, and legitimacy.",
@@ -110,14 +104,10 @@ function buildSuggestions(state) {
     );
 
   if (!state.supportLinks)
-    suggestions.push(
-      "Provide decision support links to guide next steps."
-    );
+    suggestions.push("Provide decision support links to guide next steps.");
 
   if (!state.preferredDecision)
-    suggestions.push(
-      "Highlight the preferred option to encourage compliance."
-    );
+    suggestions.push("Highlight the preferred option to encourage compliance.");
 
   if (!state.aiTone)
     suggestions.push(
@@ -148,16 +138,19 @@ function buildSuggestions(state) {
       "Location mismatch: This notification is high urgency but a banner is easy to miss. Consider a Pop-up or Modal.",
     );
 
-  if ((state.location === "popup" || state.location === "modal") && state.urgency === "low")
+  if (
+    (state.location === "popup" || state.location === "modal") &&
+    state.urgency === "low"
+  )
     suggestions.push(
       "Location mismatch: Pop-ups and Modals should usually be reserved for high urgency notifications. Consider a Banner or Inline placement instead.",
     );
-  
+
   if (state.urgency === "high" && state.agency === "not_urgent")
     suggestions.push(
       "User agency mismatch: A high urgency notification should not default to Not urgent.",
     );
-  
+
   if (state.urgency === "low" && state.agency === "must_do")
     suggestions.push(
       "User agency mismatch: A low urgency notification may feel too forceful if the user must act immediately.",
@@ -178,14 +171,19 @@ function buildSuggestions(state) {
   return suggestions;
 }
 
-// Method to build an AI Tone Review
-// TODO
 function buildAiToneText(state) {
   if (!state.aiTone) {
     return "Enable AI tone review to simulate a framework-level tone check.";
   }
 
-  const msg = (state.message || "").toLowerCase();
+  const rawMessage = state.message || "";
+  const msg = rawMessage.trim();
+  const lowerMsg = msg.toLowerCase();
+
+  if (!msg) {
+    return "AI tone review: No notification message has been written yet, so tone cannot be evaluated.";
+  }
+
   const harshTerms = [
     "immediately",
     "failure",
@@ -193,14 +191,113 @@ function buildAiToneText(state) {
     "critical",
     "violation",
     "must",
+    "urgent action required",
+    "breach",
+    "compromised",
+    "unsafe",
+    "danger",
+    "penalty",
   ];
-  const harshCount = harshTerms.filter((term) => msg.includes(term)).length;
+
+  const supportiveTerms = [
+    "please",
+    "recommend",
+    "suggest",
+    "to protect",
+    "to help",
+    "review",
+    "update",
+    "check",
+    "you can",
+  ];
+
+  const technicalTerms = [
+    "vulnerability",
+    "authentication",
+    "credential",
+    "token",
+    "compromise",
+    "exploit",
+    "malicious",
+    "session",
+    "configuration",
+    "privilege",
+  ];
+
+  const harshCount = harshTerms.filter((term) =>
+    lowerMsg.includes(term),
+  ).length;
+  const supportiveCount = supportiveTerms.filter((term) =>
+    lowerMsg.includes(term),
+  ).length;
+  const technicalCount = technicalTerms.filter((term) =>
+    lowerMsg.includes(term),
+  ).length;
+
+  const notes = [];
+
+  if (msg.length < 25) {
+    notes.push(
+      "The message is very short and may not feel informative enough.",
+    );
+  } else if (msg.length < 45) {
+    notes.push(
+      "The message could use slightly more context to feel clearer and more trustworthy.",
+    );
+  }
 
   if (harshCount >= 3) {
-    return "AI tone review: The wording may feel too forceful. Consider softer guidance with clear reasons and actionable next steps.";
+    notes.push("The wording may feel overly forceful or alarm-heavy.");
+  } else if (harshCount >= 1 && supportiveCount === 0) {
+    notes.push("The tone may feel strict without enough supportive guidance.");
   }
-  if (state.message.length < 25) {
-    return "AI tone review: The message may be too short to feel informative or trustworthy. Add context and guidance.";
+
+  if (supportiveCount === 0) {
+    notes.push(
+      "Consider adding more constructive action language, such as what the user should do next.",
+    );
   }
-  return "AI tone review: Tone appears constructive and action-oriented. The message likely supports compliance without sounding overly punitive.";
+
+  if (
+    (state.userGroup || "").toLowerCase() === "general user" &&
+    technicalCount >= 2
+  ) {
+    notes.push("The wording may be too technical for a general user audience.");
+  }
+
+  if (!/[.!?]$/.test(msg)) {
+    notes.push(
+      "Ending the message with cleaner sentence punctuation may make it read more naturally.",
+    );
+  }
+
+  if (
+    !/(update|review|check|change|verify|clear|restart|open|enable|disable)/i.test(
+      msg,
+    )
+  ) {
+    notes.push("The message does not clearly communicate the next action.");
+  }
+
+  if (state.urgency === "low" && harshCount >= 2) {
+    notes.push(
+      "The tone feels stronger than the selected low-urgency setting.",
+    );
+  }
+
+  if (state.urgency === "high" && supportiveCount > 0 && harshCount === 0) {
+    notes.push(
+      "The tone is supportive, but for a high-urgency alert you may want slightly firmer wording.",
+    );
+  }
+
+  if (notes.length === 0) {
+    return "AI tone review: Tone appears balanced, constructive, and appropriate for the selected notification style.";
+  }
+
+  if (notes.length === 1) {
+    return `AI tone review: ${notes[0]}`;
+  }
+
+  return `AI tone review: ${notes.join(" ")}`;
 }
