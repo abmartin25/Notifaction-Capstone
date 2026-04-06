@@ -293,6 +293,7 @@ function render() {
   syncActionButtonsByAgency();
   syncInstructionSteps();
   syncVulnerabilityText();
+  syncRiskText();
   syncInteractionPreview();
   syncGuidance();
 }
@@ -519,6 +520,29 @@ function getVulnerabilityExplanation(context) {
 function syncVulnerabilityText() {
   const tooltip = document.getElementById("pvVulnTooltip");
   tooltip.textContent = getVulnerabilityExplanation(state.context);
+}
+
+function getRiskExplanation(context) {
+  const map = {
+    weak_password:
+      "If this password is reused or easily guessed, your account may be more likely to be accessed by someone else.",
+    suspicious_login:
+      "If the login was unauthorized, your account or personal data could be exposed or changed.",
+    cache_clear:
+      "Leaving cached content behind may allow sensitive information to remain accessible after the task ends.",
+    software_update:
+      "Delaying updates can leave your system exposed to known security issues that have already been fixed.",
+  };
+
+  return (
+    map[context] ||
+    "Ignoring this issue could increase the chance of account, data, or system exposure."
+  );
+}
+
+function syncRiskText() {
+  const tooltip = document.getElementById("pvRiskTooltip");
+  tooltip.textContent = getRiskExplanation(state.context);
 }
 
 function setupSaveLoad() {
