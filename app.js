@@ -296,6 +296,8 @@ function render() {
   syncRiskText();
   syncContextBackground();
   syncConsequences();
+  syncSupportLinks();
+  syncTransparency();
   syncInteractionPreview();
   syncGuidance();
 }
@@ -606,6 +608,42 @@ function syncConsequences() {
 
   wrap.style.display = "block";
   wrap.textContent = getConsequencesText(state.context);
+}
+
+function syncSupportLinks() {
+  const wrap = document.getElementById("pvSupportLinksWrap");
+  wrap.style.display = state.supportLinks ? "flex" : "none";
+}
+
+function getTransparencyText(context) {
+  const map = {
+    weak_password:
+      "This notification appeared because your password was identified as weak or exposed.",
+    suspicious_login:
+      "This notification appeared because a recent login attempt looked unusual.",
+    cache_clear:
+      "This notification appeared because the current task may leave sensitive browser data behind.",
+    software_update:
+      "This notification appeared because an available update addresses security-related issues.",
+  };
+
+  return (
+    map[context] ||
+    "This notification appeared because the system detected a security-relevant event."
+  );
+}
+
+function syncTransparency() {
+  const wrap = document.getElementById("pvTransparencyWrap");
+
+  if (!state.transparency) {
+    wrap.style.display = "none";
+    wrap.textContent = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  wrap.textContent = getTransparencyText(state.context);
 }
 
 function setupSaveLoad() {
