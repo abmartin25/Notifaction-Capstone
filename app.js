@@ -29,15 +29,41 @@ function showSection(sectionId) {
   document
     .querySelectorAll("main > section")
     .forEach((sec) => sec.classList.add("hidden"));
+
   document.getElementById(sectionId).classList.remove("hidden");
 
   document
     .querySelectorAll(".nav button")
     .forEach((b) => b.classList.remove("active"));
+
   const activeNav = document.querySelector(
     `.nav button[data-route="${sectionId}"]`,
   );
   if (activeNav) activeNav.classList.add("active");
+
+  if (sectionId === "export") {
+    renderCode();
+  }
+}
+
+function setupExportActions() {
+  const copyBtn = document.getElementById("copyCodeBtn");
+  if (!copyBtn) return;
+
+  copyBtn.addEventListener("click", async () => {
+    const code = document.getElementById("codeOutput").textContent;
+
+    try {
+      await navigator.clipboard.writeText(code);
+      const original = copyBtn.textContent;
+      copyBtn.textContent = "Copied ✓";
+      setTimeout(() => {
+        copyBtn.textContent = original;
+      }, 1500);
+    } catch (err) {
+      console.error("Failed to copy export code:", err);
+    }
+  });
 }
 
 // I ant to split off all of the creating the notification/preview stuff to its own js
@@ -288,6 +314,7 @@ function render() {
 
   syncSliderPreview();
   syncTooltipVisibility();
+  renderCode();
   syncHint();
   syncInfoStrip();
   syncActionButtonsByAgency();
@@ -1112,6 +1139,7 @@ function init() {
   setupCustomContentToggles();
   setupInlineNotificationReceiver();
   setupCustomContentInputs();
+  setupExportActions();
   render();
 }
 
