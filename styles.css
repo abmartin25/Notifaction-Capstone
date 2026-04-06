@@ -90,6 +90,18 @@ input[type="range"]{ width:100%; }
 .ref-table-scroll{ max-height:400px; overflow-y:auto; border-radius:10px; border:1px solid var(--border); }
 .schedule-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .sectionNote{ font-size:11px; color:var(--muted); line-height:1.4; margin-top:6px; }
+#customContentField {
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+#customContentField textarea {
+  margin-top: 6px;
+}
+
+#customContentField > div.hidden {
+  display: none;
+}
 @media (max-width: 1100px){
   .app{ grid-template-columns: 1fr; }
   .sidebar{ position:sticky; top:0; z-index:1; border-right:none; border-bottom:1px solid var(--border); }

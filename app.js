@@ -329,7 +329,6 @@ function syncHint() {
   if (state.timeEst) hintParts.push("Includes time estimate");
   if (state.instructionSteps) hintParts.push("Step-by-step guidance enabled");
   if (state.contextBackground) hintParts.push("Risk background included");
-  if (state.transparency) hintParts.push("Why this appeared is explained");
   document.getElementById("pvHint").textContent = hintParts.join(" • ");
 }
 
@@ -448,6 +447,13 @@ function renderCode() {
 }
 
 function getInstructionSteps(context) {
+  if (state.customSteps.trim()) {
+    return state.customSteps
+      .split("\n")
+      .map((step) => step.trim())
+      .filter(Boolean);
+  }
+
   const map = {
     weak_password: [
       "Open your account security settings.",
@@ -474,8 +480,8 @@ function getInstructionSteps(context) {
   return (
     map[context] || [
       "Review the notification details.",
-      "Take the recommended protective action.",
-      "Confirm the change was completed.",
+      "Take the recommended action.",
+      "Confirm the issue is resolved.",
     ]
   );
 }
@@ -483,6 +489,8 @@ function getInstructionSteps(context) {
 function syncInstructionSteps() {
   const wrap = document.getElementById("pvStepsWrap");
   const list = document.getElementById("pvStepsList");
+
+  if (!wrap || !list) return;
 
   if (!state.instructionSteps) {
     wrap.style.display = "none";
@@ -504,6 +512,10 @@ function setupReferenceTableToggle() {
 }
 
 function getVulnerabilityExplanation(context) {
+  if (state.customVulnerability.trim()) {
+    return state.customVulnerability.trim();
+  }
+
   const map = {
     weak_password:
       "A weak password is easier for attackers to guess or crack, especially if it has been reused or exposed before.",
@@ -523,10 +535,15 @@ function getVulnerabilityExplanation(context) {
 
 function syncVulnerabilityText() {
   const tooltip = document.getElementById("pvVulnTooltip");
+  if (!tooltip) return;
   tooltip.textContent = getVulnerabilityExplanation(state.context);
 }
 
 function getRiskExplanation(context) {
+  if (state.customRisk.trim()) {
+    return state.customRisk.trim();
+  }
+
   const map = {
     weak_password:
       "If this password is reused or easily guessed, your account may be more likely to be accessed by someone else.",
@@ -546,10 +563,15 @@ function getRiskExplanation(context) {
 
 function syncRiskText() {
   const tooltip = document.getElementById("pvRiskTooltip");
+  if (!tooltip) return;
   tooltip.textContent = getRiskExplanation(state.context);
 }
 
 function getContextBackground(context) {
+  if (state.customContext.trim()) {
+    return state.customContext.trim();
+  }
+
   const map = {
     weak_password:
       "Passwords are often targeted through reuse, guessing, and breach exposure. Stronger passwords reduce that risk.",
@@ -569,6 +591,7 @@ function getContextBackground(context) {
 
 function syncContextBackground() {
   const wrap = document.getElementById("pvContextWrap");
+  if (!wrap) return;
 
   if (!state.contextBackground) {
     wrap.style.display = "none";
@@ -581,6 +604,10 @@ function syncContextBackground() {
 }
 
 function getConsequencesText(context) {
+  if (state.customConsequences.trim()) {
+    return state.customConsequences.trim();
+  }
+
   const map = {
     weak_password: "If ignored, the account may remain easier to compromise.",
     suspicious_login:
@@ -599,6 +626,7 @@ function getConsequencesText(context) {
 
 function syncConsequences() {
   const wrap = document.getElementById("pvConsequencesWrap");
+  if (!wrap) return;
 
   if (!state.consequences) {
     wrap.style.display = "none";
@@ -610,31 +638,99 @@ function syncConsequences() {
   wrap.textContent = getConsequencesText(state.context);
 }
 
+function parseCustomLinks(raw) {
+  return raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split("|");
+      if (parts.length < 2) return null;
+      return {
+        label: parts[0].trim(),
+        url: parts.slice(1).join("|").trim(),
+      };
+    })
+    .filter(Boolean);
+}
+
+function getSupportLinks(context) {
+  if (state.customLinks.trim()) {
+    return parseCustomLinks(state.customLinks);
+  }
+
+  const map = {
+    weak_password: [
+      { label: "Password Help", url: "#" },
+      { label: "Account Security", url: "#" },
+    ],
+    suspicious_login: [
+      { label: "Review Login Activity", url: "#" },
+      { label: "Secure Account", url: "#" },
+    ],
+    cache_clear: [
+      { label: "Browser Privacy Help", url: "#" },
+      { label: "Clear Cached Data", url: "#" },
+    ],
+    software_update: [
+      { label: "Update Instructions", url: "#" },
+      { label: "Release Notes", url: "#" },
+    ],
+  };
+
+  return (
+    map[context] || [
+      { label: "Help Article", url: "#" },
+      { label: "Learn More", url: "#" },
+    ]
+  );
+}
+
 function syncSupportLinks() {
   const wrap = document.getElementById("pvSupportLinksWrap");
-  wrap.style.display = state.supportLinks ? "flex" : "none";
+  if (!wrap) return;
+
+  if (!state.supportLinks) {
+    wrap.style.display = "none";
+    wrap.innerHTML = "";
+    return;
+  }
+
+  const links = getSupportLinks(state.context);
+  wrap.style.display = "flex";
+  wrap.innerHTML = links
+    .map(
+      (link) =>
+        `<a class="mini neutral-accent" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`,
+    )
+    .join("");
 }
 
 function getTransparencyText(context) {
+  if ((state.customTransparency || "").trim()) {
+    return state.customTransparency.trim();
+  }
+
   const map = {
     weak_password:
-      "This notification appeared because your password was identified as weak or exposed.",
+      "Why you are seeing this: your password was identified as weak or potentially exposed.",
     suspicious_login:
-      "This notification appeared because a recent login attempt looked unusual.",
+      "Why you are seeing this: a recent login attempt looked unusual for this account.",
     cache_clear:
-      "This notification appeared because the current task may leave sensitive browser data behind.",
+      "Why you are seeing this: this task may leave sensitive browser data stored on the device.",
     software_update:
-      "This notification appeared because an available update addresses security-related issues.",
+      "Why you are seeing this: an available update addresses security-related issues.",
   };
 
   return (
     map[context] ||
-    "This notification appeared because the system detected a security-relevant event."
+    "Why you are seeing this: the system detected a security-relevant event."
   );
 }
 
 function syncTransparency() {
   const wrap = document.getElementById("pvTransparencyWrap");
+  if (!wrap) return;
 
   if (!state.transparency) {
     wrap.style.display = "none";
@@ -644,6 +740,53 @@ function syncTransparency() {
 
   wrap.style.display = "block";
   wrap.textContent = getTransparencyText(state.context);
+}
+
+function setupCustomContentInputs() {
+  const mappings = [
+    ["customStepsInput", "customSteps"],
+    ["customVulnInput", "customVulnerability"],
+    ["customRiskInput", "customRisk"],
+    ["customContextInput", "customContext"],
+    ["customTransparencyInput", "customTransparency"],
+    ["customConsequencesInput", "customConsequences"],
+    ["customLinksInput", "customLinks"],
+  ];
+  mappings.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.addEventListener("input", (e) => {
+      state[key] = e.target.value;
+      render();
+    });
+  });
+}
+
+function setupCustomContentToggles() {
+  const mappings = [
+    ["ckInstructionSteps", "customStepsWrap"],
+    ["ckExplainVuln", "customVulnWrap"],
+    ["ckExplainRisk", "customRiskWrap"],
+    ["ckContextBackground", "customContextWrap"],
+    ["ckTransparency", "customTransparencyWrap"],
+    ["ckConsequences", "customConsequencesWrap"],
+    ["ckSupportLinks", "customLinksWrap"],
+  ];
+
+  mappings.forEach(([checkboxId, wrapId]) => {
+    const checkbox = document.getElementById(checkboxId);
+    const wrap = document.getElementById(wrapId);
+
+    if (!checkbox || !wrap) return;
+
+    const syncVisibility = () => {
+      wrap.classList.toggle("hidden", !checkbox.checked);
+    };
+
+    checkbox.addEventListener("change", syncVisibility);
+    syncVisibility();
+  });
 }
 
 function setupSaveLoad() {
@@ -810,6 +953,7 @@ function loadStateFromTemplate(config) {
     ["ckShowOnBootup", "showOnBootup"],
     ["ckShowDuringTask", "showDuringTask"],
   ];
+
   checkboxMappings.forEach(([id, key]) => {
     document.getElementById(id).checked = !!state[key];
   });
@@ -821,12 +965,49 @@ function loadStateFromTemplate(config) {
   document.getElementById("deployHour").value = state.deployHour || "09:00";
   document.getElementById("deployWindow").value = state.deployWindow || "";
 
+  document.getElementById("customStepsInput").value = state.customSteps || "";
+  document.getElementById("customVulnInput").value =
+    state.customVulnerability || "";
+  document.getElementById("customRiskInput").value = state.customRisk || "";
+  document.getElementById("customContextInput").value =
+    state.customContext || "";
+  document.getElementById("customConsequencesInput").value =
+    state.customConsequences || "";
+  document.getElementById("customLinksInput").value = state.customLinks || "";
+
+  document
+    .getElementById("customStepsWrap")
+    .classList.toggle("hidden", !state.instructionSteps);
+  document
+    .getElementById("customVulnWrap")
+    .classList.toggle("hidden", !state.explainVuln);
+  document
+    .getElementById("customRiskWrap")
+    .classList.toggle("hidden", !state.explainRisk);
+  document
+    .getElementById("customContextWrap")
+    .classList.toggle("hidden", !state.contextBackground);
+  document
+    .getElementById("customConsequencesWrap")
+    .classList.toggle("hidden", !state.consequences);
+  document
+    .getElementById("customLinksWrap")
+    .classList.toggle("hidden", !state.supportLinks);
+
+  document.getElementById("customTransparencyInput").value =
+    state.customTransparency || "";
+
+  document
+    .getElementById("customTransparencyWrap")
+    .classList.toggle("hidden", !state.transparency);
+
   function restoreSeg(containerId, dataAttr, value) {
     const container = document.getElementById(containerId);
     container.querySelectorAll("button").forEach((b) => {
       b.classList.toggle("on", b.dataset[dataAttr] === value);
     });
   }
+
   restoreSeg("motivationSeg", "m", state.motivation);
   restoreSeg("urgencySeg", "u", state.urgency);
   restoreSeg("interactionSeg", "i", state.interaction);
@@ -839,6 +1020,7 @@ function loadStateFromTemplate(config) {
     inline: "Appears within the page content; contextual and subtle.",
     modal: "Overlays the full screen; blocks all other interaction.",
   };
+
   document.getElementById("locationDesc").textContent =
     locationDescs[state.location] || "";
 
@@ -899,6 +1081,8 @@ function init() {
   setupReferenceTableToggle();
   setupSaveLoad();
   setupNotificationLaunch();
+  setupCustomContentToggles();
+  setupCustomContentInputs();
   render();
 }
 

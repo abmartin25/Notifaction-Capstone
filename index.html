@@ -129,6 +129,86 @@
             </div>
           </div>
 
+          <div class="field" id="customContentField">
+            <label>Custom content overrides</label>
+            <div class="sectionNote">
+              Use these fields when you want to override the default generated content for a custom notification type or audience.
+            </div>
+
+            <div id="customStepsWrap" class="hidden" style="margin-top:10px;">
+              <label for="customStepsInput">Custom step-by-step instructions</label>
+              <textarea
+                id="customStepsInput"
+                placeholder="Enter one step per line...
+          Example:
+          Open account settings
+          Change your password
+          Save and confirm the update"
+                style="min-height:110px;"
+              ></textarea>
+            </div>
+
+            <div id="customVulnWrap" class="hidden" style="margin-top:10px;">
+              <label for="customVulnInput">Custom vulnerability explanation</label>
+              <textarea
+                id="customVulnInput"
+                placeholder="Explain the vulnerability in plain language..."
+                style="min-height:90px;"
+              ></textarea>
+            </div>
+
+            <div id="customRiskWrap" class="hidden" style="margin-top:10px;">
+              <label for="customRiskInput">Custom risk explanation</label>
+              <textarea
+                id="customRiskInput"
+                placeholder="Explain the risk to the user if the issue is not addressed..."
+                style="min-height:90px;"
+              ></textarea>
+            </div>
+
+            <div id="customContextWrap" class="hidden" style="margin-top:10px;">
+              <label for="customContextInput">Custom context and background</label>
+              <textarea
+                id="customContextInput"
+                placeholder="Provide background information to help the user understand why this matters..."
+                style="min-height:90px;"
+              ></textarea>
+            </div>
+
+            <div id="customTransparencyWrap" class="hidden" style="margin-top:10px;">
+              <label for="customTransparencyInput">Custom explanation for why the notification appeared</label>
+              <textarea
+                id="customTransparencyInput"
+                placeholder="Explain why this notification was triggered..."
+                style="min-height:90px;"
+              ></textarea>
+            </div>
+
+
+            <div id="customConsequencesWrap" class="hidden" style="margin-top:10px;">
+              <label for="customConsequencesInput">Custom consequences if ignored</label>
+              <textarea
+                id="customConsequencesInput"
+                placeholder="Describe what may happen if the user ignores this notification..."
+                style="min-height:90px;"
+              ></textarea>
+            </div>
+
+            <div id="customLinksWrap" class="hidden" style="margin-top:10px;">
+              <label for="customLinksInput">Custom support links</label>
+              <textarea
+                id="customLinksInput"
+                placeholder="Enter one link per line using:
+          Label | https://example.com
+
+          Example:
+          Help Article | https://example.com/help
+          Security Policy | https://example.com/policy"
+                style="min-height:110px;"
+              ></textarea>
+            </div>
+          </div>
+
           <div class="field" data-type="segmentGroup">
             <label>Urgency</label>
             <div class="seg" id="urgencySeg">
@@ -203,8 +283,7 @@
               <div>
                 <div class="previewTitle" id="pvTitle">Security alert</div>
                 <div style="font-size:12px;color:var(--muted)" id="pvMeta">General user • Weak password</div>
-                <div id="pvTransparencyWrap" style="display:none; font-size:11px; color:var(--muted); margin-top:4px;">
-                </div>
+                <div id="pvTransparencyWrap" style="display:none; font-size:11px; color:var(--muted); margin-top:4px;"></div>
               </div>
             </div>
             <p class="previewMsg" id="pvMsg">Your password appears in a known breach. Update now to protect your account.</p>
