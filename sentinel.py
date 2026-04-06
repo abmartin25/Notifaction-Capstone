@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import platform
 import os
 import sqlite3
 import subprocess
@@ -15,6 +16,9 @@ ROOT = Path(__file__).parent
 DB_PATH = ROOT / "sentinel.db"
 SERVER_SCRIPT = ROOT / "server.js"
 ELECTRON_MAIN = ROOT / "electron-main.js"
+
+# OS Detection
+OS_NAME = platform.system().lower()  # "windows", "darwin" (mac), "linux", etc.
 
 
 #Default notification state  
@@ -137,12 +141,21 @@ class ProcessManager:
             print(f"[sentinel] server.js not found at {SERVER_SCRIPT}")
             return False
         print("[sentinel] Starting Node server...")
-        self._server = subprocess.Popen(
-            ["node", str(SERVER_SCRIPT)],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-        )
+
+        if OS_NAME == "windows":
+            self._server = subprocess.Popen(
+                [sys.executable, "node", str(SERVER_SCRIPT)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+        if OS_NAME == "darwin":
+            self._server = subprocess.Popen(
+                ["node", str(SERVER_SCRIPT)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
         # Wait until the server ready
         for _ in range(20):
             line = self._server.stdout.readline()
@@ -161,10 +174,19 @@ class ProcessManager:
             if not electron_bin.exists():
                 # system electron
                 electron_bin = "electron"
-            self._electron = subprocess.Popen(
-                [str(electron_bin), str(ELECTRON_MAIN)],
-                cwd=str(ROOT),
-            )
+            
+            if OS_NAME == "windows":
+                electron_bin = electron_bin.with_suffix(".cmd")
+                self._electron = subprocess.Popen(
+                    [str(electron_bin), str(ELECTRON_MAIN)],
+                    cwd=str(ROOT),
+                )
+            
+            if OS_NAME == "darwin":
+                self._electron = subprocess.Popen(
+                    [str(electron_bin), str(ELECTRON_MAIN)],
+                    cwd=str(ROOT),
+                )
             return True
         except FileNotFoundError:
             print("[sentinel] Electron not found. Run `npm install` first.")

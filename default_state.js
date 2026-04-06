@@ -35,3 +35,6 @@ function modifyDefaultState(...modifications) {
 function getDefaultState() {
     return { ...defaultState };
 }
+
+// For current testing purposes
+export { defaultState, modifyDefaultState, getDefaultState };
