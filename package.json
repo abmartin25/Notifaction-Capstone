@@ -1,13 +1,17 @@
 {
+  "name": "sentinel-app",
+  "version": "1.0.0",
+  "main": "electron-main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server.js"
+  },
   "dependencies": {
     "better-sqlite3": "^12.8.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.2",
-    "chai": "^6.2.2",
-    "electron": "^41.1.1",
-    "electron-rebuild": "^3.2.9"
-  },
-  "scripts": {}
+    "electron": "^41.1.1"
+  }
 }

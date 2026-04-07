@@ -14,8 +14,8 @@ from pathlib import Path
 #Paths 
 ROOT = Path(__file__).parent
 DB_PATH = ROOT / "sentinel.db"
-SERVER_SCRIPT = ROOT / "server.js"
-ELECTRON_MAIN = ROOT / "electron-main.js"
+SERVER_SCRIPT = ROOT / "server.cjs"
+ELECTRON_MAIN = ROOT / "electron-main.cjs"
 
 # OS Detection
 OS_NAME = platform.system().lower()  # "windows", "darwin" (mac), "linux", etc.
@@ -139,7 +139,7 @@ class ProcessManager:
         self._electron = None
 
     def start_server(self) -> bool:
-        """Start node server.js. Returns True when ready."""
+        """Start node server.cjs. Returns True when ready."""
         if not SERVER_SCRIPT.exists():
             print(f"[sentinel] server.js not found at {SERVER_SCRIPT}")
             return False
@@ -325,7 +325,7 @@ def main():
 
     else:
         # Default — launch the Electron app
-        pm.start_server()
+        # pm.start_server()
         time.sleep(0.5)
         ok = pm.start_electron()
         if ok:
