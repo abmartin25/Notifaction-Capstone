@@ -331,7 +331,7 @@ def main():
         if ok:
             print("[sentinel] App launched. Close the window to exit.")
             try:
-                while True:
+                while pm._electron and pm._electron.poll() is None:
                     time.sleep(1)
             except KeyboardInterrupt:
                 pm.stop_all()
