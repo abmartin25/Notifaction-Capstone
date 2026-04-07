@@ -13,5 +13,5 @@ https://nodejs.org/en
 
 ~~ Usage ~~
 1. npm install better-sqlite3
-2. node server.js
+2. npm start
 
