@@ -458,9 +458,33 @@ function syncGuidance() {
   updateScore("Decision", scores.decision, "mDecision", "sDecision");
   updateScore("Trust", scores.trust, "mTrust", "sTrust");
 
-  document.getElementById("suggestions").innerHTML = suggestions
-    .map((item) => `<li>${item}</li>`)
+  const suggestionsEl = document.getElementById("suggestions");
+  const prevOpenIndexes = new Set(
+    [...suggestionsEl.querySelectorAll("li.suggestion-open")].map((li) =>
+      parseInt(li.dataset.idx)
+    )
+  );
+
+  suggestionsEl.innerHTML = suggestions
+    .map((item, i) => {
+      const isOpen = prevOpenIndexes.has(i);
+      const title = item.title || item;
+      const detail = item.detail || item;
+      return `<li class="suggestion-item${isOpen ? " suggestion-open" : ""}" data-idx="${i}" data-detail="${detail.replace(/"/g, "&quot;")}">
+        <span class="suggestion-title">${title}</span>
+        <span class="suggestion-chevron">${isOpen ? "▲" : "▼"}</span>
+        <div class="suggestion-detail">${detail}</div>
+      </li>`;
+    })
     .join("");
+
+  suggestionsEl.querySelectorAll(".suggestion-item").forEach((li) => {
+    li.addEventListener("click", () => {
+      li.classList.toggle("suggestion-open");
+      li.querySelector(".suggestion-chevron").textContent = li.classList.contains("suggestion-open") ? "▲" : "▼";
+    });
+  });
+
   document.getElementById("aiToneText").textContent = aiToneText;
 }
 
