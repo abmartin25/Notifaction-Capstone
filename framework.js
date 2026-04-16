@@ -62,115 +62,132 @@ function evaluateNotification(state) {
 }
 
 // Function for Generating Suggestions Based on the Notification Design Aspects (State)
-// This Justifies Design Elements that are Toggled Off, ex: Step-by-step instructions, Direct action button, etc. & General Mismatches of Tones
+// Returns { title, detail } objects — title shown collapsed, detail revealed on click
 function buildSuggestions(state) {
   const suggestions = [];
 
-  // Instruction Design Suggestions
   if (!state.instructionSteps)
-    suggestions.push(
-      "Include step-by-step instructions to strengthen clarity and guidance.",
-    );
+    suggestions.push({
+      title: 'Add step-by-step instructions',
+      detail: 'Include step-by-step instructions to strengthen clarity and guidance. Users are more likely to act correctly when they know exactly what to do next.',
+    });
 
   if (!state.directAction)
-    suggestions.push("Provide a direct action button for immediate response.");
+    suggestions.push({
+      title: 'Add a direct action button',
+      detail: 'Provide a direct action button for immediate response. Reducing friction between reading and acting increases the chance a user will comply.',
+    });
 
   if (!state.explainVuln)
-    suggestions.push(
-      "Add a vulnerability explanation hover pop-up to strengthen clarity of information.",
-    );
+    suggestions.push({
+      title: 'Explain the vulnerability',
+      detail: 'Add a vulnerability explanation hover pop-up to strengthen clarity of information. Users who understand what is wrong are more likely to take the issue seriously.',
+    });
 
   if (!state.explainRisk)
-    suggestions.push(
-      "Add a risk explanation hover pop-up to improve risk communication and user understanding.",
-    );
+    suggestions.push({
+      title: 'Explain the risk',
+      detail: 'Add a risk explanation hover pop-up to improve risk communication and user understanding. Clearly stating what could go wrong helps users make informed decisions.',
+    });
 
   if (!state.contextBackground)
-    suggestions.push(
-      "Provide context and background about the risk so the user has better decision support.",
-    );
+    suggestions.push({
+      title: 'Provide context and background',
+      detail: 'Provide context and background about the risk so the user has better decision support. Users who understand why something matters are more likely to engage.',
+    });
 
   if (!state.timeEst)
-    suggestions.push("Add a time estimate to reduce perceived burden.");
+    suggestions.push({
+      title: 'Include a time estimate',
+      detail: 'Add a time estimate to reduce perceived burden. Knowing an action takes only a minute or two makes users far less likely to defer or dismiss the notification.',
+    });
 
   if (!state.transparency)
-    suggestions.push(
-      "Explain why the notification appeared to improve transparency, trust, and legitimacy.",
-    );
+    suggestions.push({
+      title: 'Explain why this appeared',
+      detail: 'Explain why the notification appeared to improve transparency, trust, and legitimacy. Users are more receptive to alerts that do not feel arbitrary or unexplained.',
+    });
 
   if (!state.consequences)
-    suggestions.push(
-      "Mention consequences if ignored to improve motivation and risk communication.",
-    );
+    suggestions.push({
+      title: 'Mention consequences if ignored',
+      detail: 'Mention consequences if ignored to improve motivation and risk communication. Clearly stating what happens when users do nothing strengthens the case for acting.',
+    });
 
   if (!state.supportLinks)
-    suggestions.push("Provide decision support links to guide next steps.");
+    suggestions.push({
+      title: 'Add decision support links',
+      detail: 'Provide decision support links to guide next steps. Links to help articles or relevant settings give users a clear path forward and reduce uncertainty.',
+    });
 
   if (!state.preferredDecision)
-    suggestions.push("Highlight the preferred option to encourage compliance.");
+    suggestions.push({
+      title: 'Highlight the preferred option',
+      detail: 'Highlight the preferred option to encourage compliance. Visually distinguishing the recommended action makes it easier for users to choose correctly.',
+    });
 
   if (!state.aiTone)
-    suggestions.push(
-      "Enable AI tone review so the framework guidance can flag overly harsh or unclear messaging.",
-    );
+    suggestions.push({
+      title: 'Enable AI tone review',
+      detail: 'Enable AI tone review so the framework can flag overly harsh or unclear messaging. Tone has a strong effect on whether users trust and act on a notification.',
+    });
 
-  // Interaction, Workflow, & Agency Suggestions
-  if (state.interaction === "click_box")
-    suggestions.push(
-      "Interaction mode: Click boxes are easy to dismiss without reading. Consider using a Sliding Bar or Toggle instead for a more deliberate decision.",
-    );
+  if (state.interaction === 'click_box')
+    suggestions.push({
+      title: 'Reconsider the interaction mode',
+      detail: 'Click boxes are easy to dismiss without reading. Consider using a Sliding Bar or Toggle instead — these require a more deliberate action, reducing mindless dismissal.',
+    });
 
-  // Schedule Suggestions
   if (!state.schedule)
-    suggestions.push(
-      "Add deployment scheduling controls to better manage notification frequency.",
-    );
+    suggestions.push({
+      title: 'Set a deployment schedule',
+      detail: 'Add deployment scheduling controls to better manage notification frequency. Poorly timed notifications are more likely to be ignored or create alert fatigue.',
+    });
 
   if (state.schedule && !state.showOnBootup && !state.showDuringTask)
-    suggestions.push(
-      "Choose when users should see the notification, such as on bootup or during the relevant task.",
-    );
+    suggestions.push({
+      title: 'Choose a display trigger',
+      detail: 'Choose when users should see the notification, such as on bootup or during the relevant task. Contextual timing significantly increases user engagement.',
+    });
 
-  // Urgency, Location, & Agency Mismatch Suggestions
-  // TODO Modify Urgency to Reflect Non-Slider
-  if (state.location === "banner" && state.urgency === "high")
-    suggestions.push(
-      "Location mismatch: This notification is high urgency but a banner is easy to miss. Consider a Pop-up or Modal.",
-    );
+  if (state.location === 'banner' && state.urgency === 'high')
+    suggestions.push({
+      title: 'Location mismatch: banner vs. high urgency',
+      detail: 'This notification is high urgency but a banner is easy to miss. Consider a Pop-up or Modal to ensure the message gets the attention it requires.',
+    });
 
-  if (
-    (state.location === "popup" || state.location === "modal") &&
-    state.urgency === "low"
-  )
-    suggestions.push(
-      "Location mismatch: Pop-ups and Modals should usually be reserved for high urgency notifications. Consider a Banner or Inline placement instead.",
-    );
+  if ((state.location === 'popup' || state.location === 'modal') && state.urgency === 'low')
+    suggestions.push({
+      title: 'Location mismatch: pop-up vs. low urgency',
+      detail: 'Pop-ups and Modals should usually be reserved for high urgency notifications. For a low urgency alert, consider a Banner or Inline placement instead.',
+    });
 
-  if (state.urgency === "high" && state.agency === "not_urgent")
-    suggestions.push(
-      "User agency mismatch: A high urgency notification should not default to Not urgent.",
-    );
+  if (state.urgency === 'high' && state.agency === 'not_urgent')
+    suggestions.push({
+      title: 'Agency mismatch: high urgency, not urgent',
+      detail: 'A high urgency notification should not default to Not urgent agency. This contradicts the urgency signal and may confuse users about how seriously to treat the alert.',
+    });
 
-  if (state.urgency === "low" && state.agency === "must_do")
-    suggestions.push(
-      "User agency mismatch: A low urgency notification may feel too forceful if the user must act immediately.",
-    );
+  if (state.urgency === 'low' && state.agency === 'must_do')
+    suggestions.push({
+      title: 'Agency mismatch: low urgency, must-do',
+      detail: 'A low urgency notification may feel too forceful if the user must act immediately. Consider offering a Remind later or Not urgent option to match the tone.',
+    });
 
-  // Message Length Suggestion
-  if (state.message.length < 35) {
-    suggestions.push(
-      "Increase message clarity by providing a higher level of detail, such as the risk and likely consequence.",
-    );
-  }
+  if (state.message.length < 35)
+    suggestions.push({
+      title: 'Message is too brief',
+      detail: 'Increase message clarity by providing more detail, such as what the risk is and what is likely to happen if it goes unaddressed. Short messages often feel vague.',
+    });
 
-  // No Suggestions Default
-  if (suggestions.length === 0) {
-    suggestions.push("Looks balanced. Consider A/B testing for optimization.");
-  }
+  if (suggestions.length === 0)
+    suggestions.push({
+      title: 'Looks balanced',
+      detail: 'No major issues detected. Consider A/B testing different versions to see which design elements have the most impact on user compliance rates.',
+    });
 
   return suggestions;
 }
-
 function buildAiToneText(state) {
   if (!state.aiTone) {
     return "Enable AI tone review to simulate a framework-level tone check.";
