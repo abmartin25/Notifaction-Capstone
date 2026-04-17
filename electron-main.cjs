@@ -20,7 +20,7 @@ function createWindow() {
   });
 
   mainWindow.loadURL("http://localhost:3000");
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
