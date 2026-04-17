@@ -1,5 +1,3 @@
-
-
 import argparse
 import json
 import platform
@@ -52,6 +50,15 @@ DEFAULT_STATE = {
     "deployWindow": "",
     "showOnBootup": False,
     "showDuringTask": False,
+
+    # new
+    "customSteps": "",
+    "customVulnerability": "",
+    "customRisk": "",
+    "customContext": "",
+    "customConsequences": "",
+    "customTransparency": "",
+    "customLinks": "",
 }
 
 
@@ -139,7 +146,7 @@ class ProcessManager:
         self._electron = None
 
     def start_server(self) -> bool:
-        """Start node server.cjs. Returns True when ready."""
+        """Start node server.js. Returns True when ready."""
         if not SERVER_SCRIPT.exists():
             print(f"[sentinel] server.js not found at {SERVER_SCRIPT}")
             return False
@@ -174,23 +181,15 @@ class ProcessManager:
         print("[sentinel] Launching Electron app...")
         try:
             # Use the local electron binary installed by npm
-            electron_bin = ROOT / "node_modules" / ".bin" / "electron"
-            if not electron_bin.exists():
-                # system electron
-                electron_bin = "electron"
-            
-            if OS_NAME == "windows":
-                electron_bin = electron_bin.with_suffix(".cmd")
-                self._electron = subprocess.Popen(
-                    [str(electron_bin), str(ELECTRON_MAIN)],
-                    cwd=str(ROOT),
-                )
-            
-            if OS_NAME == "darwin":
-                self._electron = subprocess.Popen(
-                    [str(electron_bin), str(ELECTRON_MAIN)],
-                    cwd=str(ROOT),
-                )
+            # electron_bin = ROOT / "node_modules" / ".bin" / "electron"
+            # if not electron_bin.exists():
+            #     # system electron
+            #     electron_bin = "electron"
+            self._electron = subprocess.Popen(
+            ["npx", "electron", str(ELECTRON_MAIN)],
+            cwd=str(ROOT),
+            shell=True  # Windows
+        )
             return True
         except FileNotFoundError:
             print("[sentinel] Electron not found. Run `npm install` first.")
@@ -220,7 +219,13 @@ class SentinelSDK:
         and applying any keyword overrides.
 
         All keys from DEFAULT_STATE are valid kwargs, e.g.:
-            create_notification(title="...", urgency="high", consequences=True)
+            create_notification(
+                title="Update your password",
+                urgency="high",
+                consequences=True,
+                customSteps="Open settings\nChange password\nSave changes",
+                customTransparency="Why you are seeing this: your password was flagged as weak."
+             )
         """
         state = self.get_default_state()
         invalid = [k for k in kwargs if k not in DEFAULT_STATE]

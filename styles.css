@@ -90,6 +90,91 @@ input[type="range"]{ width:100%; }
 .ref-table-scroll{ max-height:400px; overflow-y:auto; border-radius:10px; border:1px solid var(--border); }
 .schedule-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .sectionNote{ font-size:11px; color:var(--muted); line-height:1.4; margin-top:6px; }
+#customContentField {
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+#customContentField textarea {
+  margin-top: 6px;
+}
+
+#customContentField > div.hidden {
+  display: none;
+}
+
+/* Collapsible suggestion items */
+#suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.suggestion-item {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s;
+  user-select: none;
+}
+
+.suggestion-item:hover {
+  border-color: #bfdbfe;
+}
+
+.suggestion-item.suggestion-open {
+  border-color: #bfdbfe;
+}
+
+.suggestion-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.suggestion-item:not(.suggestion-open) .suggestion-title {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.suggestion-item:hover .suggestion-title {
+  color: var(--text);
+}
+
+.suggestion-chevron {
+  font-size: 8px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.suggestion-item.suggestion-open .suggestion-chevron {
+  color: var(--primary);
+}
+
+.suggestion-detail {
+  display: none;
+  padding: 0 10px 9px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  border-top: 1px solid var(--border);
+  margin-top: 0;
+  padding-top: 8px;
+}
+
+.suggestion-item.suggestion-open .suggestion-detail {
+  display: block;
+}
 @media (max-width: 1100px){
   .app{ grid-template-columns: 1fr; }
   .sidebar{ position:sticky; top:0; z-index:1; border-right:none; border-bottom:1px solid var(--border); }

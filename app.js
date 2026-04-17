@@ -29,15 +29,41 @@ function showSection(sectionId) {
   document
     .querySelectorAll("main > section")
     .forEach((sec) => sec.classList.add("hidden"));
-    document.getElementById(sectionId).classList.remove("hidden");
-  
+
+  document.getElementById(sectionId).classList.remove("hidden");
+
   document
     .querySelectorAll(".nav button")
     .forEach((b) => b.classList.remove("active"));
+
   const activeNav = document.querySelector(
     `.nav button[data-route="${sectionId}"]`,
   );
   if (activeNav) activeNav.classList.add("active");
+
+  if (sectionId === "export") {
+    renderCode();
+  }
+}
+
+function setupExportActions() {
+  const copyBtn = document.getElementById("copyCodeBtn");
+  if (!copyBtn) return;
+
+  copyBtn.addEventListener("click", async () => {
+    const code = document.getElementById("codeOutput").textContent;
+
+    try {
+      await navigator.clipboard.writeText(code);
+      const original = copyBtn.textContent;
+      copyBtn.textContent = "Copied ✓";
+      setTimeout(() => {
+        copyBtn.textContent = original;
+      }, 1500);
+    } catch (err) {
+      console.error("Failed to copy export code:", err);
+    }
+  });
 }
 
 // I ant to split off all of the creating the notification/preview stuff to its own js
@@ -49,23 +75,25 @@ const state = getDefaultState();
 // Building of Notification Live Preview
 // Setup Card-Panel (Configuration Panel)
 function setupDropdowns() {
-  document.querySelectorAll(".field[data-type='dropdown']").forEach((dropdown) => {
-    const forAttr = dropdown.querySelector("label").getAttribute("for");
-    const customWrap = dropdown.querySelector(".custom-input-wrap");
-    customWrap.addEventListener("input", (e) => {
-      state[forAttr] = e.target.value.trim();
-      render();
-    });
-
-    const select = dropdown.querySelector(".dropdown");
-    select.addEventListener("change", (e) => {
-      const isCustom = e.target.value === "__custom__";
-      customWrap.classList.toggle("hidden", !isCustom);
-      state[forAttr] = isCustom ? "" : e.target.value;
-      if (isCustom) customWrap.querySelector("input").focus();
+  document
+    .querySelectorAll(".field[data-type='dropdown']")
+    .forEach((dropdown) => {
+      const forAttr = dropdown.querySelector("label").getAttribute("for");
+      const customWrap = dropdown.querySelector(".custom-input-wrap");
+      customWrap.addEventListener("input", (e) => {
+        state[forAttr] = e.target.value.trim();
         render();
+      });
+
+      const select = dropdown.querySelector(".dropdown");
+      select.addEventListener("change", (e) => {
+        const isCustom = e.target.value === "__custom__";
+        customWrap.classList.toggle("hidden", !isCustom);
+        state[forAttr] = isCustom ? "" : e.target.value;
+        if (isCustom) customWrap.querySelector("input").focus();
+        render();
+      });
     });
-  });
 }
 
 function syncDropdowns() {
@@ -130,7 +158,9 @@ function setupCheckboxInputs() {
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
       if (key === "schedule") {
-        document.getElementById("scheduleWrap").classList.toggle("hidden", !state.schedule);
+        document
+          .getElementById("scheduleWrap")
+          .classList.toggle("hidden", !state.schedule);
       }
       render();
     });
@@ -235,17 +265,23 @@ function syncConfigPanel() {
 // TODO
 function setupPreviewInteractions() {
   const primaryBtn = document.getElementById("primaryBtn");
+  const remindBtn = document.getElementById("remindBtn");
   const denyBtn = document.getElementById("denyBtn");
   let clickChoice = null;
 
   primaryBtn.addEventListener("click", () => {
     clickChoice = clickChoice === "allow" ? null : "allow";
-    updateClickBoxState(primaryBtn, denyBtn, clickChoice);
+    updateClickBoxState(primaryBtn, remindBtn, denyBtn, clickChoice);
+  });
+
+  remindBtn.addEventListener("click", () => {
+    clickChoice = clickChoice === "remind" ? null : "remind";
+    updateClickBoxState(primaryBtn, remindBtn, denyBtn, clickChoice);
   });
 
   denyBtn.addEventListener("click", () => {
     clickChoice = clickChoice === "deny" ? null : "deny";
-    updateClickBoxState(primaryBtn, denyBtn, clickChoice);
+    updateClickBoxState(primaryBtn, remindBtn, denyBtn, clickChoice);
   });
 
   const pvToggleAllow = document.getElementById("pvToggleAllow");
@@ -295,12 +331,18 @@ function setupPreviewInteractions() {
   wireTooltip("pvRiskTrigger", "pvRiskTooltip");
 }
 
-function updateClickBoxState(primaryBtn, denyBtn, clickChoice) {
-  const isAllow = clickChoice === "allow" || clickChoice === null;
-  primaryBtn.classList.toggle("primary", isAllow);
-  primaryBtn.classList.toggle("selected-deny", false);
+function updateClickBoxState(primaryBtn, remindBtn, denyBtn, clickChoice) {
+  primaryBtn.classList.toggle(
+    "primary",
+    clickChoice === "allow" || clickChoice === null,
+  );
+  primaryBtn.classList.remove("selected-deny");
+
+  remindBtn.classList.toggle("primary", clickChoice === "remind");
+  remindBtn.classList.toggle("secondary-accent", clickChoice !== "remind");
+
   denyBtn.classList.toggle("selected-deny", clickChoice === "deny");
-  denyBtn.classList.toggle("primary", false);
+  denyBtn.classList.remove("primary");
 }
 
 function applyToggleVisual(checkbox, track, thumb, color) {
@@ -341,9 +383,17 @@ function render() {
 
   syncSliderPreview();
   syncTooltipVisibility();
+  renderCode();
   syncHint();
   syncInfoStrip();
-  syncAgencyPreview();
+  syncActionButtonsByAgency();
+  syncInstructionSteps();
+  syncVulnerabilityText();
+  syncRiskText();
+  syncContextBackground();
+  syncConsequences();
+  syncSupportLinks();
+  syncTransparency();
   syncInteractionPreview();
   syncGuidance();
 }
@@ -370,12 +420,39 @@ function syncTooltipVisibility() {
     : "none";
 }
 
+function setupInlineNotificationReceiver() {
+  if (!window.electronAPI?.onInlineNotification) return;
+
+  window.electronAPI.onInlineNotification((data) => {
+    const host = document.getElementById("inlineNotificationHost");
+    if (!host) return;
+
+    host.classList.remove("hidden");
+
+    host.innerHTML = `
+      <div class="previewCard">
+        <div class="previewHeader">
+          <div class="badge ${data.urgency || "low"}">
+            ${data.urgency === "high" ? "⚠" : data.urgency === "med" ? "!" : "i"}
+          </div>
+          <div>
+            <div class="previewTitle">${data.title || "Security alert"}</div>
+            <div style="font-size:12px;color:var(--muted)">
+              ${data.userGroup || "User group"} • ${data.context || "Security context"}
+            </div>
+          </div>
+        </div>
+        <p class="previewMsg">${data.message || "Notification message will appear here."}</p>
+      </div>
+    `;
+  });
+}
+
 function syncHint() {
   const hintParts = [];
   if (state.timeEst) hintParts.push("Includes time estimate");
   if (state.instructionSteps) hintParts.push("Step-by-step guidance enabled");
   if (state.contextBackground) hintParts.push("Risk background included");
-  if (state.transparency) hintParts.push("Why this appeared is explained");
   document.getElementById("pvHint").textContent = hintParts.join(" • ");
 }
 
@@ -395,35 +472,29 @@ function syncInfoStrip() {
     .join("");
 }
 
-function syncAgencyPreview() {
-  const mainBtn = document.getElementById("agencyMainBtn");
-  const secondaryBtn = document.getElementById("agencySecondaryBtn");
-  const tertiaryBtn = document.getElementById("agencyTertiaryBtn");
+function syncActionButtonsByAgency() {
+  const primaryBtn = document.getElementById("primaryBtn");
+  const remindBtn = document.getElementById("remindBtn");
+  const denyBtn = document.getElementById("denyBtn");
 
-  mainBtn.textContent =
-    state.agency === "must_do"
-      ? "Have to"
-      : state.agency === "remind_later"
-        ? "Remind me later"
-        : "Not urgent";
+  if (!primaryBtn || !remindBtn || !denyBtn) return;
 
-  secondaryBtn.style.display =
-    state.agency === "must_do" ? "inline-block" : "none";
-  tertiaryBtn.style.display =
-    state.agency === "must_do"
-      ? "inline-block"
-      : state.agency === "remind_later"
-        ? "inline-block"
-        : "none";
+  primaryBtn.style.display = "inline-block";
+  remindBtn.style.display = "none";
+  denyBtn.style.display = "none";
 
-  if (state.agency === "remind_later") {
-    secondaryBtn.textContent = "Have to";
-    tertiaryBtn.textContent = "Not urgent";
+  if (state.agency === "must_do") {
+    primaryBtn.textContent = "Allow";
+  } else if (state.agency === "remind_later") {
+    primaryBtn.textContent = "Allow";
+    remindBtn.style.display = "inline-block";
+    remindBtn.textContent = "Remind me later";
   } else if (state.agency === "not_urgent") {
-    tertiaryBtn.textContent = "Have to";
-  } else {
-    secondaryBtn.textContent = "Remind me later";
-    tertiaryBtn.textContent = "Not urgent";
+    primaryBtn.textContent = "Allow";
+    remindBtn.style.display = "inline-block";
+    remindBtn.textContent = "Remind me later";
+    denyBtn.style.display = "inline-block";
+    denyBtn.textContent = "Don't Allow";
   }
 }
 
@@ -456,9 +527,33 @@ function syncGuidance() {
   updateScore("Decision", scores.decision, "mDecision", "sDecision");
   updateScore("Trust", scores.trust, "mTrust", "sTrust");
 
-  document.getElementById("suggestions").innerHTML = suggestions
-    .map((item) => `<li>${item}</li>`)
+  const suggestionsEl = document.getElementById("suggestions");
+  const prevOpenIndexes = new Set(
+    [...suggestionsEl.querySelectorAll("li.suggestion-open")].map((li) =>
+      parseInt(li.dataset.idx)
+    )
+  );
+
+  suggestionsEl.innerHTML = suggestions
+    .map((item, i) => {
+      const isOpen = prevOpenIndexes.has(i);
+      const title = item.title || item;
+      const detail = item.detail || item;
+      return `<li class="suggestion-item${isOpen ? " suggestion-open" : ""}" data-idx="${i}" data-detail="${detail.replace(/"/g, "&quot;")}">
+        <span class="suggestion-title">${title}</span>
+        <span class="suggestion-chevron">${isOpen ? "▲" : "▼"}</span>
+        <div class="suggestion-detail">${detail}</div>
+      </li>`;
+    })
     .join("");
+
+  suggestionsEl.querySelectorAll(".suggestion-item").forEach((li) => {
+    li.addEventListener("click", () => {
+      li.classList.toggle("suggestion-open");
+      li.querySelector(".suggestion-chevron").textContent = li.classList.contains("suggestion-open") ? "▲" : "▼";
+    });
+  });
+
   document.getElementById("aiToneText").textContent = aiToneText;
 }
 
@@ -499,6 +594,63 @@ function renderCode() {
 )`;
 }
 
+function getInstructionSteps(context) {
+  if (state.customSteps.trim()) {
+    return state.customSteps
+      .split("\n")
+      .map((step) => step.trim())
+      .filter(Boolean);
+  }
+
+  const map = {
+    weak_password: [
+      "Open your account security settings.",
+      "Choose a new password that is unique.",
+      "Save the change and sign in again if prompted.",
+    ],
+    suspicious_login: [
+      "Review the recent login attempt.",
+      "Change your password if the activity was not you.",
+      "Enable extra account protection if available.",
+    ],
+    cache_clear: [
+      "Open your browser settings.",
+      "Go to privacy or history options.",
+      "Clear cached data for the recent session.",
+    ],
+    software_update: [
+      "Open system or application update settings.",
+      "Review the available update.",
+      "Install the update and restart if required.",
+    ],
+  };
+
+  return (
+    map[context] || [
+      "Review the notification details.",
+      "Take the recommended action.",
+      "Confirm the issue is resolved.",
+    ]
+  );
+}
+
+function syncInstructionSteps() {
+  const wrap = document.getElementById("pvStepsWrap");
+  const list = document.getElementById("pvStepsList");
+
+  if (!wrap || !list) return;
+
+  if (!state.instructionSteps) {
+    wrap.style.display = "none";
+    list.innerHTML = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  const steps = getInstructionSteps(state.context);
+  list.innerHTML = steps.map((step) => `<li>${step}</li>`).join("");
+}
+
 function setupReferenceTableToggle() {
   document.getElementById("ckRefTable").addEventListener("change", function () {
     document
@@ -507,8 +659,284 @@ function setupReferenceTableToggle() {
   });
 }
 
+function getVulnerabilityExplanation(context) {
+  if (state.customVulnerability.trim()) {
+    return state.customVulnerability.trim();
+  }
 
-// Save/Load Functionality
+  const map = {
+    weak_password:
+      "A weak password is easier for attackers to guess or crack, especially if it has been reused or exposed before.",
+    suspicious_login:
+      "A suspicious login may indicate that someone else is attempting to access your account from an unfamiliar device or location.",
+    cache_clear:
+      "Stored browser cache can retain sensitive content, which may be accessible later on a shared or exposed device.",
+    software_update:
+      "Outdated software may contain known weaknesses that attackers can exploit if updates are not installed.",
+  };
+
+  return (
+    map[context] ||
+    "A security weakness was detected that may increase exposure if it is not addressed."
+  );
+}
+
+function syncVulnerabilityText() {
+  const tooltip = document.getElementById("pvVulnTooltip");
+  if (!tooltip) return;
+  tooltip.textContent = getVulnerabilityExplanation(state.context);
+}
+
+function getRiskExplanation(context) {
+  if (state.customRisk.trim()) {
+    return state.customRisk.trim();
+  }
+
+  const map = {
+    weak_password:
+      "If this password is reused or easily guessed, your account may be more likely to be accessed by someone else.",
+    suspicious_login:
+      "If the login was unauthorized, your account or personal data could be exposed or changed.",
+    cache_clear:
+      "Leaving cached content behind may allow sensitive information to remain accessible after the task ends.",
+    software_update:
+      "Delaying updates can leave your system exposed to known security issues that have already been fixed.",
+  };
+
+  return (
+    map[context] ||
+    "Ignoring this issue could increase the chance of account, data, or system exposure."
+  );
+}
+
+function syncRiskText() {
+  const tooltip = document.getElementById("pvRiskTooltip");
+  if (!tooltip) return;
+  tooltip.textContent = getRiskExplanation(state.context);
+}
+
+function getContextBackground(context) {
+  if (state.customContext.trim()) {
+    return state.customContext.trim();
+  }
+
+  const map = {
+    weak_password:
+      "Passwords are often targeted through reuse, guessing, and breach exposure. Stronger passwords reduce that risk.",
+    suspicious_login:
+      "Login activity from unusual devices or locations can be a sign that account access should be reviewed quickly.",
+    cache_clear:
+      "Cached browser data may improve convenience, but it can also preserve sensitive material longer than intended.",
+    software_update:
+      "Security updates are released to correct known weaknesses and reduce exposure over time.",
+  };
+
+  return (
+    map[context] ||
+    "This issue relates to a broader security risk that may affect account safety, device protection, or data exposure."
+  );
+}
+
+function syncContextBackground() {
+  const wrap = document.getElementById("pvContextWrap");
+  if (!wrap) return;
+
+  if (!state.contextBackground) {
+    wrap.style.display = "none";
+    wrap.textContent = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  wrap.textContent = getContextBackground(state.context);
+}
+
+function getConsequencesText(context) {
+  if (state.customConsequences.trim()) {
+    return state.customConsequences.trim();
+  }
+
+  const map = {
+    weak_password: "If ignored, the account may remain easier to compromise.",
+    suspicious_login:
+      "If ignored, unauthorized access may continue without being reviewed.",
+    cache_clear:
+      "If ignored, sensitive content may remain stored on the device.",
+    software_update:
+      "If ignored, the system may remain exposed to known issues.",
+  };
+
+  return (
+    map[context] ||
+    "If ignored, the issue may continue to increase security exposure."
+  );
+}
+
+function syncConsequences() {
+  const wrap = document.getElementById("pvConsequencesWrap");
+  if (!wrap) return;
+
+  if (!state.consequences) {
+    wrap.style.display = "none";
+    wrap.textContent = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  wrap.textContent = getConsequencesText(state.context);
+}
+
+function parseCustomLinks(raw) {
+  return raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split("|");
+      if (parts.length < 2) return null;
+      return {
+        label: parts[0].trim(),
+        url: parts.slice(1).join("|").trim(),
+      };
+    })
+    .filter(Boolean);
+}
+
+function getSupportLinks(context) {
+  if (state.customLinks.trim()) {
+    return parseCustomLinks(state.customLinks);
+  }
+
+  const map = {
+    weak_password: [
+      { label: "Password Help", url: "#" },
+      { label: "Account Security", url: "#" },
+    ],
+    suspicious_login: [
+      { label: "Review Login Activity", url: "#" },
+      { label: "Secure Account", url: "#" },
+    ],
+    cache_clear: [
+      { label: "Browser Privacy Help", url: "#" },
+      { label: "Clear Cached Data", url: "#" },
+    ],
+    software_update: [
+      { label: "Update Instructions", url: "#" },
+      { label: "Release Notes", url: "#" },
+    ],
+  };
+
+  return (
+    map[context] || [
+      { label: "Help Article", url: "#" },
+      { label: "Learn More", url: "#" },
+    ]
+  );
+}
+
+function syncSupportLinks() {
+  const wrap = document.getElementById("pvSupportLinksWrap");
+  if (!wrap) return;
+
+  if (!state.supportLinks) {
+    wrap.style.display = "none";
+    wrap.innerHTML = "";
+    return;
+  }
+
+  const links = getSupportLinks(state.context);
+  wrap.style.display = "flex";
+  wrap.innerHTML = links
+    .map(
+      (link) =>
+        `<a class="mini neutral-accent" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`,
+    )
+    .join("");
+}
+
+function getTransparencyText(context) {
+  if ((state.customTransparency || "").trim()) {
+    return state.customTransparency.trim();
+  }
+
+  const map = {
+    weak_password:
+      "Why you are seeing this: your password was identified as weak or potentially exposed.",
+    suspicious_login:
+      "Why you are seeing this: a recent login attempt looked unusual for this account.",
+    cache_clear:
+      "Why you are seeing this: this task may leave sensitive browser data stored on the device.",
+    software_update:
+      "Why you are seeing this: an available update addresses security-related issues.",
+  };
+
+  return (
+    map[context] ||
+    "Why you are seeing this: the system detected a security-relevant event."
+  );
+}
+
+function syncTransparency() {
+  const wrap = document.getElementById("pvTransparencyWrap");
+  if (!wrap) return;
+
+  if (!state.transparency) {
+    wrap.style.display = "none";
+    wrap.textContent = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  wrap.textContent = getTransparencyText(state.context);
+}
+
+function setupCustomContentInputs() {
+  const mappings = [
+    ["customStepsInput", "customSteps"],
+    ["customVulnInput", "customVulnerability"],
+    ["customRiskInput", "customRisk"],
+    ["customContextInput", "customContext"],
+    ["customTransparencyInput", "customTransparency"],
+    ["customConsequencesInput", "customConsequences"],
+    ["customLinksInput", "customLinks"],
+  ];
+  mappings.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.addEventListener("input", (e) => {
+      state[key] = e.target.value;
+      render();
+    });
+  });
+}
+
+function setupCustomContentToggles() {
+  const mappings = [
+    ["ckInstructionSteps", "customStepsWrap"],
+    ["ckExplainVuln", "customVulnWrap"],
+    ["ckExplainRisk", "customRiskWrap"],
+    ["ckContextBackground", "customContextWrap"],
+    ["ckTransparency", "customTransparencyWrap"],
+    ["ckConsequences", "customConsequencesWrap"],
+    ["ckSupportLinks", "customLinksWrap"],
+  ];
+
+  mappings.forEach(([checkboxId, wrapId]) => {
+    const checkbox = document.getElementById(checkboxId);
+    const wrap = document.getElementById(wrapId);
+
+    if (!checkbox || !wrap) return;
+
+    const syncVisibility = () => {
+      wrap.classList.toggle("hidden", !checkbox.checked);
+    };
+
+    checkbox.addEventListener("change", syncVisibility);
+    syncVisibility();
+  });
+}
+
 function setupSaveLoad() {
   document.getElementById("saveTemplate").addEventListener("click", () => {
     const nameInput = document.getElementById("saveTemplateName");
@@ -518,45 +946,56 @@ function setupSaveLoad() {
     nameInput.focus();
   });
 
-  document.getElementById("saveModalCancel").addEventListener("click", () => hideModal("saveModal"));
+  document
+    .getElementById("saveModalCancel")
+    .addEventListener("click", () => hideModal("saveModal"));
 
-  document.getElementById("saveModalConfirm").addEventListener("click", async () => {
-    const name = document.getElementById("saveTemplateName").value.trim();
-    const errorEl = document.getElementById("saveModalError");
-    if (!name) {
-      errorEl.textContent = "Please enter a template name.";
-      errorEl.style.display = "block";
-      return;
-    }
-    try {
-      const res = await fetch("/api/templates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, config: { ...state } }),
-      });
-      if (!res.ok) throw new Error((await res.json()).error || "Save failed");
-      hideModal("saveModal");
-      flashSaveButton();
-    } catch (err) {
-      errorEl.textContent = err.message;
-      errorEl.style.display = "block";
-    }
-  });
+  document
+    .getElementById("saveModalConfirm")
+    .addEventListener("click", async () => {
+      const name = document.getElementById("saveTemplateName").value.trim();
+      const errorEl = document.getElementById("saveModalError");
+      if (!name) {
+        errorEl.textContent = "Please enter a template name.";
+        errorEl.style.display = "block";
+        return;
+      }
+      try {
+        const res = await fetch("/api/templates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, config: { ...state } }),
+        });
+        if (!res.ok) throw new Error((await res.json()).error || "Save failed");
+        hideModal("saveModal");
+        flashSaveButton();
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = "block";
+      }
+    });
 
-  document.getElementById("saveTemplateName").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") document.getElementById("saveModalConfirm").click();
-  });
+  document
+    .getElementById("saveTemplateName")
+    .addEventListener("keydown", (e) => {
+      if (e.key === "Enter")
+        document.getElementById("saveModalConfirm").click();
+    });
 
-  document.getElementById("loadTemplate").addEventListener("click", async () => {
-    await populateLoadModal();
-    showModal("loadModal");
-  });
+  document
+    .getElementById("loadTemplate")
+    .addEventListener("click", async () => {
+      await populateLoadModal();
+      showModal("loadModal");
+    });
 
-  document.getElementById("loadModalCancel").addEventListener("click", () => hideModal("loadModal"));
+  document
+    .getElementById("loadModalCancel")
+    .addEventListener("click", () => hideModal("loadModal"));
 }
 
 async function populateLoadModal() {
-  const listEl  = document.getElementById("loadModalList");
+  const listEl = document.getElementById("loadModalList");
   const emptyEl = document.getElementById("loadModalEmpty");
   listEl.innerHTML = '<p style="color:#6b7280;font-size:13px;">Loading…</p>';
 
@@ -577,7 +1016,8 @@ async function populateLoadModal() {
 
     templates.forEach((t) => {
       const row = document.createElement("div");
-      row.style.cssText = "display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid #e5e7eb; border-radius:12px; cursor:pointer; background:#fff; gap:10px;";
+      row.style.cssText =
+        "display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid #e5e7eb; border-radius:12px; cursor:pointer; background:#fff; gap:10px;";
 
       row.innerHTML = `
         <div style="flex:1; min-width:0;">
@@ -612,7 +1052,6 @@ async function populateLoadModal() {
         await populateLoadModal(); // refresh list
       });
     });
-
   } catch (err) {
     listEl.innerHTML = `<p style="color:#ef4444;font-size:13px;">Failed to load templates: ${err.message}</p>`;
   }
@@ -622,9 +1061,122 @@ function loadStateFromTemplate(config) {
   Object.assign(state, config);
   // console.log("Loaded template config:", config);
   syncConfigPanel();
+
+  // Head changes I need to resolve
+  // document.getElementById("titleInput").value = state.title || "";
+  // document.getElementById("msgInput").value = state.message || "";
+
+  // const ugSelect = document.getElementById("userGroup");
+  // const ugOptions = Array.from(ugSelect.options).map((o) => o.value);
+  // if (ugOptions.includes(state.userGroup)) {
+  //   ugSelect.value = state.userGroup;
+  //   document.getElementById("userGroupCustomWrap").classList.add("hidden");
+  // } else {
+  //   ugSelect.value = "__custom__";
+  //   document.getElementById("userGroupCustomWrap").classList.remove("hidden");
+  //   document.getElementById("userGroupCustom").value = state.userGroup;
+  // }
+
+  // const ctxSelect = document.getElementById("context");
+  // const ctxOptions = Array.from(ctxSelect.options).map((o) => o.value);
+  // if (ctxOptions.includes(state.context)) {
+  //   ctxSelect.value = state.context;
+  //   document.getElementById("contextCustomWrap").classList.add("hidden");
+  // } else {
+  //   ctxSelect.value = "__custom__";
+  //   document.getElementById("contextCustomWrap").classList.remove("hidden");
+  //   document.getElementById("contextCustom").value = state.context;
+  // }
+
+  // const checkboxMappings = [
+  //   ["ckInstructionSteps", "instructionSteps"],
+  //   ["ckDirectAction", "directAction"],
+  //   ["ckExplainVuln", "explainVuln"],
+  //   ["ckExplainRisk", "explainRisk"],
+  //   ["ckContextBackground", "contextBackground"],
+  //   ["ckTimeEst", "timeEst"],
+  //   ["ckTransparency", "transparency"],
+  //   ["ckConsequences", "consequences"],
+  //   ["ckSupportLinks", "supportLinks"],
+  //   ["ckPreferredDecision", "preferredDecision"],
+  //   ["ckAiTone", "aiTone"],
+  //   ["ckSchedule", "schedule"],
+  //   ["ckShowOnBootup", "showOnBootup"],
+  //   ["ckShowDuringTask", "showDuringTask"],
+  // ];
+
+  // checkboxMappings.forEach(([id, key]) => {
+  //   document.getElementById(id).checked = !!state[key];
+  // });
+
+  // document
+  //   .getElementById("scheduleWrap")
+  //   .classList.toggle("hidden", !state.schedule);
+  // document.getElementById("deployDate").value = state.deployDate || "";
+  // document.getElementById("deployHour").value = state.deployHour || "09:00";
+  // document.getElementById("deployWindow").value = state.deployWindow || "";
+
+  // document.getElementById("customStepsInput").value = state.customSteps || "";
+  // document.getElementById("customVulnInput").value =
+  //   state.customVulnerability || "";
+  // document.getElementById("customRiskInput").value = state.customRisk || "";
+  // document.getElementById("customContextInput").value =
+  //   state.customContext || "";
+  // document.getElementById("customConsequencesInput").value =
+  //   state.customConsequences || "";
+  // document.getElementById("customLinksInput").value = state.customLinks || "";
+
+  // document
+  //   .getElementById("customStepsWrap")
+  //   .classList.toggle("hidden", !state.instructionSteps);
+  // document
+  //   .getElementById("customVulnWrap")
+  //   .classList.toggle("hidden", !state.explainVuln);
+  // document
+  //   .getElementById("customRiskWrap")
+  //   .classList.toggle("hidden", !state.explainRisk);
+  // document
+  //   .getElementById("customContextWrap")
+  //   .classList.toggle("hidden", !state.contextBackground);
+  // document
+  //   .getElementById("customConsequencesWrap")
+  //   .classList.toggle("hidden", !state.consequences);
+  // document
+  //   .getElementById("customLinksWrap")
+  //   .classList.toggle("hidden", !state.supportLinks);
+
+  // document.getElementById("customTransparencyInput").value =
+  //   state.customTransparency || "";
+
+  // document
+  //   .getElementById("customTransparencyWrap")
+  //   .classList.toggle("hidden", !state.transparency);
+
+  // function restoreSeg(containerId, dataAttr, value) {
+  //   const container = document.getElementById(containerId);
+  //   container.querySelectorAll("button").forEach((b) => {
+  //     b.classList.toggle("on", b.dataset[dataAttr] === value);
+  //   });
+  // }
+
+  // restoreSeg("motivationSeg", "m", state.motivation);
+  // restoreSeg("urgencySeg", "u", state.urgency);
+  // restoreSeg("interactionSeg", "i", state.interaction);
+  // restoreSeg("locationSeg", "l", state.location);
+  // restoreSeg("agencySeg", "a", state.agency);
+
+  // const locationDescs = {
+  //   banner: "Appears at the top or bottom of the screen; non-blocking.",
+  //   popup: "Appears in the center of the screen; requires user interaction.",
+  //   inline: "Appears within the page content; contextual and subtle.",
+  //   modal: "Overlays the full screen; blocks all other interaction.",
+  // };
+
+  // document.getElementById("locationDesc").textContent =
+  //   locationDescs[state.location] || "";
+
   render();
 }
-
 
 function showModal(id) {
   const el = document.getElementById(id);
@@ -653,6 +1205,22 @@ function flashSaveButton() {
   }, 2000);
 }
 
+function setupNotificationLaunch() {
+  const btn = document.getElementById("launchNotification");
+
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    console.log("Launching notification with state:", state);
+
+    if (window.electronAPI?.sendNotification) {
+      window.electronAPI.sendNotification(state);
+    } else {
+      console.warn("Electron API not available");
+    }
+  });
+}
+
 function init() {
   setupConfigPanel();
   syncConfigPanel();
@@ -662,6 +1230,11 @@ function init() {
   setupPreviewInteractions();
   setupReferenceTableToggle();
   setupSaveLoad();
+  setupNotificationLaunch();
+  setupCustomContentToggles();
+  setupInlineNotificationReceiver();
+  setupCustomContentInputs();
+  setupExportActions();
   render();
 }
 
