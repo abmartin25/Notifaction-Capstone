@@ -1,6 +1,10 @@
 import { test, expect, _electron as electron } from '@playwright/test'
 import * as helper from './helperFunctions.mjs'
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { getDefaultState } = require('../default_state.js');
+
 test.describe('BetterNotify Functionality Suite', () => {
   test.describe.configure({ mode: 'serial' });
   let electronApp, appWindow
@@ -26,7 +30,8 @@ test.describe('BetterNotify Functionality Suite', () => {
     // Ensure BrowserWindow has correct title
     // const window = await appWindow
     const window_title = await appWindow.title()
-    expect(window_title).toBe('SENTINEL SDK — Prototype')
+    expect(window_title).toBe('BetterNotify')
+    await expect(appWindow.locator('.sidebar .brand')).toContainText('Human-centered security notifications')
 
     // Ensure Opens to Dashboard Page
     await helper.verifyPageNavigation(appWindow, 'Dashboard')
@@ -36,7 +41,7 @@ test.describe('BetterNotify Functionality Suite', () => {
 
   test('Navigation Bar Functionality', async() => {
     // Iterate over our nav windows and ensure they open the correct page
-    const pages = ['Dashboard', 'Builder', 'Export']
+    const pages = ['Dashboard', 'Builder', 'Framework', 'Export']
     for (const page of pages) {
       await helper.navigateToPageUsingNavBar(appWindow, page)
       await helper.verifyPageNavigation(appWindow, page)
@@ -46,7 +51,7 @@ test.describe('BetterNotify Functionality Suite', () => {
   test('Navigation Cards Functionality', async() => {
     // Make sure all cards lead to correct place (Excluding Framework)
     // Go through VALID cards
-    const cards = ["Builder", "Export"]
+    const cards = ['Builder', 'Framework', 'Export']
     for (const card of cards) {
       // Go back to dashboard first
       await helper.navigateToPageUsingNavBar(appWindow, 'Dashboard')
@@ -55,7 +60,7 @@ test.describe('BetterNotify Functionality Suite', () => {
     }
   })
 
-  test('Navigation Top Right Buttons Functionality @debug', async() => {
+  test('Navigation Top Right Buttons Functionality', async() => {
     // Have to test all for each subpage individually since they change depending on page
     // Manually written out to cover all boundaries
     // Dashboard to Builder
@@ -80,12 +85,17 @@ test.describe('BetterNotify Functionality Suite', () => {
     
   })
 
-  // Content of Dashboard
+  // Content of Builder
+
+  // Ensure configuration matches default when page is launched
+  test('Builder Default Configuration @debug', async() => {
+    await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
+    const defaultConfig = getDefaultState()
+    await helper.checkState(appWindow, defaultConfig)
+  })
+
 
   // Content of Export
 
-  // Content of Builder
-
-  // Functionality of Builder
   
 })

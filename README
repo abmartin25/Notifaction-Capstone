@@ -28,3 +28,8 @@ https://nodejs.org/en
 6. npx electron-rebuild -f -w better-sqlite3 ?
 2. npm start
 
+~ Testing ~
+1. npx playwright test
+--debug to watch 
+-- grep @debug to watch specified test
+
