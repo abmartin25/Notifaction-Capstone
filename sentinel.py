@@ -1,5 +1,6 @@
 import argparse
 import json
+import platform
 import os
 import sqlite3
 import subprocess
@@ -11,19 +12,23 @@ from pathlib import Path
 #Paths 
 ROOT = Path(__file__).parent
 DB_PATH = ROOT / "sentinel.db"
-SERVER_SCRIPT = ROOT / "server.js"
-ELECTRON_MAIN = ROOT / "electron-main.js"
+SERVER_SCRIPT = ROOT / "server.cjs"
+ELECTRON_MAIN = ROOT / "electron-main.cjs"
+
+# OS Detection
+OS_NAME = platform.system().lower()  # "windows", "darwin" (mac), "linux", etc.
+
+# TIMEOUT for server startup (seconds)
+SERVER_START_TIMEOUT = 5
 
 
 #Default notification state  
-# Default notification state (synced with frontend)
 DEFAULT_STATE = {
     "title": "",
     "message": "",
     "context": "",
     "userGroup": "",
     "motivation": "risk_avoidance",
-
     "instructionSteps": False,
     "directAction": False,
     "explainVuln": False,
@@ -35,12 +40,10 @@ DEFAULT_STATE = {
     "supportLinks": False,
     "preferredDecision": False,
     "aiTone": False,
-
     "urgency": "low",
     "interaction": "click_box",
     "location": "banner",
     "agency": "must_do",
-
     "schedule": False,
     "deployDate": "",
     "deployHour": "09:00",
@@ -148,25 +151,40 @@ class ProcessManager:
             print(f"[sentinel] server.js not found at {SERVER_SCRIPT}")
             return False
         print("[sentinel] Starting Node server...")
-        self._server = subprocess.Popen(
-            ["node", str(SERVER_SCRIPT)],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-        )
-        # Wait until the server ready
-        for _ in range(20):
-            line = self._server.stdout.readline()
-            if "running at" in line.lower():
-                print(f"[sentinel] {line.strip()}")
-                return True
-            time.sleep(0.1)
-        return True  # assume ready after timeout
 
+        if OS_NAME == "windows":
+            self._server = subprocess.Popen(
+                ["node", str(SERVER_SCRIPT)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+        if OS_NAME == "darwin":
+            self._server = subprocess.Popen(
+                ["node", str(SERVER_SCRIPT)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+        # Check server timeout for issues
+        # Check if the process is done every second
+        for _ in range(SERVER_START_TIMEOUT):
+            ret_code = self._server.poll()
+            if ret_code is not None:
+                print(f"Process finished with return code: {ret_code}")
+                return False
+            time.sleep(1)
+        return True
+            
     def start_electron(self) -> bool:
         """Launch the Electron desktop app."""
         print("[sentinel] Launching Electron app...")
         try:
+            # Use the local electron binary installed by npm
+            # electron_bin = ROOT / "node_modules" / ".bin" / "electron"
+            # if not electron_bin.exists():
+            #     # system electron
+            #     electron_bin = "electron"
             self._electron = subprocess.Popen(
             ["npx", "electron", str(ELECTRON_MAIN)],
             cwd=str(ROOT),
@@ -298,8 +316,12 @@ def main():
     if args.debug:
         # Dev/team only — server without Electron, use the browser
         pm.start_server()
-        print("[sentinel] Debug server running at http://localhost:3000")
-        print("[sentinel] Press Ctrl+C to stop.")
+        if not pm._server:
+            print("[sentinel] Failed to start server.")
+            return
+        else: 
+            print("[sentinel] Debug server running at http://localhost:3000")
+            print("[sentinel] Press Ctrl+C to stop.")
         try:
             while True:
                 time.sleep(1)
@@ -308,13 +330,13 @@ def main():
 
     else:
         # Default — launch the Electron app
-        pm.start_server()
+        # pm.start_server()
         time.sleep(0.5)
         ok = pm.start_electron()
         if ok:
             print("[sentinel] App launched. Close the window to exit.")
             try:
-                while True:
+                while pm._electron and pm._electron.poll() is None:
                     time.sleep(1)
             except KeyboardInterrupt:
                 pm.stop_all()
