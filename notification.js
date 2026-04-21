@@ -256,6 +256,9 @@ function setClickBoxBehavior() {
   primaryBtn.addEventListener("click", () => {
     choice = choice === "allow" ? null : "allow";
     setClickBoxState(choice);
+    if (choice === "allow" && currentState) {
+      handleAllowAction(currentState.context);
+    }
   });
 
   remindBtn.addEventListener("click", () => {
@@ -448,7 +451,9 @@ function setSupportLinks(state) {
     .join("");
 }
 
+let currentState = null;
 function applyNotificationState(state) {
+  currentState = state;
   document.getElementById("ntTitle").textContent =
     state.title || "Security alert";
 
@@ -469,6 +474,24 @@ function applyNotificationState(state) {
   applyLocationStyling(state);
   setInstructionSteps(state);
   setSupportLinks(state);
+}
+
+
+const CONTEXT_ACTIONS = {
+  weak_password:    "https://passwords.google.com",
+  suspicious_login: "https://myaccount.google.com/security",
+  cache_clear:      "https://support.google.com/accounts/answer/32050",
+  software_update:  null, // triggers restart instead
+};
+
+function handleAllowAction(context) {
+  if (!window.electronAPI) return;
+  if (context === "software_update") {
+    window.electronAPI.triggerRestart();
+  } else {
+    const url = CONTEXT_ACTIONS[context];
+    if (url) window.electronAPI.openUrl(url);
+  }
 }
 
 wireTooltip("ntVulnTrigger", "ntVulnTooltip");
