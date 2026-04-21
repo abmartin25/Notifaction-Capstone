@@ -1,4 +1,5 @@
-const { app, BrowserWindow, ipcMain, screen } = require("electron");
+const { app, BrowserWindow, ipcMain, screen, shell, dialog } = require("electron");
+const { exec } = require("child_process");
 const path = require("path");
 const { fork } = require("child_process");
 
@@ -46,8 +47,8 @@ function createNotificationWindow(notificationData) {
 
   let windowOptions = {
     frame: false,
-    resizable: false,
-    movable: false,
+    resizable: true,
+    movable: true,
     alwaysOnTop: true,
     skipTaskbar: true,
     transparent: true,
@@ -63,18 +64,18 @@ function createNotificationWindow(notificationData) {
   if (notificationData.location === "banner") {
     windowOptions = {
       ...windowOptions,
-      width: 520,
-      height: 180,
-      x: Math.floor((width - 520) / 2),
+      width: 560,
+      height: 520,
+      x: Math.floor((width - 560) / 2),
       y: 20,
     };
   } else if (notificationData.location === "popup") {
     windowOptions = {
       ...windowOptions,
-      width: 420,
-      height: 320,
-      x: Math.floor((width - 420) / 2),
-      y: Math.floor((height - 320) / 2),
+      width: 480,
+      height: 600,
+      x: Math.floor((width - 480) / 2),
+      y: Math.floor((height - 600) / 2),
     };
   } else if (notificationData.location === "modal") {
     windowOptions = {
@@ -93,10 +94,10 @@ function createNotificationWindow(notificationData) {
     // fallback
     windowOptions = {
       ...windowOptions,
-      width: 380,
-      height: 260,
-      x: width - 400,
-      y: height - 300,
+      width: 400,
+      height: 520,
+      x: width - 420,
+      y: height - 540,
     };
   }
 
@@ -136,6 +137,31 @@ app.whenReady().then(async () => {
 
   ipcMain.on("show-notification", (_event, notificationData) => {
     createNotificationWindow(notificationData);
+  });
+
+  ipcMain.on("open-url", (_event, url) => {
+    shell.openExternal(url);
+  });
+
+  ipcMain.on("trigger-restart", async (_event) => {
+    const { response } = await dialog.showMessageBox({
+      type: "warning",
+      buttons: ["Restart Now", "Cancel"],
+      defaultId: 0,
+      cancelId: 1,
+      title: "Software Update",
+      message: "Your computer will restart to apply the update.",
+      detail: "Save any open work before continuing.",
+    });
+    if (response === 0) {
+      if (process.platform === "win32") {
+        exec("shutdown /r /t 5");
+      } else if (process.platform === "darwin") {
+        exec("osascript -e 'tell application \"Finder\" to restart'");
+      } else {
+        exec("shutdown -r now");
+      }
+    }
   });
 
   app.on("activate", () => {
