@@ -14,4 +14,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
       callback(data);
     });
   },
+  openUrl: (url) => {
+    ipcRenderer.send("open-url", url);
+  },
+  triggerRestart: () => {
+    ipcRenderer.send("trigger-restart");
+  },
 });
