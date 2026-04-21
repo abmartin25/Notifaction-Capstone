@@ -52,18 +52,29 @@ function setupExportActions() {
 
   copyBtn.addEventListener("click", async () => {
     const code = document.getElementById("codeOutput").textContent;
-
     try {
       await navigator.clipboard.writeText(code);
       const original = copyBtn.textContent;
       copyBtn.textContent = "Copied ✓";
-      setTimeout(() => {
-        copyBtn.textContent = original;
-      }, 1500);
+      setTimeout(() => { copyBtn.textContent = original; }, 1500);
     } catch (err) {
       console.error("Failed to copy export code:", err);
     }
   });
+
+  const btnPython = document.getElementById("exportLangPython");
+  const btnJson = document.getElementById("exportLangJson");
+  if (!btnPython || !btnJson) return;
+
+  function setLang(lang) {
+    exportLang = lang;
+    btnPython.classList.toggle("primary", lang === "python");
+    btnJson.classList.toggle("primary", lang === "json");
+    renderCode();
+  }
+
+  btnPython.addEventListener("click", () => setLang("python"));
+  btnJson.addEventListener("click", () => setLang("json"));
 }
 
 // I ant to split off all of the creating the notification/preview stuff to its own js
@@ -258,6 +269,36 @@ function setupPreviewInteractions() {
     );
   });
 
+  // Wire remind me later toggle
+  const pvToggleRemind = document.getElementById("pvToggleRemind");
+  const pvToggleRemindTrack = document.getElementById("pvToggleRemindTrack");
+  const pvToggleRemindThumb = document.getElementById("pvToggleRemindThumb");
+  if (pvToggleRemind) {
+    pvToggleRemind.addEventListener("change", () => {
+      if (pvToggleRemind.checked) {
+        pvToggleAllow.checked = false;
+        pvToggleDeny.checked = false;
+        applyToggleVisual(pvToggleAllow, pvToggleAllowTrack, pvToggleAllowThumb, "var(--primary)");
+        applyToggleVisual(pvToggleDeny, pvToggleDenyTrack, pvToggleDenyThumb, "var(--danger)");
+      }
+      applyToggleVisual(pvToggleRemind, pvToggleRemindTrack, pvToggleRemindThumb, "var(--warn)");
+    });
+  }
+
+  // Update allow/deny to also uncheck remind
+  pvToggleAllow.addEventListener("change", () => {
+    if (pvToggleAllow.checked && pvToggleRemind) {
+      pvToggleRemind.checked = false;
+      applyToggleVisual(pvToggleRemind, pvToggleRemindTrack, pvToggleRemindThumb, "var(--warn)");
+    }
+  }, true);
+  pvToggleDeny.addEventListener("change", () => {
+    if (pvToggleDeny.checked && pvToggleRemind) {
+      pvToggleRemind.checked = false;
+      applyToggleVisual(pvToggleRemind, pvToggleRemindTrack, pvToggleRemindThumb, "var(--warn)");
+    }
+  }, true);
+
   wireTooltip("pvVulnTrigger", "pvVulnTooltip");
   wireTooltip("pvRiskTrigger", "pvRiskTooltip");
 }
@@ -335,9 +376,18 @@ function syncSliderPreview() {
     pvSlider._wired = true;
     pvSlider.addEventListener("input", () => {
       const label = document.getElementById("pvSliderLabel");
-      label.textContent = pvSlider.value === "0" ? "Allow" : "Don't Allow";
-      label.style.color =
-        pvSlider.value === "0" ? "var(--primary)" : "var(--muted)";
+      const v = parseInt(pvSlider.value);
+      const max = parseInt(pvSlider.max);
+      if (v === 0) {
+        label.textContent = "Allow";
+        label.style.color = "var(--primary)";
+      } else if (v === max) {
+        label.textContent = state.agency === "remind_later" ? "Remind me later" : "Don't Allow";
+        label.style.color = "var(--muted)";
+      } else {
+        label.textContent = "Remind me later";
+        label.style.color = "var(--muted)";
+      }
     });
   }
 }
@@ -411,37 +461,84 @@ function syncActionButtonsByAgency() {
   if (!primaryBtn || !remindBtn || !denyBtn) return;
 
   primaryBtn.style.display = "inline-block";
+  primaryBtn.textContent = "Allow";
   remindBtn.style.display = "none";
   denyBtn.style.display = "none";
 
-  if (state.agency === "must_do") {
-    primaryBtn.textContent = "Allow";
-  } else if (state.agency === "remind_later") {
-    primaryBtn.textContent = "Allow";
+  if (state.agency === "remind_later") {
     remindBtn.style.display = "inline-block";
     remindBtn.textContent = "Remind me later";
   } else if (state.agency === "not_urgent") {
-    primaryBtn.textContent = "Allow";
     remindBtn.style.display = "inline-block";
     remindBtn.textContent = "Remind me later";
     denyBtn.style.display = "inline-block";
     denyBtn.textContent = "Don't Allow";
   }
-}
 
+  // Slider: configure labels and range based on agency
+  const pvSlider = document.getElementById("pvSlider");
+  const pvSliderLabel = document.getElementById("pvSliderLabel");
+  const labelLeft = document.getElementById("pvSliderLabelLeft");
+  const labelRight = document.getElementById("pvSliderLabelRight");
+
+  const labelMiddle = document.getElementById("pvSliderMiddle") || document.getElementById("pvSliderLabelMiddle");
+  const disabledMsg = document.getElementById("pvSliderDisabledMsg");
+
+  if (pvSlider) {
+    if (state.agency === "must_do") {
+      // Disable slider — show overlay message, keep track inert
+      pvSlider.disabled = true;
+      pvSlider.style.opacity = "0.35";
+      if (disabledMsg) disabledMsg.style.display = "flex";
+      if (labelMiddle) labelMiddle.style.display = "none";
+      if (labelLeft) labelLeft.textContent = "Allow";
+      if (labelRight) labelRight.textContent = "Don't Allow";
+    } else if (state.agency === "remind_later") {
+      pvSlider.disabled = false;
+      pvSlider.style.opacity = "1";
+      if (disabledMsg) disabledMsg.style.display = "none";
+      pvSlider.min = "0"; pvSlider.max = "1"; pvSlider.step = "1"; pvSlider.value = "0";
+      if (labelLeft) labelLeft.textContent = "Allow";
+      if (labelMiddle) labelMiddle.style.display = "none";
+      if (labelRight) labelRight.textContent = "Remind me later";
+      if (pvSliderLabel) { pvSliderLabel.textContent = "Allow"; pvSliderLabel.style.color = "var(--primary)"; }
+    } else if (state.agency === "not_urgent") {
+      pvSlider.disabled = false;
+      pvSlider.style.opacity = "1";
+      if (disabledMsg) disabledMsg.style.display = "none";
+      pvSlider.min = "0"; pvSlider.max = "2"; pvSlider.step = "1"; pvSlider.value = "1";
+      if (labelLeft) labelLeft.textContent = "Allow";
+      if (labelMiddle) { labelMiddle.style.display = "block"; labelMiddle.textContent = "Remind me later"; }
+      if (labelRight) labelRight.textContent = "Don't Allow";
+      if (pvSliderLabel) { pvSliderLabel.textContent = "Remind me later"; pvSliderLabel.style.color = "var(--muted)"; }
+    }
+  }
+
+  // Toggle rows: show/hide based on agency
+  const remindRow = document.getElementById("pvToggleRemindRow");
+  const denyRow = document.getElementById("pvToggleDenyRow");
+  if (remindRow) remindRow.style.display = (state.agency === "remind_later" || state.agency === "not_urgent") ? "flex" : "none";
+  if (denyRow) denyRow.style.display = state.agency === "not_urgent" ? "flex" : "none";
+
+  // Preferred decision highlights
+  const preferred = !!state.preferredDecision;
+  if (primaryBtn) primaryBtn.classList.toggle("preferred-highlight", preferred);
+  const sliderAllowLabel = document.getElementById("pvSliderLabelLeft");
+  if (sliderAllowLabel) sliderAllowLabel.classList.toggle("preferred-highlight-text", preferred && state.agency !== "must_do");
+  const toggleAllowRow = document.getElementById("pvToggleAllowRow");
+  if (toggleAllowRow) toggleAllowRow.classList.toggle("preferred-highlight-row", preferred);
+}
 function syncInteractionPreview() {
   ["click_box", "slider", "toggle"].forEach((mode) => {
     const element = document.getElementById(`pvInteraction_${mode}`);
     if (!element) return;
-    element.style.display =
-      mode === state.interaction
-        ? mode === "toggle" || mode === "slider"
-          ? "block"
-          : "flex"
-        : "none";
+    const isCurrent = mode === state.interaction;
+    // For must_do + slider: show it but disabled overlay will appear
+    element.style.display = isCurrent
+      ? (mode === "toggle" || mode === "slider" ? "block" : "flex")
+      : "none";
   });
 }
-
 function syncGuidance() {
   const result = evaluateNotification(state);
   const { scores, suggestions, aiToneText } = result;
@@ -460,23 +557,21 @@ function syncGuidance() {
 
   const suggestionsEl = document.getElementById("suggestions");
   const prevOpenIndexes = new Set(
-    [...suggestionsEl.querySelectorAll("li.suggestion-open")].map((li) =>
-      parseInt(li.dataset.idx)
-    )
+    [...suggestionsEl.querySelectorAll("li.suggestion-open")].map((li) => parseInt(li.dataset.idx))
   );
 
-  suggestionsEl.innerHTML = suggestions
-    .map((item, i) => {
-      const isOpen = prevOpenIndexes.has(i);
-      const title = item.title || item;
-      const detail = item.detail || item;
-      return `<li class="suggestion-item${isOpen ? " suggestion-open" : ""}" data-idx="${i}" data-detail="${detail.replace(/"/g, "&quot;")}">
+  suggestionsEl.innerHTML = suggestions.map((item, i) => {
+    const isOpen = prevOpenIndexes.has(i);
+    const title = item.title || item;
+    const detail = item.detail || item;
+    return `<li class="suggestion-item${isOpen ? ' suggestion-open' : ''}" data-idx="${i}">
+      <div class="suggestion-header">
         <span class="suggestion-title">${title}</span>
-        <span class="suggestion-chevron">${isOpen ? "▲" : "▼"}</span>
-        <div class="suggestion-detail">${detail}</div>
-      </li>`;
-    })
-    .join("");
+        <span class="suggestion-chevron">${isOpen ? '▲' : '▼'}</span>
+      </div>
+      <div class="suggestion-detail">${detail}</div>
+    </li>`;
+  }).join("");
 
   suggestionsEl.querySelectorAll(".suggestion-item").forEach((li) => {
     li.addEventListener("click", () => {
@@ -493,9 +588,10 @@ function updateScore(_label, value, meterId, scoreId) {
   document.getElementById(meterId).style.width = `${value}%`;
 }
 
-function renderCode() {
-  document.getElementById("codeOutput").textContent =
-    `notif = create_notification(
+let exportLang = "python";
+
+function renderCodePython() {
+  return `notif = create_notification(
   title="${state.title}",
   message="${state.message}",
   context="${state.context}",
@@ -523,6 +619,43 @@ function renderCode() {
   show_on_bootup=${state.showOnBootup},
   show_during_task=${state.showDuringTask}
 )`;
+}
+
+function renderCodeJson() {
+  const obj = {
+    title: state.title,
+    message: state.message,
+    context: state.context,
+    user_group: state.userGroup,
+    urgency: state.urgency,
+    motivation: state.motivation,
+    include_steps: state.instructionSteps,
+    include_action: state.directAction,
+    explain_vulnerability: state.explainVuln,
+    explain_risk: state.explainRisk,
+    include_background_context: state.contextBackground,
+    include_time_estimate: state.timeEst,
+    explain_transparency: state.transparency,
+    consequences_if_ignored: state.consequences,
+    decision_support: state.supportLinks,
+    preferred_decision: state.preferredDecision,
+    ai_tone_review: state.aiTone,
+    interaction_mode: state.interaction,
+    notification_location: state.location,
+    user_agency: state.agency,
+    schedule_enabled: state.schedule,
+    deploy_date: state.deployDate,
+    deploy_hour: state.deployHour,
+    deploy_window: state.deployWindow,
+    show_on_bootup: state.showOnBootup,
+    show_during_task: state.showDuringTask,
+  };
+  return JSON.stringify(obj, null, 2);
+}
+
+function renderCode() {
+  document.getElementById("codeOutput").textContent =
+    exportLang === "json" ? renderCodeJson() : renderCodePython();
 }
 
 function getInstructionSteps(context) {
@@ -580,14 +713,6 @@ function syncInstructionSteps() {
   wrap.style.display = "block";
   const steps = getInstructionSteps(state.context);
   list.innerHTML = steps.map((step) => `<li>${step}</li>`).join("");
-}
-
-function setupReferenceTableToggle() {
-  document.getElementById("ckRefTable").addEventListener("change", function () {
-    document
-      .getElementById("refTableWrap")
-      .classList.toggle("open", this.checked);
-  });
 }
 
 function getVulnerabilityExplanation(context) {
@@ -777,12 +902,14 @@ function syncSupportLinks() {
 
   const links = getSupportLinks(state.context);
   wrap.style.display = "flex";
-  wrap.innerHTML = links
-    .map(
-      (link) =>
-        `<a class="mini neutral-accent" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`,
-    )
-    .join("");
+  wrap.innerHTML = links.map((link) => {
+    const isReal = link.url && link.url !== "#";
+    if (isReal) {
+      return `<a class="mini neutral-accent" href="${link.url}" target="_blank" rel="noopener noreferrer" style="cursor:pointer;">${link.label}</a>`;
+    } else {
+      return `<span class="mini neutral-accent" title="No URL set — enter one in the custom links field" style="opacity:0.4; cursor:not-allowed;">${link.label}</span>`;
+    }
+  }).join("");
 }
 
 function getTransparencyText(context) {
@@ -1157,7 +1284,6 @@ function init() {
   setupSegmentedControls();
   setupNavigation();
   setupPreviewInteractions();
-  setupReferenceTableToggle();
   setupSaveLoad();
   setupNotificationLaunch();
   setupCustomContentToggles();
