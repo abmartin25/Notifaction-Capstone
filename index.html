@@ -1,25 +1,25 @@
-
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SENTINEL SDK — Prototype</title>
+  <title>BetterNotify</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
     <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
+      <img src="SDK_Logo.png" alt="BetterNotify logo" style="width:34px;height:34px;border-radius:10px;object-fit:cover;box-shadow:var(--shadow);" />
       <div>
-        <h1>SENTINEL SDK</h1>
+        <h1>BetterNotify</h1>
         <p>Human-centered security notifications</p>
       </div>
     </div>
     <div class="nav">
       <button class="active" data-route="dashboard">Dashboard <span>↩</span></button>
       <button data-route="builder">Builder <span>⚙</span></button>
+      <button data-route="framework">Framework <span>☰</span></button>
       <button data-route="export">Export <span>⇩</span></button>
     </div>
   </aside>
@@ -40,7 +40,7 @@
       </div>
       <div class="grid">
         <div class="card" data-route="builder"><h3>Create Notification</h3><p>Choose user group and security context, then tune clarity, urgency, motivation, guidance, transparency, and user agency.</p></div>
-        <div class="card"><h3>Framework Guidance</h3><p>Review notification quality across clarity, context, trust, tone, decision support, workflow fit, and frequency.</p></div>
+        <div class="card" data-route="framework"><h3>Framework Guidance</h3><p>Review notification quality across clarity, context, trust, tone, decision support, workflow fit, and frequency.</p></div>
         <div class="card" data-route="export"><h3>SDK Integration</h3><p>Export Python snippets for consistent notifications across apps, teams, and environments.</p></div>
       </div>
     </section>
@@ -292,32 +292,32 @@
               </div>
               <div id="pvConsequencesWrap" style="display:none; margin-top:10px; font-size:12px; line-height:1.45; color:#991b1b; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:10px 12px;">
               </div>
-              <div id="pvSupportLinksWrap" style="display:none; margin-top:10px; gap:8px; flex-wrap:wrap;" class="previewBtns">
-                <button class="mini neutral-accent" id="pvHelpLinkBtn" type="button">Help Article</button>
-                <button class="mini neutral-accent" id="pvLearnMoreBtn" type="button">Learn More</button>
-              </div>
+              <div id="pvSupportLinksWrap" style="display:none; margin-top:10px; gap:8px; flex-wrap:wrap;" class="previewBtns"></div>
               <div id="pvStepsWrap" style="display:none; margin-top:10px; background:#f9fafb; border-radius:12px; padding:10px 12px;">
                 <div style="font-size:12px; font-weight:700; margin-bottom:6px;">Next steps</div>
                 <ol id="pvStepsList" style="margin:0; padding-left:18px; font-size:12px; color:var(--muted); line-height:1.5;">
                 </ol>
               </div>
 
-            <div id="pvInteraction_click_box" class="previewBtns">
+            <div id="pvInteraction_click_box" class="previewBtns" style="margin-top:10px;">
               <button class="mini primary" id="primaryBtn">Allow</button>
               <button class="mini secondary-accent" id="remindBtn" style="display:none;">Remind me later</button>
               <button class="mini" id="denyBtn">Don't Allow</button>
             </div>
 
-            <div id="pvInteraction_slider" style="display:none; margin-top:6px;">
+            <div id="pvInteraction_slider" style="display:none; margin-top:6px; position:relative;">
+              <div id="pvSliderDisabledMsg" style="display:none; position:absolute; inset:0; background:rgba(249,250,251,0.92); border-radius:10px; z-index:2; align-items:center; justify-content:center; font-size:12px; color:var(--muted); text-align:center; padding:8px;">A sliding bar needs at least two options — switch user agency to use this.</div>
               <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px;">
-                <span>Allow</span><span>Don't Allow</span>
+                <span id="pvSliderLabelLeft">Allow</span>
+                <span id="pvSliderLabelMiddle" style="display:none; color:var(--muted);">Remind me later</span>
+                <span id="pvSliderLabelRight">Don't Allow</span>
               </div>
-              <input type="range" id="pvSlider" min="0" max="1" step="1" value="0" style="width:100%; accent-color:var(--primary);" />
-              <div id="pvSliderLabel" style="text-align:center; font-size:12px; font-weight:700; color:var(--muted); margin-top:5px;">Allow</div>
+              <input type="range" id="pvSlider" min="0" max="2" step="1" value="1" style="width:100%; accent-color:var(--primary);" />
+              <div id="pvSliderLabel" style="text-align:center; font-size:12px; font-weight:700; color:var(--muted); margin-top:5px;"> </div>
             </div>
 
             <div id="pvInteraction_toggle" style="display:none;">
-              <div style="display:flex; align-items:center; justify-content:space-between; background:#f3f4f6; border-radius:12px; padding:10px 14px; margin-bottom:8px;">
+              <div id="pvToggleAllowRow" style="display:flex; align-items:center; justify-content:space-between; background:#f3f4f6; border-radius:12px; padding:10px 14px; margin-bottom:8px;">
                 <span style="font-size:13px; font-weight:600;">Allow</span>
                 <label style="position:relative; width:42px; height:24px; cursor:pointer; margin:0;">
                   <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute;" id="pvToggleAllow" />
@@ -325,7 +325,15 @@
                   <span id="pvToggleAllowThumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s;"></span>
                 </label>
               </div>
-              <div style="display:flex; align-items:center; justify-content:space-between; background:#f3f4f6; border-radius:12px; padding:10px 14px;">
+              <div id="pvToggleRemindRow" style="display:none; align-items:center; justify-content:space-between; background:#f3f4f6; border-radius:12px; padding:10px 14px; margin-bottom:8px;">
+                <span style="font-size:13px; font-weight:600;">Remind me later</span>
+                <label style="position:relative; width:42px; height:24px; cursor:pointer; margin:0;">
+                  <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute;" id="pvToggleRemind" />
+                  <span id="pvToggleRemindTrack" style="position:absolute;inset:0;background:#d1d5db;border-radius:999px;transition:background .2s;"></span>
+                  <span id="pvToggleRemindThumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s;"></span>
+                </label>
+              </div>
+              <div id="pvToggleDenyRow" style="display:flex; align-items:center; justify-content:space-between; background:#f3f4f6; border-radius:12px; padding:10px 14px;">
                 <span style="font-size:13px; font-weight:600;">Don't Allow</span>
                 <label style="position:relative; width:42px; height:24px; cursor:pointer; margin:0;">
                   <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute;" id="pvToggleDeny" />
@@ -376,39 +384,43 @@
               <p id="aiToneText" style="font-size:13px; color:var(--muted); line-height:1.45;">Enable AI tone review to simulate a framework-level tone check.</p>
             </div>
 
-            <div class="ref-toggle-row">
-              <label>
-                <input type="checkbox" id="ckRefTable" />
-                Show notification quality reference table
-              </label>
-            </div>
-            <div class="ref-table-wrap" id="refTableWrap">
-              <div class="ref-table-scroll">
-                <table class="ref-table">
-                  <thead>
-                    <tr><th>Category</th><th>✔ Good Attribute</th><th>✖ Bad Attribute</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>Clarity</td><td>Detailed explanation of how the issue was detected, vulnerability details, and remediation steps</td><td>Technical, ambiguous, or unclear warning messages</td></tr>
-                    <tr><td>Transparency</td><td>Explains why the warning occurred and what the threat is</td><td>No explanation of why the notification appeared</td></tr>
-                    <tr><td>Context</td><td>Provides context showing why the notification applies to the user</td><td>Lacks context, making the message feel irrelevant</td></tr>
-                    <tr><td>Decision Support</td><td>Helps inform decision-making rather than forcing users to quickly click a button</td><td>Pushes users to dismiss without understanding</td></tr>
-                    <tr><td>Guidance</td><td>Provides actionable guidance and remediation steps</td><td>No guidance on what users should do</td></tr>
-                    <tr><td>Risk Communication</td><td>Clearly states potential risks and consequences</td><td>Does not communicate risks clearly</td></tr>
-                    <tr><td>Consequences</td><td>Explains implications of ignoring the warning and may provide examples of consequences</td><td>Consequences are unclear or not mentioned</td></tr>
-                    <tr><td>User Understanding</td><td>Explains background information so users understand the issue</td><td>Assumes technical knowledge users may not have</td></tr>
-                    <tr><td>Encouraging Compliance</td><td>Clearly communicates the problem and highlights the safer or preferred action</td><td>Does not clearly communicate what action is preferred</td></tr>
-                    <tr><td>Tone</td><td>Uses constructive or positive framing rather than threats or legal intimidation</td><td>Creates annoyance or frustration that discourages engagement</td></tr>
-                    <tr><td>Trust & Legitimacy</td><td>Appears trustworthy and legitimate to users</td><td>Looks suspicious, spam-like, or untrustworthy</td></tr>
-                    <tr><td>Design & Interaction</td><td>Has a distinct design or interaction style that differentiates it from normal notifications</td><td>Looks identical to regular notifications</td></tr>
-                    <tr><td>Frequency</td><td>Reduces unnecessary warnings and only alerts when meaningful</td><td>Too many notifications with no meaningful follow-through</td></tr>
-                    <tr><td>User Workflow</td><td>Minimizes disruption and respects the user's workflow</td><td>Interrupts normal activities, leading users to ignore or disable notifications</td></tr>
-                    <tr><td>User Impact</td><td>Increases users' perception of security and their intention to continue using the app</td><td>Causes annoyance, leading users to ignore or dismiss warnings and develop poor security habits</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="framework" class="hidden">
+      <div class="topbar">
+        <div class="title">
+          <h2>Framework Guidance</h2>
+          <p>Research-backed quality criteria for human-centered security notifications. Use this as a reference when designing and evaluating your notifications.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ref-table-scroll">
+          <table class="ref-table">
+            <thead>
+              <tr><th>Category</th><th>✔ Good Attribute</th><th>✖ Bad Attribute</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Clarity</td><td>Detailed explanation of how the issue was detected, vulnerability details, and remediation steps</td><td>Technical, ambiguous, or unclear warning messages</td></tr>
+              <tr><td>Transparency</td><td>Explains why the warning occurred and what the threat is</td><td>No explanation of why the notification appeared</td></tr>
+              <tr><td>Context</td><td>Provides context showing why the notification applies to the user</td><td>Lacks context, making the message feel irrelevant</td></tr>
+              <tr><td>Decision Support</td><td>Helps inform decision-making rather than forcing users to quickly click a button</td><td>Pushes users to dismiss without understanding</td></tr>
+              <tr><td>Guidance</td><td>Provides actionable guidance and remediation steps</td><td>No guidance on what users should do</td></tr>
+              <tr><td>Risk Communication</td><td>Clearly states potential risks and consequences</td><td>Does not communicate risks clearly</td></tr>
+              <tr><td>Consequences</td><td>Explains implications of ignoring the warning and may provide examples of consequences</td><td>Consequences are unclear or not mentioned</td></tr>
+              <tr><td>User Understanding</td><td>Explains background information so users understand the issue</td><td>Assumes technical knowledge users may not have</td></tr>
+              <tr><td>Encouraging Compliance</td><td>Clearly communicates the problem and highlights the safer or preferred action</td><td>Does not clearly communicate what action is preferred</td></tr>
+              <tr><td>Tone</td><td>Uses constructive or positive framing rather than threats or legal intimidation</td><td>Creates annoyance or frustration that discourages engagement</td></tr>
+              <tr><td>Trust & Legitimacy</td><td>Appears trustworthy and legitimate to users</td><td>Looks suspicious, spam-like, or untrustworthy</td></tr>
+              <tr><td>Design & Interaction</td><td>Has a distinct design or interaction style that differentiates it from normal notifications</td><td>Looks identical to regular notifications</td></tr>
+              <tr><td>Frequency</td><td>Reduces unnecessary warnings and only alerts when meaningful</td><td>Too many notifications with no meaningful follow-through</td></tr>
+              <tr><td>User Workflow</td><td>Minimizes disruption and respects the user's workflow</td><td>Interrupts normal activities, leading users to ignore or disable notifications</td></tr>
+              <tr><td>User Impact</td><td>Increases users' perception of security and their intention to continue using the app</td><td>Causes annoyance, leading users to ignore or dismiss warnings and develop poor security habits</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -425,6 +437,10 @@
         </div>
       </div>
       <div class="card">
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="btn on" id="exportLangPython" style="font-size:12px; padding:7px 14px;">Python</button>
+          <button class="btn" id="exportLangJson" style="font-size:12px; padding:7px 14px;">JSON</button>
+        </div>
         <pre class="codebox" id="codeOutput">// Your generated notification code will appear here</pre>
       </div>
     </section>
