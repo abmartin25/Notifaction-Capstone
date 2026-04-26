@@ -142,6 +142,28 @@ function getContextBackground(state) {
   );
 }
 
+function applyLocationStyling(state) {
+  const shell = document.getElementById("notificationShell");
+  if (!shell) return;
+
+  shell.classList.remove(
+    "toast-layout",
+    "banner-layout",
+    "popup-layout",
+    "modal-layout",
+  );
+
+  if (state.location === "banner") {
+    shell.classList.add("banner-layout");
+  } else if (state.location === "popup") {
+    shell.classList.add("popup-layout");
+  } else if (state.location === "modal") {
+    shell.classList.add("modal-layout");
+  } else {
+    shell.classList.add("toast-layout");
+  }
+}
+
 function getConsequencesText(state) {
   if ((state.customConsequences || "").trim()) {
     return state.customConsequences.trim();
@@ -453,6 +475,7 @@ function setSupportLinks(state) {
 
 let currentState = null;
 function applyNotificationState(state) {
+  applyLocationStyling(state);
   currentState = state;
   document.getElementById("ntTitle").textContent =
     state.title || "Security alert";
@@ -476,12 +499,11 @@ function applyNotificationState(state) {
   setSupportLinks(state);
 }
 
-
 const CONTEXT_ACTIONS = {
-  weak_password:    "https://passwords.google.com",
+  weak_password: "https://passwords.google.com",
   suspicious_login: "https://myaccount.google.com/security",
-  cache_clear:      "https://support.google.com/accounts/answer/32050",
-  software_update:  null, // triggers restart instead
+  cache_clear: "https://support.google.com/accounts/answer/32050",
+  software_update: null, // triggers restart instead
 };
 
 function handleAllowAction(context) {

@@ -56,7 +56,9 @@ function setupExportActions() {
       await navigator.clipboard.writeText(code);
       const original = copyBtn.textContent;
       copyBtn.textContent = "Copied ✓";
-      setTimeout(() => { copyBtn.textContent = original; }, 1500);
+      setTimeout(() => {
+        copyBtn.textContent = original;
+      }, 1500);
     } catch (err) {
       console.error("Failed to copy export code:", err);
     }
@@ -108,61 +110,69 @@ function setupDropdowns() {
 }
 
 function syncDropdowns() {
-  document.querySelectorAll(".field[data-type='dropdown']").forEach((dropdown) => {
-    const forAttr = dropdown.querySelector("label").getAttribute("for");
-    const customWrap = dropdown.querySelector(".custom-input-wrap");
-    const select = dropdown.querySelector(".dropdown");
-    const currentValue = state[forAttr] || getDefaultState()[forAttr];  // Double-Blind to Default
-    const dropdownOption = Array.from(select.options).find((o) => o.value === currentValue);
-    if (dropdownOption) {
-      select.value = currentValue;
-    } else {
-      select.value = "__custom__";
-      customWrap.classList.remove("hidden");
-      customWrap.querySelector("input").value = currentValue;
-    }
-    render();
-  });
+  document
+    .querySelectorAll(".field[data-type='dropdown']")
+    .forEach((dropdown) => {
+      const forAttr = dropdown.querySelector("label").getAttribute("for");
+      const customWrap = dropdown.querySelector(".custom-input-wrap");
+      const select = dropdown.querySelector(".dropdown");
+      const currentValue = state[forAttr] || getDefaultState()[forAttr]; // Double-Blind to Default
+      const dropdownOption = Array.from(select.options).find(
+        (o) => o.value === currentValue,
+      );
+      if (dropdownOption) {
+        select.value = currentValue;
+      } else {
+        select.value = "__custom__";
+        customWrap.classList.remove("hidden");
+        customWrap.querySelector("input").value = currentValue;
+      }
+      render();
+    });
 }
 
 function setupTextInputs() {
-  document.querySelectorAll(".field[data-type='textInput']").forEach((field) => {
-    const forAttr = field.querySelector("label").getAttribute("for");
-    field.addEventListener("input", (e) => {
-      state[forAttr] = e.target.value;
-      // console.log(`Text input ${forAttr} changed to ${state[forAttr]}`);
-      render();
+  document
+    .querySelectorAll(".field[data-type='textInput']")
+    .forEach((field) => {
+      const forAttr = field.querySelector("label").getAttribute("for");
+      field.addEventListener("input", (e) => {
+        state[forAttr] = e.target.value;
+        // console.log(`Text input ${forAttr} changed to ${state[forAttr]}`);
+        render();
+      });
     });
-  });
 }
 
 function syncTextInputs() {
-  document.querySelectorAll(".field[data-type='textInput']").forEach((field) => {
-    const forAttr = field.querySelector("label").getAttribute("for");
-    const currentValue = state[forAttr] || getDefaultState()[forAttr];  // Double-Blind to Default
-    const select = field.querySelector("textarea, input");
-    if (select) select.value = currentValue;
-    render();
-  });
+  document
+    .querySelectorAll(".field[data-type='textInput']")
+    .forEach((field) => {
+      const forAttr = field.querySelector("label").getAttribute("for");
+      const currentValue = state[forAttr] || getDefaultState()[forAttr]; // Double-Blind to Default
+      const select = field.querySelector("textarea, input");
+      if (select) select.value = currentValue;
+      render();
+    });
 }
 
 //This is fine to leave as ID based (one off, components get handled differently)
 const checkboxMappings = [
-    ["ckInstructionSteps", "instructionSteps"],
-    ["ckDirectAction", "directAction"],
-    ["ckExplainVuln", "explainVuln"],
-    ["ckExplainRisk", "explainRisk"],
-    ["ckContextBackground", "contextBackground"],
-    ["ckTimeEst", "timeEst"],
-    ["ckTransparency", "transparency"],
-    ["ckConsequences", "consequences"],
-    ["ckSupportLinks", "supportLinks"],
-    ["ckPreferredDecision", "preferredDecision"],
-    ["ckAiTone", "aiTone"],
-    ["ckSchedule", "schedule"],
-    ["ckShowOnBootup", "showOnBootup"],
-    ["ckShowDuringTask", "showDuringTask"],
-  ];
+  ["ckInstructionSteps", "instructionSteps"],
+  ["ckDirectAction", "directAction"],
+  ["ckExplainVuln", "explainVuln"],
+  ["ckExplainRisk", "explainRisk"],
+  ["ckContextBackground", "contextBackground"],
+  ["ckTimeEst", "timeEst"],
+  ["ckTransparency", "transparency"],
+  ["ckConsequences", "consequences"],
+  ["ckSupportLinks", "supportLinks"],
+  ["ckPreferredDecision", "preferredDecision"],
+  ["ckAiTone", "aiTone"],
+  ["ckSchedule", "schedule"],
+  ["ckShowOnBootup", "showOnBootup"],
+  ["ckShowDuringTask", "showDuringTask"],
+];
 
 function setupCheckboxInputs() {
   checkboxMappings.forEach(([id, key]) => {
@@ -182,78 +192,98 @@ function syncCheckboxInputs() {
   checkboxMappings.forEach(([id, key]) => {
     document.getElementById(id).checked = state[key];
     if (key === "schedule") {
-      document.getElementById("scheduleWrap").classList.toggle("hidden", !state.schedule);
+      document
+        .getElementById("scheduleWrap")
+        .classList.toggle("hidden", !state.schedule);
     }
     render();
   });
 }
 
 const locationDescs = {
-    banner: "Appears at the top or bottom of the screen; non-blocking.",
-    popup: "Appears in the center of the screen; requires user interaction.",
-    inline: "Appears within the page content; contextual and subtle.",
-    modal: "Overlays the full screen; blocks all other interaction.",
+  banner: "Appears at the top or bottom of the screen; non-blocking.",
+  popup: "Appears in the center of the screen; requires user interaction.",
+  inline: "Appears within the page content; contextual and subtle.",
+  modal: "Overlays the full screen; blocks all other interaction.",
 };
 
 function setupSegmentedControls() {
-  document.querySelectorAll(".field[data-type='segmentGroup']").forEach((field) => {
-    const forContainer = field.querySelector("div.seg").id.slice(0, -3);
-    field.querySelectorAll("button").forEach((button) => {
-      button.addEventListener("click", () => {
-        field
-          .querySelectorAll("button")
-          .forEach((b) => b.classList.remove("on"));
-        button.classList.add("on");
-        state[forContainer] = button.dataset[forContainer.charAt(0)];
-        
-        if (forContainer === "location") {
-          field.querySelector(".sectionNote").textContent =
-            locationDescs[button.dataset[forContainer.charAt(0)]] || "";
-        }
-        
-        console.log(`Segment group ${forContainer} changed to ${state[forContainer]}`);
-        render();
+  document
+    .querySelectorAll(".field[data-type='segmentGroup']")
+    .forEach((field) => {
+      const forContainer = field.querySelector("div.seg").id.slice(0, -3);
+      field.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          field
+            .querySelectorAll("button")
+            .forEach((b) => b.classList.remove("on"));
+          button.classList.add("on");
+          state[forContainer] = button.dataset[forContainer.charAt(0)];
+
+          if (forContainer === "location") {
+            field.querySelector(".sectionNote").textContent =
+              locationDescs[button.dataset[forContainer.charAt(0)]] || "";
+          }
+
+          console.log(
+            `Segment group ${forContainer} changed to ${state[forContainer]}`,
+          );
+          render();
+        });
       });
-    })
-  });
+    });
 }
 
 function syncSegmentedControls() {
-  document.querySelectorAll(".field[data-type='segmentGroup']").forEach((field) => {
-    const forContainer = field.querySelector("div.seg").id.slice(0, -3);
-    const currentValue = state[forContainer] || getDefaultState()[forContainer];  // Double-Blind to Default
+  document
+    .querySelectorAll(".field[data-type='segmentGroup']")
+    .forEach((field) => {
+      const forContainer = field.querySelector("div.seg").id.slice(0, -3);
+      const currentValue =
+        state[forContainer] || getDefaultState()[forContainer]; // Double-Blind to Default
 
-    field.querySelectorAll("button").forEach((b) => b.classList.remove("on"));
+      field.querySelectorAll("button").forEach((b) => b.classList.remove("on"));
 
-    const buttonToActivate = field.querySelector(`button[data-${forContainer.charAt(0)}="${currentValue}"]`);
-    if (buttonToActivate) buttonToActivate.classList.add("on");
+      const buttonToActivate = field.querySelector(
+        `button[data-${forContainer.charAt(0)}="${currentValue}"]`,
+      );
+      if (buttonToActivate) buttonToActivate.classList.add("on");
 
-    if (forContainer === "location") {
-      field.querySelector(".sectionNote").textContent =
-        locationDescs[currentValue] || locationDescs[getDefaultState().location];
-    }
-    render();
-  });
+      if (forContainer === "location") {
+        field.querySelector(".sectionNote").textContent =
+          locationDescs[currentValue] ||
+          locationDescs[getDefaultState().location];
+      }
+      render();
+    });
 }
 
 function setupDeploymentInputs() {
-  document.querySelectorAll(".field[data-type='deploymentInputs'] [data-type='input']").forEach((input) => {
-    const forAttr = input.querySelector("label").getAttribute("for");
-    input.querySelector("input").addEventListener("input", (e) => {
-      state[forAttr] = e.target.value;
-      render();
+  document
+    .querySelectorAll(
+      ".field[data-type='deploymentInputs'] [data-type='input']",
+    )
+    .forEach((input) => {
+      const forAttr = input.querySelector("label").getAttribute("for");
+      input.querySelector("input").addEventListener("input", (e) => {
+        state[forAttr] = e.target.value;
+        render();
+      });
     });
-  });
 }
 
 function syncDeploymentInputs() {
-  document.querySelectorAll(".field[data-type='deploymentInputs'] [data-type='input']").forEach((input) => {
-    const forAttr = input.querySelector("label").getAttribute("for");
-    const inputLocation = input.querySelector("input");
-    const currentValue = state[forAttr] || getDefaultState()[forAttr];  // Double-Blind to Default
-    if (inputLocation) inputLocation.value = currentValue;
-    render();
-  });
+  document
+    .querySelectorAll(
+      ".field[data-type='deploymentInputs'] [data-type='input']",
+    )
+    .forEach((input) => {
+      const forAttr = input.querySelector("label").getAttribute("for");
+      const inputLocation = input.querySelector("input");
+      const currentValue = state[forAttr] || getDefaultState()[forAttr]; // Double-Blind to Default
+      if (inputLocation) inputLocation.value = currentValue;
+      render();
+    });
 }
 
 // Summary functions for simplicity
@@ -347,26 +377,59 @@ function setupPreviewInteractions() {
       if (pvToggleRemind.checked) {
         pvToggleAllow.checked = false;
         pvToggleDeny.checked = false;
-        applyToggleVisual(pvToggleAllow, pvToggleAllowTrack, pvToggleAllowThumb, "var(--primary)");
-        applyToggleVisual(pvToggleDeny, pvToggleDenyTrack, pvToggleDenyThumb, "var(--danger)");
+        applyToggleVisual(
+          pvToggleAllow,
+          pvToggleAllowTrack,
+          pvToggleAllowThumb,
+          "var(--primary)",
+        );
+        applyToggleVisual(
+          pvToggleDeny,
+          pvToggleDenyTrack,
+          pvToggleDenyThumb,
+          "var(--danger)",
+        );
       }
-      applyToggleVisual(pvToggleRemind, pvToggleRemindTrack, pvToggleRemindThumb, "var(--warn)");
+      applyToggleVisual(
+        pvToggleRemind,
+        pvToggleRemindTrack,
+        pvToggleRemindThumb,
+        "var(--warn)",
+      );
     });
   }
 
   // Update allow/deny to also uncheck remind
-  pvToggleAllow.addEventListener("change", () => {
-    if (pvToggleAllow.checked && pvToggleRemind) {
-      pvToggleRemind.checked = false;
-      applyToggleVisual(pvToggleRemind, pvToggleRemindTrack, pvToggleRemindThumb, "var(--warn)");
-    }
-  }, true);
-  pvToggleDeny.addEventListener("change", () => {
-    if (pvToggleDeny.checked && pvToggleRemind) {
-      pvToggleRemind.checked = false;
-      applyToggleVisual(pvToggleRemind, pvToggleRemindTrack, pvToggleRemindThumb, "var(--warn)");
-    }
-  }, true);
+  pvToggleAllow.addEventListener(
+    "change",
+    () => {
+      if (pvToggleAllow.checked && pvToggleRemind) {
+        pvToggleRemind.checked = false;
+        applyToggleVisual(
+          pvToggleRemind,
+          pvToggleRemindTrack,
+          pvToggleRemindThumb,
+          "var(--warn)",
+        );
+      }
+    },
+    true,
+  );
+  pvToggleDeny.addEventListener(
+    "change",
+    () => {
+      if (pvToggleDeny.checked && pvToggleRemind) {
+        pvToggleRemind.checked = false;
+        applyToggleVisual(
+          pvToggleRemind,
+          pvToggleRemindTrack,
+          pvToggleRemindThumb,
+          "var(--warn)",
+        );
+      }
+    },
+    true,
+  );
 
   wireTooltip("pvVulnTrigger", "pvVulnTooltip");
   wireTooltip("pvRiskTrigger", "pvRiskTooltip");
@@ -451,7 +514,8 @@ function syncSliderPreview() {
         label.textContent = "Allow";
         label.style.color = "var(--primary)";
       } else if (v === max) {
-        label.textContent = state.agency === "remind_later" ? "Remind me later" : "Don't Allow";
+        label.textContent =
+          state.agency === "remind_later" ? "Remind me later" : "Don't Allow";
         label.style.color = "var(--muted)";
       } else {
         label.textContent = "Remind me later";
@@ -550,7 +614,9 @@ function syncActionButtonsByAgency() {
   const labelLeft = document.getElementById("pvSliderLabelLeft");
   const labelRight = document.getElementById("pvSliderLabelRight");
 
-  const labelMiddle = document.getElementById("pvSliderMiddle") || document.getElementById("pvSliderLabelMiddle");
+  const labelMiddle =
+    document.getElementById("pvSliderMiddle") ||
+    document.getElementById("pvSliderLabelMiddle");
   const disabledMsg = document.getElementById("pvSliderDisabledMsg");
 
   if (pvSlider) {
@@ -566,36 +632,61 @@ function syncActionButtonsByAgency() {
       pvSlider.disabled = false;
       pvSlider.style.opacity = "1";
       if (disabledMsg) disabledMsg.style.display = "none";
-      pvSlider.min = "0"; pvSlider.max = "1"; pvSlider.step = "1"; pvSlider.value = "0";
+      pvSlider.min = "0";
+      pvSlider.max = "1";
+      pvSlider.step = "1";
+      pvSlider.value = "0";
       if (labelLeft) labelLeft.textContent = "Allow";
       if (labelMiddle) labelMiddle.style.display = "none";
       if (labelRight) labelRight.textContent = "Remind me later";
-      if (pvSliderLabel) { pvSliderLabel.textContent = "Allow"; pvSliderLabel.style.color = "var(--primary)"; }
+      if (pvSliderLabel) {
+        pvSliderLabel.textContent = "Allow";
+        pvSliderLabel.style.color = "var(--primary)";
+      }
     } else if (state.agency === "not_urgent") {
       pvSlider.disabled = false;
       pvSlider.style.opacity = "1";
       if (disabledMsg) disabledMsg.style.display = "none";
-      pvSlider.min = "0"; pvSlider.max = "2"; pvSlider.step = "1"; pvSlider.value = "1";
+      pvSlider.min = "0";
+      pvSlider.max = "2";
+      pvSlider.step = "1";
+      pvSlider.value = "1";
       if (labelLeft) labelLeft.textContent = "Allow";
-      if (labelMiddle) { labelMiddle.style.display = "block"; labelMiddle.textContent = "Remind me later"; }
+      if (labelMiddle) {
+        labelMiddle.style.display = "block";
+        labelMiddle.textContent = "Remind me later";
+      }
       if (labelRight) labelRight.textContent = "Don't Allow";
-      if (pvSliderLabel) { pvSliderLabel.textContent = "Remind me later"; pvSliderLabel.style.color = "var(--muted)"; }
+      if (pvSliderLabel) {
+        pvSliderLabel.textContent = "Remind me later";
+        pvSliderLabel.style.color = "var(--muted)";
+      }
     }
   }
 
   // Toggle rows: show/hide based on agency
   const remindRow = document.getElementById("pvToggleRemindRow");
   const denyRow = document.getElementById("pvToggleDenyRow");
-  if (remindRow) remindRow.style.display = (state.agency === "remind_later" || state.agency === "not_urgent") ? "flex" : "none";
-  if (denyRow) denyRow.style.display = state.agency === "not_urgent" ? "flex" : "none";
+  if (remindRow)
+    remindRow.style.display =
+      state.agency === "remind_later" || state.agency === "not_urgent"
+        ? "flex"
+        : "none";
+  if (denyRow)
+    denyRow.style.display = state.agency === "not_urgent" ? "flex" : "none";
 
   // Preferred decision highlights
   const preferred = !!state.preferredDecision;
   if (primaryBtn) primaryBtn.classList.toggle("preferred-highlight", preferred);
   const sliderAllowLabel = document.getElementById("pvSliderLabelLeft");
-  if (sliderAllowLabel) sliderAllowLabel.classList.toggle("preferred-highlight-text", preferred && state.agency !== "must_do");
+  if (sliderAllowLabel)
+    sliderAllowLabel.classList.toggle(
+      "preferred-highlight-text",
+      preferred && state.agency !== "must_do",
+    );
   const toggleAllowRow = document.getElementById("pvToggleAllowRow");
-  if (toggleAllowRow) toggleAllowRow.classList.toggle("preferred-highlight-row", preferred);
+  if (toggleAllowRow)
+    toggleAllowRow.classList.toggle("preferred-highlight-row", preferred);
 }
 function syncInteractionPreview() {
   ["click_box", "slider", "toggle"].forEach((mode) => {
@@ -604,7 +695,9 @@ function syncInteractionPreview() {
     const isCurrent = mode === state.interaction;
     // For must_do + slider: show it but disabled overlay will appear
     element.style.display = isCurrent
-      ? (mode === "toggle" || mode === "slider" ? "block" : "flex")
+      ? mode === "toggle" || mode === "slider"
+        ? "block"
+        : "flex"
       : "none";
   });
 }
@@ -626,26 +719,31 @@ function syncGuidance() {
 
   const suggestionsEl = document.getElementById("suggestions");
   const prevOpenIndexes = new Set(
-    [...suggestionsEl.querySelectorAll("li.suggestion-open")].map((li) => parseInt(li.dataset.idx))
+    [...suggestionsEl.querySelectorAll("li.suggestion-open")].map((li) =>
+      parseInt(li.dataset.idx),
+    ),
   );
 
-  suggestionsEl.innerHTML = suggestions.map((item, i) => {
-    const isOpen = prevOpenIndexes.has(i);
-    const title = item.title || item;
-    const detail = item.detail || item;
-    return `<li class="suggestion-item${isOpen ? ' suggestion-open' : ''}" data-idx="${i}">
+  suggestionsEl.innerHTML = suggestions
+    .map((item, i) => {
+      const isOpen = prevOpenIndexes.has(i);
+      const title = item.title || item;
+      const detail = item.detail || item;
+      return `<li class="suggestion-item${isOpen ? " suggestion-open" : ""}" data-idx="${i}">
       <div class="suggestion-header">
         <span class="suggestion-title">${title}</span>
-        <span class="suggestion-chevron">${isOpen ? '▲' : '▼'}</span>
+        <span class="suggestion-chevron">${isOpen ? "▲" : "▼"}</span>
       </div>
       <div class="suggestion-detail">${detail}</div>
     </li>`;
-  }).join("");
+    })
+    .join("");
 
   suggestionsEl.querySelectorAll(".suggestion-item").forEach((li) => {
     li.addEventListener("click", () => {
       li.classList.toggle("suggestion-open");
-      li.querySelector(".suggestion-chevron").textContent = li.classList.contains("suggestion-open") ? "▲" : "▼";
+      li.querySelector(".suggestion-chevron").textContent =
+        li.classList.contains("suggestion-open") ? "▲" : "▼";
     });
   });
 
@@ -971,14 +1069,16 @@ function syncSupportLinks() {
 
   const links = getSupportLinks(state.context);
   wrap.style.display = "flex";
-  wrap.innerHTML = links.map((link) => {
-    const isReal = link.url && link.url !== "#";
-    if (isReal) {
-      return `<a class="mini neutral-accent" href="${link.url}" target="_blank" rel="noopener noreferrer" style="cursor:pointer;">${link.label}</a>`;
-    } else {
-      return `<span class="mini neutral-accent" title="No URL set — enter one in the custom links field" style="opacity:0.4; cursor:not-allowed;">${link.label}</span>`;
-    }
-  }).join("");
+  wrap.innerHTML = links
+    .map((link) => {
+      const isReal = link.url && link.url !== "#";
+      if (isReal) {
+        return `<a class="mini neutral-accent" href="${link.url}" target="_blank" rel="noopener noreferrer" style="cursor:pointer;">${link.label}</a>`;
+      } else {
+        return `<span class="mini neutral-accent" title="No URL set — enter one in the custom links field" style="opacity:0.4; cursor:not-allowed;">${link.label}</span>`;
+      }
+    })
+    .join("");
 }
 
 function getTransparencyText(context) {
@@ -1305,6 +1405,98 @@ function loadStateFromTemplate(config) {
   render();
 }
 
+function startNotificationPolling() {
+  const DEVICE_ID = "my-machine"; // change per machine
+
+  setInterval(async () => {
+    try {
+      const baseUrl =
+        document.getElementById("serverUrlInput")?.value.trim() ||
+        "http://localhost:3000";
+
+      const res = await fetch(
+        `${baseUrl}/api/pending-notifications/${DEVICE_ID}`,
+      );
+
+      const notifications = await res.json();
+
+      if (!Array.isArray(notifications)) return;
+
+      notifications.forEach((notif) => {
+        window.electronAPI.sendNotification(notif);
+      });
+    } catch (err) {
+      console.error("Polling error:", err);
+    }
+  }, 5000); // every 5 seconds
+}
+
+function setupRemoteSend() {
+  const btn = document.getElementById("sendRemoteBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    const device =
+      document.getElementById("deviceInput").value.trim() || "my-machine";
+
+    try {
+      const baseUrl =
+        document.getElementById("serverUrlInput")?.value.trim() ||
+        "http://localhost:3000";
+      const res = await fetch(`${baseUrl}/api/send-notification`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetDevice: device,
+          notification: { ...state },
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to send notification");
+
+      const original = btn.textContent;
+      btn.textContent = `Sent to ${device} ✓`;
+      setTimeout(() => {
+        btn.textContent = original;
+      }, 1500);
+    } catch (err) {
+      console.error("Remote send failed:", err);
+      btn.textContent = "Send failed";
+    }
+  });
+}
+
+async function checkServerConnection() {
+  const input = document.getElementById("serverUrlInput");
+  const dot = document.getElementById("serverStatusDot");
+
+  if (!input || !dot) return;
+
+  const baseUrl = input.value.trim() || "http://localhost:3000";
+
+  try {
+    const res = await fetch(`${baseUrl}/api/templates`);
+
+    if (!res.ok) throw new Error();
+
+    dot.style.background = "#10b981"; // green
+  } catch (err) {
+    dot.style.background = "#ef4444"; // red
+  }
+}
+
+function setupServerStatus() {
+  const input = document.getElementById("serverUrlInput");
+  if (!input) return;
+
+  checkServerConnection();
+
+  input.addEventListener("change", checkServerConnection);
+  input.addEventListener("blur", checkServerConnection);
+
+  setInterval(checkServerConnection, 10000);
+}
+
 function showModal(id) {
   const el = document.getElementById(id);
   el.style.display = "flex";
@@ -1361,7 +1553,10 @@ function init() {
   setupInlineNotificationReceiver();
   setupCustomContentInputs();
   setupExportActions();
+  startNotificationPolling();
   render();
+  setupServerStatus();
+  setupRemoteSend();
 }
 
 init();

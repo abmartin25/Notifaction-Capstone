@@ -420,6 +420,37 @@
     .toast-layout .notification-card {
         width: min(380px, 92vw);
     }
+    .banner-layout {
+  width: 100%;
+}
+
+.banner-layout .notification-card {
+  width: calc(100vw - 24px);
+  max-width: none;
+  border-radius: 0 0 18px 18px;
+}
+
+.popup-layout .notification-card {
+  width: min(420px, 92vw);
+}
+
+.toast-layout .notification-card {
+  width: min(380px, 92vw);
+}
+
+.modal-layout {
+  min-height: calc(100vh - 24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 24, 39, 0.38);
+}
+
+.modal-layout .notification-card {
+  width: min(560px, 92vw);
+  max-height: 85vh;
+  overflow-y: auto;
+}
 
     @keyframes slideIn {
       from {

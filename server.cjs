@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const pendingNotifications = {};
 // const express = require("express");
 // const app = express();
 // const {PythonShell} = require('python-shell');
@@ -29,7 +30,9 @@ const MIME_TYPES = {
 
 function startServer() {
   function sendJson(res, status, data) {
-    res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+    res.writeHead(status, {
+      "Content-Type": "application/json; charset=utf-8",
+    });
     res.end(JSON.stringify(data));
   }
 
@@ -64,8 +67,6 @@ function startServer() {
     });
   }
 
-
-
   // api routes
   async function handleApi(req, res, url) {
     // GET /api/templates — list saved templates
@@ -89,21 +90,61 @@ function startServer() {
         return sendJson(res, 400, { error: err.message });
       }
     }
+    // POST /api/send-notification — queue a notification for a device
+    if (req.method === "POST" && url === "/api/send-notification") {
+      try {
+        const body = await readBody(req);
+
+        if (!body.targetDevice || !body.notification) {
+          return sendJson(res, 400, {
+            error: "targetDevice and notification are required",
+          });
+        }
+
+        const { targetDevice, notification } = body;
+
+        if (!pendingNotifications[targetDevice]) {
+          pendingNotifications[targetDevice] = [];
+        }
+
+        pendingNotifications[targetDevice].push(notification);
+
+        return sendJson(res, 200, {
+          success: true,
+          queued: pendingNotifications[targetDevice].length,
+        });
+      } catch (err) {
+        return sendJson(res, 400, { error: err.message });
+      }
+    }
+
+    // GET /api/pending-notifications/:deviceId — receiver checks for queued notifications
+    const matchPending = url.match(/^\/api\/pending-notifications\/(.+)$/);
+    if (matchPending && req.method === "GET") {
+      const deviceId = decodeURIComponent(matchPending[1]);
+      const notifications = pendingNotifications[deviceId] || [];
+
+      pendingNotifications[deviceId] = [];
+
+      return sendJson(res, 200, notifications);
+    }
 
     // Passing to PythonShell
-    // if 
+    // if
 
     // GET /api/templates/:id — load template with config
     const matchId = url.match(/^\/api\/templates\/(\d+)$/);
     if (matchId) {
       if (req.method === "GET") {
         const template = getTemplate(parseInt(matchId[1], 10));
-        if (!template) return sendJson(res, 404, { error: "Template not found" });
+        if (!template)
+          return sendJson(res, 404, { error: "Template not found" });
         return sendJson(res, 200, template);
       }
       if (req.method === "DELETE") {
         const deleted = deleteTemplate(parseInt(matchId[1], 10));
-        if (!deleted) return sendJson(res, 404, { error: "Template not found" });
+        if (!deleted)
+          return sendJson(res, 404, { error: "Template not found" });
         return sendJson(res, 200, { success: true });
       }
     }
@@ -138,8 +179,7 @@ function startServer() {
     }
   });
 
-return server;
-
+  return server;
 }
 
 module.exports = startServer;

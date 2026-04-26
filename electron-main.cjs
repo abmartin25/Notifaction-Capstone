@@ -1,4 +1,11 @@
-const { app, BrowserWindow, ipcMain, screen, shell, dialog } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  screen,
+  shell,
+  dialog,
+} = require("electron");
 const { exec } = require("child_process");
 const path = require("path");
 const startServer = require("./server.cjs");
@@ -67,10 +74,10 @@ function createNotificationWindow(notificationData) {
   if (notificationData.location === "banner") {
     windowOptions = {
       ...windowOptions,
-      width: 560,
-      height: 520,
-      x: Math.floor((width - 560) / 2),
-      y: 20,
+      width: width,
+      height: 160,
+      x: 0,
+      y: 0,
     };
   } else if (notificationData.location === "popup") {
     windowOptions = {
