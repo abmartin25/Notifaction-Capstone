@@ -1410,8 +1410,12 @@ function startNotificationPolling() {
 
   setInterval(async () => {
     try {
+      const baseUrl =
+        document.getElementById("serverUrlInput")?.value.trim() ||
+        "http://localhost:3000";
+
       const res = await fetch(
-        `http://localhost:3000/api/pending-notifications/${DEVICE_ID}`,
+        `${baseUrl}/api/pending-notifications/${DEVICE_ID}`,
       );
 
       const notifications = await res.json();
@@ -1432,12 +1436,18 @@ function setupRemoteSend() {
   if (!btn) return;
 
   btn.addEventListener("click", async () => {
+    const device =
+      document.getElementById("deviceInput").value.trim() || "my-machine";
+
     try {
-      const res = await fetch("/api/send-notification", {
+      const baseUrl =
+        document.getElementById("serverUrlInput")?.value.trim() ||
+        "http://localhost:3000";
+      const res = await fetch(`${baseUrl}/api/send-notification`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          targetDevice: "my-machine",
+          targetDevice: device,
           notification: { ...state },
         }),
       });
@@ -1445,7 +1455,7 @@ function setupRemoteSend() {
       if (!res.ok) throw new Error("Failed to send notification");
 
       const original = btn.textContent;
-      btn.textContent = "Sent ✓";
+      btn.textContent = `Sent to ${device} ✓`;
       setTimeout(() => {
         btn.textContent = original;
       }, 1500);
@@ -1454,6 +1464,37 @@ function setupRemoteSend() {
       btn.textContent = "Send failed";
     }
   });
+}
+
+async function checkServerConnection() {
+  const input = document.getElementById("serverUrlInput");
+  const dot = document.getElementById("serverStatusDot");
+
+  if (!input || !dot) return;
+
+  const baseUrl = input.value.trim() || "http://localhost:3000";
+
+  try {
+    const res = await fetch(`${baseUrl}/api/templates`);
+
+    if (!res.ok) throw new Error();
+
+    dot.style.background = "#10b981"; // green
+  } catch (err) {
+    dot.style.background = "#ef4444"; // red
+  }
+}
+
+function setupServerStatus() {
+  const input = document.getElementById("serverUrlInput");
+  if (!input) return;
+
+  checkServerConnection();
+
+  input.addEventListener("change", checkServerConnection);
+  input.addEventListener("blur", checkServerConnection);
+
+  setInterval(checkServerConnection, 10000);
 }
 
 function showModal(id) {
@@ -1514,6 +1555,7 @@ function init() {
   setupExportActions();
   startNotificationPolling();
   render();
+  setupServerStatus();
   setupRemoteSend();
 }
 
