@@ -1439,10 +1439,18 @@ function setupRemoteSend() {
     const device =
       document.getElementById("deviceInput").value.trim() || "my-machine";
 
+    const baseUrl =
+      document.getElementById("serverUrlInput")?.value.trim() ||
+      "http://localhost:3000";
+
+    if (!shouldSendNow(state)) {
+      alert(
+        "This notification is scheduled for a later time or outside the selected deployment window.",
+      );
+      return;
+    }
+
     try {
-      const baseUrl =
-        document.getElementById("serverUrlInput")?.value.trim() ||
-        "http://localhost:3000";
       const res = await fetch(`${baseUrl}/api/send-notification`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1464,6 +1472,70 @@ function setupRemoteSend() {
       btn.textContent = "Send failed";
     }
   });
+}
+
+function checkBootupNotification() {
+  if (!state.schedule || !state.showOnBootup) return;
+  if (!shouldSendNow(state)) return;
+
+  if (window.electronAPI?.sendNotification) {
+    window.electronAPI.sendNotification({ ...state });
+  }
+}
+
+function getScheduledDateTime(state) {
+  if (!state.schedule || !state.deployDate || !state.deployHour) {
+    return null;
+  }
+
+  return new Date(`${state.deployDate}T${state.deployHour}`);
+}
+
+function isWithinDeployWindow(state) {
+  if (!state.schedule || !state.deployWindow.trim()) return true;
+
+  const match = state.deployWindow
+    .trim()
+    .match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
+
+  if (!match) {
+    console.warn("Invalid deploy window format. Expected HH:MM-HH:MM");
+    return true;
+  }
+
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const startMinutes = Number(match[1]) * 60 + Number(match[2]);
+  const endMinutes = Number(match[3]) * 60 + Number(match[4]);
+
+  // Handles normal windows like 09:00-17:00
+  if (startMinutes <= endMinutes) {
+    return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+  }
+
+  // Handles overnight windows like 22:00-02:00
+  return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+}
+
+function shouldSendNow(state) {
+  if (!state.schedule) return true;
+
+  const scheduledTime = getScheduledDateTime(state);
+
+  if (scheduledTime && new Date() < scheduledTime) {
+    console.log("Blocked: scheduled for future", scheduledTime);
+    return false;
+  }
+
+  const inWindow = isWithinDeployWindow(state);
+  console.log("Deploy window check:", {
+    deployWindow: state.deployWindow,
+    currentTime: new Date().toLocaleTimeString(),
+    inWindow,
+  });
+
+  return inWindow;
 }
 
 async function checkServerConnection() {
@@ -1530,13 +1602,19 @@ function setupNotificationLaunch() {
   if (!btn) return;
 
   btn.addEventListener("click", () => {
-    console.log("Launching notification with state:", state);
-
-    if (window.electronAPI?.sendNotification) {
-      window.electronAPI.sendNotification(state);
-    } else {
+    if (!window.electronAPI?.sendNotification) {
       console.warn("Electron API not available");
+      return;
     }
+
+    if (!shouldSendNow(state)) {
+      alert(
+        "This notification is scheduled for a later time or outside the selected deployment window.",
+      );
+      return;
+    }
+
+    window.electronAPI.sendNotification({ ...state });
   });
 }
 
@@ -1555,6 +1633,7 @@ function init() {
   setupExportActions();
   startNotificationPolling();
   render();
+  checkBootupNotification();
   setupServerStatus();
   setupRemoteSend();
 }
