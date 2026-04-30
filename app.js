@@ -170,6 +170,7 @@ const checkboxMappings = [
   ["ckPreferredDecision", "preferredDecision"],
   ["ckAiTone", "aiTone"],
   ["ckSchedule", "schedule"],
+  ["ckCustomContent", "customContent"],
   ["ckShowOnBootup", "showOnBootup"],
   ["ckShowDuringTask", "showDuringTask"],
 ];
@@ -183,6 +184,11 @@ function setupCheckboxInputs() {
           .getElementById("scheduleWrap")
           .classList.toggle("hidden", !state.schedule);
       }
+      if (key === "customContent") {
+        document
+          .getElementById("customContentWrap")
+          .classList.toggle("hidden", !state.customContent);
+      }
       render();
     });
   });
@@ -195,6 +201,11 @@ function syncCheckboxInputs() {
       document
         .getElementById("scheduleWrap")
         .classList.toggle("hidden", !state.schedule);
+    }
+    if (key === "customContent") {
+      document
+        .getElementById("customContentWrap")
+        .classList.toggle("hidden", !state.customContent);
     }
     render();
   });
