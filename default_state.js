@@ -21,6 +21,7 @@ const defaultState = {
   location: "banner",
   agency: "must_do",
   schedule: false,
+  customContent: false,
   deployDate: "",
   deployHour: "09:00",
   deployWindow: "",
