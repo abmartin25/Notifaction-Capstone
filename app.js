@@ -169,7 +169,7 @@ const checkboxMappings = [
   ["ckPreferredDecision", "preferredDecision"],
   ["ckAiTone", "aiTone"],
   ["ckSchedule", "schedule", "scheduleWrap"],
-  // ["ckCustomContent", "customContent"],
+  ["ckCustomContent", "customContent", "customContentWrap"],
   ["ckShowOnBootup", "showOnBootup"],
   ["ckShowDuringTask", "showDuringTask"],
 ];
@@ -506,7 +506,6 @@ function wireTooltip(triggerId, tooltipId) {
 }
 
 // Render the interactive preview
-// Potentially change this to not have to refresh entire thing but subsections depending on type of change
 function render() {
   document.getElementById("pvTitle").textContent =
     state.title || "Notification title";
