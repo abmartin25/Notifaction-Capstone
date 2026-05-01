@@ -71,10 +71,10 @@
               <option>Developer</option>
               <option>IT admin</option>
               <option>Student</option>
-              <option value="__custom__">Custom…</option>
+              <option value="__custom__" maxlength="255">Custom…</option>
             </select>
             <div class="custom-input-wrap hidden" id="userGroupCustomWrap">
-              <input id="userGroupCustom" type="text" placeholder="Enter custom user group…" />
+              <input id="userGroupCustom" type="text" placeholder="Enter custom user group…" maxlength="50" />
             </div>
           </div>
 
@@ -89,18 +89,18 @@
               <option value="__custom__">Custom…</option>
             </select>
             <div class="custom-input-wrap hidden" id="contextCustomWrap">
-              <input id="contextCustom" type="text" placeholder="Enter custom security context…" />
+              <input id="contextCustom" type="text" placeholder="Enter custom security context…" maxlength="50" />
             </div>
           </div>
 
           <div class="field" data-type="textInput">
             <label for="title">Notification title</label>
-            <input id="titleInput" type="text" value="" placeholder="Enter notification title…" />
+            <input id="titleInput" type="text" value="" placeholder="Enter notification title…" maxlength="50" />
           </div>
 
           <div class="field" data-type="textInput">
             <label for="message">Notification message</label>
-            <textarea id="messageInput" placeholder="Enter notification message…"></textarea>
+            <textarea id="messageInput" type="text" placeholder="Enter notification message…" maxlength="100"></textarea>
           </div>
 
           <div class="field" data-type="segmentGroup">
@@ -146,6 +146,7 @@
           Change your password
           Save and confirm the update"
                 style="min-height:110px;"
+                maxlength="150"
               ></textarea>
             </div>
 
@@ -155,6 +156,7 @@
                 id="customVulnInput"
                 placeholder="Explain the vulnerability in plain language..."
                 style="min-height:90px;"
+                maxlength="150"
               ></textarea>
             </div>
 
@@ -164,6 +166,7 @@
                 id="customRiskInput"
                 placeholder="Explain the risk to the user if the issue is not addressed..."
                 style="min-height:90px;"
+                maxlength="150"
               ></textarea>
             </div>
 
@@ -173,6 +176,7 @@
                 id="customContextInput"
                 placeholder="Provide background information to help the user understand why this matters..."
                 style="min-height:90px;"
+                maxlength="150"
               ></textarea>
             </div>
 
@@ -182,6 +186,7 @@
                 id="customTransparencyInput"
                 placeholder="Explain why this notification was triggered..."
                 style="min-height:90px;"
+                maxlength="150"
               ></textarea>
             </div>
 
@@ -192,6 +197,7 @@
                 id="customConsequencesInput"
                 placeholder="Describe what may happen if the user ignores this notification..."
                 style="min-height:90px;"
+                maxlength="150"
               ></textarea>
             </div>
 
@@ -206,6 +212,7 @@
           Help Article | https://example.com/help
           Security Policy | https://example.com/policy"
                 style="min-height:110px;"
+                maxlength="300"
               ></textarea>
             </div>
           </div>
@@ -287,7 +294,7 @@
                 <div id="pvTransparencyWrap" style="display:none; font-size:11px; color:var(--muted); margin-top:4px;"></div>
               </div>
             </div>
-            <p class="previewMsg" id="pvMsg">Your password appears in a known breach. Update now to protect your account.</p>
+            <p class="previewMsg" id="pvMsg" >Your password appears in a known breach. Update now to protect your account.</p>
               <div id="pvContextWrap" style="display:none; margin-top:10px; font-size:12px; line-height:1.5; color:var(--muted); background:#f9fafb; border-radius:12px; padding:10px 12px;">
               </div>
               <div id="pvConsequencesWrap" style="display:none; margin-top:10px; font-size:12px; line-height:1.45; color:#991b1b; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:10px 12px;">
