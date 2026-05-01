@@ -224,12 +224,11 @@ function setupCustomContentInputs() {
 function syncCustomContentInputs() {
   customContentMappings.forEach(([id, key]) => {
     const el = document.getElementById(id);
-    if (!el) return;
-
-    const currentValue = state[key] || getDefaultState()[key]; // Double-Blind to Default
-    const input = el.querySelector("textarea, input");
-    if (input) input.value = currentValue;
-    render();
+    if (el) {
+      const currentValue = state[key] || getDefaultState()[key]; // Double-Blind to Default
+      el.value = currentValue;
+      render();
+    } else return;
   });
 }
 
@@ -1642,9 +1641,9 @@ function init() {
   setupPreviewInteractions();
   setupSaveLoad();
   setupNotificationLaunch();
-  setupCustomContentToggles();
+  // setupCustomContentToggles();
   setupInlineNotificationReceiver();
-  setupCustomContentInputs();
+  // setupCustomContentInputs();
   setupExportActions();
   startNotificationPolling();
   render();
