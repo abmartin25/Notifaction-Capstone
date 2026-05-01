@@ -169,7 +169,7 @@ const checkboxMappings = [
   ["ckPreferredDecision", "preferredDecision"],
   ["ckAiTone", "aiTone"],
   ["ckSchedule", "schedule", "scheduleWrap"],
-  ["ckCustomContent", "customContent"],
+  // ["ckCustomContent", "customContent"],
   ["ckShowOnBootup", "showOnBootup"],
   ["ckShowDuringTask", "showDuringTask"],
 ];
@@ -193,11 +193,11 @@ function setupCheckboxInputs() {
           .getElementById(customInputId)
           .classList.toggle("hidden", !state[key]);
       }
-      if (key === "customContent") {
-        document
-          .getElementById("customContentWrap")
-          .classList.toggle("hidden", !state.customContent);
-      }
+      // if (key === "customContent") {
+      //   document
+      //     .getElementById("customContentWrap")
+      //     .classList.toggle("hidden", !state.customContent);
+      // }
       render();
     });
   });
@@ -211,11 +211,11 @@ function syncCheckboxInputs() {
         .getElementById(customInputId)
         .classList.toggle("hidden", !state[key]);
     }
-    if (key === "customContent") {
-      document
-        .getElementById("customContentWrap")
-        .classList.toggle("hidden", !state.customContent);
-    }
+    // if (key === "customContent") {
+    //   document
+    //     .getElementById("customContentWrap")
+    //     .classList.toggle("hidden", !state.customContent);
+    // }
     render();
   });
 }

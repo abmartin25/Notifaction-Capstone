@@ -162,7 +162,7 @@ test.describe('BetterNotify Functionality Suite', () => {
   // Saving & Loading
 
 
-  test('Create & Export Notification', async() => {
+  test('Create & Export Notification @debug', async() => {
     await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
     await helper.modifyTextFieldByLabel(appWindow, 'Title', 'input', 'Automated Testing Notification')
     await helper.modifyTextFieldByLabel(appWindow, 'Message', 'textarea', 'This notification was created during automated testing.')
