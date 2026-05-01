@@ -1273,10 +1273,9 @@ async function populateLoadModal() {
 }
 
 function loadStateFromTemplate(config) {
+  const tempDefaultState = getDefaultState(); // reset to default first
+  Object.assign(state, tempDefaultState);
   Object.assign(state, config);
-  if (state.instructionSteps || state.explainVuln || state.explainRisk || state.contextBackground ||state.transparency || state.consequences || state.supportLinks) {
-    state.customContent = true;
-  }
   syncConfigPanel();
   render();
 }
