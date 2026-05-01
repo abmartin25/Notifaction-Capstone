@@ -1,35 +1,24 @@
 ~~ Notification Capstone ~~
-This work is for a WPI Capstone Project, and aims to function as a fully developed SDK.
+This work is for a WPI Capstone Project, and aims to function as a fully developed SDK for aiding in the development of Effective, Accessible, Understandable, and Usable Security Notification.
 
 ~~ Installation ~~
 Clone the repository:
-
 git clone https://github.com/abmartin25/Notifaction-Capstone.git
 cd Notification-Capstone
 
 Install Relevant Dependancies:
 This project requires the node.js runtime environment to be present, which is done via an external install
 https://nodejs.org/en
-
-~~ Usage ~~
-1. Electron:
-  npx electron-rebuild -f -w better-sqlite3
-  python sentinel.py for users
-2. Debugging:
-  npm rebuild better-sqlite3 --update-binary
-  python sentinel.py   --debug 
-~~ OLD ~~
+Additionally, this project requires:
 1. npm install better-sqlite3
 2. npm install --save-dev electron@latest
-3. npm install express --save
-4. npm install python-shell
-5. npm start
--> If there is a NODE_MODULE_VERSION mismatch try
-6. npx electron-rebuild -f -w better-sqlite3 ?
-2. npm start
+3. npx electron-rebuild -f -w better-sqlite3
 
-~ Testing ~
-1. npx playwright test
---debug to watch 
--- grep @debug to watch specified test
+~~ Running ~~
+To run the basic SDK:
+npm start
+
+To run the testing suite which ensures functionality:
+npx playwright test
+-- debug: Allows stepping through tests
 

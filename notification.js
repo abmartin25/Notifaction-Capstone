@@ -77,8 +77,8 @@ function getInstructionSteps(state) {
 }
 
 function getVulnerabilityExplanation(state) {
-  if ((state.customVulnerability || "").trim()) {
-    return state.customVulnerability.trim();
+  if ((state.customVuln || "").trim()) {
+    return state.customVuln.trim();
   }
 
   const map = {

@@ -138,7 +138,6 @@ function setupTextInputs() {
       const forAttr = field.querySelector("label").getAttribute("for");
       field.addEventListener("input", (e) => {
         state[forAttr] = e.target.value;
-        // console.log(`Text input ${forAttr} changed to ${state[forAttr]}`);
         render();
       });
     });
@@ -158,36 +157,41 @@ function syncTextInputs() {
 
 //This is fine to leave as ID based (one off, components get handled differently)
 const checkboxMappings = [
-  ["ckInstructionSteps", "instructionSteps"],
+  ["ckInstructionSteps", "instructionSteps", "customStepsWrap"],
   ["ckDirectAction", "directAction"],
-  ["ckExplainVuln", "explainVuln"],
-  ["ckExplainRisk", "explainRisk"],
-  ["ckContextBackground", "contextBackground"],
+  ["ckExplainVuln", "explainVuln", "customVulnWrap"],
+  ["ckExplainRisk", "explainRisk", "customRiskWrap"],
+  ["ckContextBackground", "contextBackground", "customContextWrap"],
   ["ckTimeEst", "timeEst"],
-  ["ckTransparency", "transparency"],
-  ["ckConsequences", "consequences"],
-  ["ckSupportLinks", "supportLinks"],
+  ["ckTransparency", "transparency", "customTransparencyWrap"],
+  ["ckConsequences", "consequences", "customConsequencesWrap"],
+  ["ckSupportLinks", "supportLinks", "customLinksWrap"],
   ["ckPreferredDecision", "preferredDecision"],
   ["ckAiTone", "aiTone"],
-  ["ckSchedule", "schedule"],
-  ["ckCustomContent", "customContent"],
+  ["ckSchedule", "schedule", "scheduleWrap"],
+  // ["ckCustomContent", "customContent"],
   ["ckShowOnBootup", "showOnBootup"],
   ["ckShowDuringTask", "showDuringTask"],
 ];
 
+const customContentMappings = [
+  ["customStepsInput", "customSteps"],
+  ["customVulnInput", "customVuln"],
+  ["customRiskInput", "customRisk"],
+  ["customContextInput", "customContext"],
+  ["customTransparencyInput", "customTransparency"],
+  ["customConsequencesInput", "customConsequences"],
+  ["customLinksInput", "customLinks"],
+];
+
 function setupCheckboxInputs() {
-  checkboxMappings.forEach(([id, key]) => {
+  checkboxMappings.forEach(([id, key, customInputId]) => {
     document.getElementById(id).addEventListener("change", (e) => {
       state[key] = e.target.checked;
-      if (key === "schedule") {
+      if (customInputId) {
         document
-          .getElementById("scheduleWrap")
-          .classList.toggle("hidden", !state.schedule);
-      }
-      if (key === "customContent") {
-        document
-          .getElementById("customContentWrap")
-          .classList.toggle("hidden", !state.customContent);
+          .getElementById(customInputId)
+          .classList.toggle("hidden", !state[key]);
       }
       render();
     });
@@ -195,19 +199,37 @@ function setupCheckboxInputs() {
 }
 
 function syncCheckboxInputs() {
-  checkboxMappings.forEach(([id, key]) => {
+  checkboxMappings.forEach(([id, key, customInputId]) => {
     document.getElementById(id).checked = state[key];
-    if (key === "schedule") {
+    if (customInputId) {
       document
-        .getElementById("scheduleWrap")
-        .classList.toggle("hidden", !state.schedule);
-    }
-    if (key === "customContent") {
-      document
-        .getElementById("customContentWrap")
-        .classList.toggle("hidden", !state.customContent);
+        .getElementById(customInputId)
+        .classList.toggle("hidden", !state[key]);
     }
     render();
+  });
+}
+
+function setupCustomContentInputs() {
+  customContentMappings.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.addEventListener("input", (e) => {
+      state[key] = e.target.value;
+      render();
+    });
+  });
+}
+
+function syncCustomContentInputs() {
+  customContentMappings.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const currentValue = state[key] || getDefaultState()[key]; // Double-Blind to Default
+      el.value = currentValue;
+      render();
+    } else return;
   });
 }
 
@@ -302,6 +324,7 @@ function setupConfigPanel() {
   setupDropdowns();
   setupTextInputs();
   setupCheckboxInputs();
+  setupCustomContentInputs();
   setupSegmentedControls();
   setupDeploymentInputs();
 }
@@ -310,6 +333,7 @@ function syncConfigPanel() {
   syncDropdowns();
   syncTextInputs();
   syncCheckboxInputs();
+  syncCustomContentInputs();
   syncSegmentedControls();
   syncDeploymentInputs();
 }
@@ -712,6 +736,7 @@ function syncInteractionPreview() {
       : "none";
   });
 }
+
 function syncGuidance() {
   const result = evaluateNotification(state);
   const { scores, suggestions, aiToneText } = result;
@@ -894,8 +919,8 @@ function syncInstructionSteps() {
 }
 
 function getVulnerabilityExplanation(context) {
-  if (state.customVulnerability.trim()) {
-    return state.customVulnerability.trim();
+  if (state.customVuln.trim()) {
+    return state.customVuln.trim();
   }
 
   const map = {
@@ -1128,53 +1153,6 @@ function syncTransparency() {
   wrap.textContent = getTransparencyText(state.context);
 }
 
-function setupCustomContentInputs() {
-  const mappings = [
-    ["customStepsInput", "customSteps"],
-    ["customVulnInput", "customVulnerability"],
-    ["customRiskInput", "customRisk"],
-    ["customContextInput", "customContext"],
-    ["customTransparencyInput", "customTransparency"],
-    ["customConsequencesInput", "customConsequences"],
-    ["customLinksInput", "customLinks"],
-  ];
-  mappings.forEach(([id, key]) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-
-    el.addEventListener("input", (e) => {
-      state[key] = e.target.value;
-      render();
-    });
-  });
-}
-
-function setupCustomContentToggles() {
-  const mappings = [
-    ["ckInstructionSteps", "customStepsWrap"],
-    ["ckExplainVuln", "customVulnWrap"],
-    ["ckExplainRisk", "customRiskWrap"],
-    ["ckContextBackground", "customContextWrap"],
-    ["ckTransparency", "customTransparencyWrap"],
-    ["ckConsequences", "customConsequencesWrap"],
-    ["ckSupportLinks", "customLinksWrap"],
-  ];
-
-  mappings.forEach(([checkboxId, wrapId]) => {
-    const checkbox = document.getElementById(checkboxId);
-    const wrap = document.getElementById(wrapId);
-
-    if (!checkbox || !wrap) return;
-
-    const syncVisibility = () => {
-      wrap.classList.toggle("hidden", !checkbox.checked);
-    };
-
-    checkbox.addEventListener("change", syncVisibility);
-    syncVisibility();
-  });
-}
-
 function setupSaveLoad() {
   document.getElementById("saveTemplate").addEventListener("click", () => {
     const nameInput = document.getElementById("saveTemplateName");
@@ -1299,120 +1277,6 @@ function loadStateFromTemplate(config) {
   Object.assign(state, config);
   // console.log("Loaded template config:", config);
   syncConfigPanel();
-
-  // Head changes I need to resolve
-  // document.getElementById("titleInput").value = state.title || "";
-  // document.getElementById("msgInput").value = state.message || "";
-
-  // const ugSelect = document.getElementById("userGroup");
-  // const ugOptions = Array.from(ugSelect.options).map((o) => o.value);
-  // if (ugOptions.includes(state.userGroup)) {
-  //   ugSelect.value = state.userGroup;
-  //   document.getElementById("userGroupCustomWrap").classList.add("hidden");
-  // } else {
-  //   ugSelect.value = "__custom__";
-  //   document.getElementById("userGroupCustomWrap").classList.remove("hidden");
-  //   document.getElementById("userGroupCustom").value = state.userGroup;
-  // }
-
-  // const ctxSelect = document.getElementById("context");
-  // const ctxOptions = Array.from(ctxSelect.options).map((o) => o.value);
-  // if (ctxOptions.includes(state.context)) {
-  //   ctxSelect.value = state.context;
-  //   document.getElementById("contextCustomWrap").classList.add("hidden");
-  // } else {
-  //   ctxSelect.value = "__custom__";
-  //   document.getElementById("contextCustomWrap").classList.remove("hidden");
-  //   document.getElementById("contextCustom").value = state.context;
-  // }
-
-  // const checkboxMappings = [
-  //   ["ckInstructionSteps", "instructionSteps"],
-  //   ["ckDirectAction", "directAction"],
-  //   ["ckExplainVuln", "explainVuln"],
-  //   ["ckExplainRisk", "explainRisk"],
-  //   ["ckContextBackground", "contextBackground"],
-  //   ["ckTimeEst", "timeEst"],
-  //   ["ckTransparency", "transparency"],
-  //   ["ckConsequences", "consequences"],
-  //   ["ckSupportLinks", "supportLinks"],
-  //   ["ckPreferredDecision", "preferredDecision"],
-  //   ["ckAiTone", "aiTone"],
-  //   ["ckSchedule", "schedule"],
-  //   ["ckShowOnBootup", "showOnBootup"],
-  //   ["ckShowDuringTask", "showDuringTask"],
-  // ];
-
-  // checkboxMappings.forEach(([id, key]) => {
-  //   document.getElementById(id).checked = !!state[key];
-  // });
-
-  // document
-  //   .getElementById("scheduleWrap")
-  //   .classList.toggle("hidden", !state.schedule);
-  // document.getElementById("deployDate").value = state.deployDate || "";
-  // document.getElementById("deployHour").value = state.deployHour || "09:00";
-  // document.getElementById("deployWindow").value = state.deployWindow || "";
-
-  // document.getElementById("customStepsInput").value = state.customSteps || "";
-  // document.getElementById("customVulnInput").value =
-  //   state.customVulnerability || "";
-  // document.getElementById("customRiskInput").value = state.customRisk || "";
-  // document.getElementById("customContextInput").value =
-  //   state.customContext || "";
-  // document.getElementById("customConsequencesInput").value =
-  //   state.customConsequences || "";
-  // document.getElementById("customLinksInput").value = state.customLinks || "";
-
-  // document
-  //   .getElementById("customStepsWrap")
-  //   .classList.toggle("hidden", !state.instructionSteps);
-  // document
-  //   .getElementById("customVulnWrap")
-  //   .classList.toggle("hidden", !state.explainVuln);
-  // document
-  //   .getElementById("customRiskWrap")
-  //   .classList.toggle("hidden", !state.explainRisk);
-  // document
-  //   .getElementById("customContextWrap")
-  //   .classList.toggle("hidden", !state.contextBackground);
-  // document
-  //   .getElementById("customConsequencesWrap")
-  //   .classList.toggle("hidden", !state.consequences);
-  // document
-  //   .getElementById("customLinksWrap")
-  //   .classList.toggle("hidden", !state.supportLinks);
-
-  // document.getElementById("customTransparencyInput").value =
-  //   state.customTransparency || "";
-
-  // document
-  //   .getElementById("customTransparencyWrap")
-  //   .classList.toggle("hidden", !state.transparency);
-
-  // function restoreSeg(containerId, dataAttr, value) {
-  //   const container = document.getElementById(containerId);
-  //   container.querySelectorAll("button").forEach((b) => {
-  //     b.classList.toggle("on", b.dataset[dataAttr] === value);
-  //   });
-  // }
-
-  // restoreSeg("motivationSeg", "m", state.motivation);
-  // restoreSeg("urgencySeg", "u", state.urgency);
-  // restoreSeg("interactionSeg", "i", state.interaction);
-  // restoreSeg("locationSeg", "l", state.location);
-  // restoreSeg("agencySeg", "a", state.agency);
-
-  // const locationDescs = {
-  //   banner: "Appears at the top or bottom of the screen; non-blocking.",
-  //   popup: "Appears in the center of the screen; requires user interaction.",
-  //   inline: "Appears within the page content; contextual and subtle.",
-  //   modal: "Overlays the full screen; blocks all other interaction.",
-  // };
-
-  // document.getElementById("locationDesc").textContent =
-  //   locationDescs[state.location] || "";
-
   render();
 }
 
@@ -1638,9 +1502,7 @@ function init() {
   setupPreviewInteractions();
   setupSaveLoad();
   setupNotificationLaunch();
-  setupCustomContentToggles();
   setupInlineNotificationReceiver();
-  setupCustomContentInputs();
   setupExportActions();
   startNotificationPolling();
   render();
