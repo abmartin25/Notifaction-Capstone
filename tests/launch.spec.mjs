@@ -174,7 +174,7 @@ test.describe('BetterNotify Functionality Suite', () => {
   })
 
   // Saving & Loading
-  test('Create & Export Notification @debug', async() => {
+  test('Create & Export Notification', async() => {
     await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
     await helper.modifyTextFieldByLabel(appWindow, 'Title', 'input', 'Automated Testing Notification')
     await helper.modifyTextFieldByLabel(appWindow, 'Message', 'textarea', 'This notification was created during automated testing.')
@@ -182,6 +182,7 @@ test.describe('BetterNotify Functionality Suite', () => {
     await helper.clickCheckboxById(appWindow, 'ckInstructionSteps')
     await helper.clickCheckboxById(appWindow, 'ckExplainRisk')
     await helper.clickCheckboxById(appWindow, 'ckSupportLinks')
+    await helper.clickCheckboxById(appWindow, 'ckCustomContent')
     await helper.modifyTextFieldById(appWindow, 'customStepsInput', 'Do this\nDo that\nProfit')
     await helper.selectSegmentedControlOption(appWindow, 'high', '#urgencySeg')
     await helper.selectSegmentedControlOption(appWindow, 'popup', '#locationSeg')
@@ -215,6 +216,7 @@ test.describe('BetterNotify Functionality Suite', () => {
       instructionSteps: true,
       explainRisk: true,
       supportLinks: true,
+      customContent: true,
       customSteps: 'Do this',
       urgency: 'high',
       location: 'popup'
