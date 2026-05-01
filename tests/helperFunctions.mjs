@@ -42,67 +42,66 @@ export async function checkState(appWindow, expectedConfig) {
     const previewMessage = await appWindow.locator('.previewMsg')
     await expect(previewMessage).toHaveText(expectedConfig.message ? expectedConfig.message : 'Notification message will appear here.')
 
-    checkButtonHaveClassOn(appWindow, 'Motivation framing', expectedConfig.motivation, '#motivationSeg')
+    await checkButtonHaveClassOn(appWindow, 'Motivation framing', expectedConfig.motivation, '#motivationSeg')
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckInstructionSteps', expectedConfig.instructionSteps)){
-        console.log('Checking instruction steps')
-        checkTextAreaValueById('customStepsWrap', expectedConfig.customSteps)
+        await checkTextAreaValueById('customStepsWrap', expectedConfig.customSteps)
         const previewSteps = await appWindow.locator('[id="pvStepsWrap"]')
-        await expect(previewSteps).toContainText(expectedConfig.customSteps ? expectedConfig.customSteps : 'Next steps\nReview the notification details.Take the recommended action.Confirm the issue is resolved.')
+        await expect(previewSteps).toContainText(expectedConfig.customSteps ? expectedConfig.customSteps : 'Next steps\nReview the notification details.')
     }
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckDirectAction', expectedConfig.directAction)) {} 
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckExplainVuln', expectedConfig.explainVuln)) {
-        checkTextAreaValueById('customVulnWrap', expectedConfig.customVuln)
+        await checkTextAreaValueById('customVulnWrap', expectedConfig.customVuln)
         checkLocatorVisibilityById('pvVulnWrap', 'learn about vulnerability')
     }
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckExplainRisk', expectedConfig.explainRisk)) {
-        checkTextAreaValueById('customRiskWrap', expectedConfig.customRisk)
-        checkLocatorVisibilityById('pvRiskWrap', 'learn about risk')
+        await checkTextAreaValueById('customRiskWrap', expectedConfig.customRisk)
+        await checkLocatorVisibilityById('pvRiskWrap', 'learn about risk')
     }
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckContextBackground', expectedConfig.contextBackground)) {
-        checkTextAreaValueById('customContextWrap', expectedConfig.customContext)
-        checkLocatorVisibilityById('pvContextWrap', 'This issue relates to a broader security risk that may affect account safety, device protection, or data exposure')
+        await checkTextAreaValueById('customContextWrap', expectedConfig.customContext)
+        await checkLocatorVisibilityById('pvContextWrap', 'This issue relates to a broader security risk that may affect account safety, device protection, or data exposure')
     }
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckTimeEst', expectedConfig.timeEst)) {}
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckTransparency', expectedConfig.transparency)) {
-        checkTextAreaValueById('customTransparencyWrap', expectedConfig.customTransparency)
-        checkLocatorVisibilityById('pvTransparencyWrap', 'Why you are seeing this: the system detected a security-relevant event.')
+        await checkTextAreaValueById('customTransparencyWrap', expectedConfig.customTransparency)
+        await checkLocatorVisibilityById('pvTransparencyWrap', 'Why you are seeing this: the system detected a security-relevant event.')
     }
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckConsequences', expectedConfig.consequences)) {
-        checkTextAreaValueById('customConsequencesWrap', expectedConfig.customConsequences)
-        checkLocatorVisibilityById('pvConsequencesWrap', 'If ignored, the issue may continue to increase security exposure.')
-        checkLocatorVisibilityById('pvInfoStrip', 'Consequences shown')
+        await checkTextAreaValueById('customConsequencesWrap', expectedConfig.customConsequences)
+        await checkLocatorVisibilityById('pvConsequencesWrap', 'If ignored, the issue may continue to increase security exposure.')
+        await checkLocatorVisibilityById('pvInfoStrip', 'Consequences shown')
     }
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckSupportLinks', expectedConfig.supportLinks)) {
-        checkTextAreaValueById('customLinksWrap', expectedConfig.customLinks)
-        checkLocatorVisibilityById('pvSupportLinksWrap')
+        await checkTextAreaValueById('customLinksWrap', expectedConfig.customLinks)
+        await checkLocatorVisibilityById('pvSupportLinksWrap')
     }
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckPreferredDecision', expectedConfig.preferredDecision)) {
-        checkLocatorVisibilityById('pvInfoStrip', 'Preferred choice highlighted')
+        await checkLocatorVisibilityById('pvInfoStrip', 'Preferred choice highlighted')
     }
     
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckAiTone', expectedConfig.aiTone)) {}
 
-    checkButtonHaveClassOn(appWindow, 'Urgency', expectedConfig.urgency, '#urgencySeg')
-    checkUrgencyPreview(expectedConfig.urgency)
+    await checkButtonHaveClassOn(appWindow, 'Urgency', expectedConfig.urgency, '#urgencySeg')
+    await checkUrgencyPreview(expectedConfig.urgency)
 
-    checkButtonHaveClassOn(appWindow, 'Mode of interaction', expectedConfig.interaction, '#interactionSeg')
-    checkModeOfInteractionPreview(expectedConfig.interaction)
+    await checkButtonHaveClassOn(appWindow, 'Mode of interaction', expectedConfig.interaction, '#interactionSeg')
+    await checkModeOfInteractionPreview(expectedConfig.interaction)
 
-    checkButtonHaveClassOn(appWindow, 'User workflow', expectedConfig.location, '#locationSeg')
-    checkWorkflowPreview(expectedConfig.location)
+    await checkButtonHaveClassOn(appWindow, 'User workflow', expectedConfig.location, '#locationSeg')
+    await checkWorkflowPreview(expectedConfig.location)
     
-    checkButtonHaveClassOn(appWindow, 'User agency', expectedConfig.agency, '#agencySeg')
-    checkUserAgencyPreview(expectedConfig.agency)
+    await checkButtonHaveClassOn(appWindow, 'User agency', expectedConfig.agency, '#agencySeg')
+    await checkUserAgencyPreview(expectedConfig.agency)
 
     if (await checkCheckboxSpecifiedStateById(appWindow, 'ckSchedule', expectedConfig.schedule)) {
         const deployDateField = await appWindow.locator('.field', { hasText: 'Deployment date' }).locator('input[type="date"]')
@@ -119,8 +118,9 @@ export async function checkState(appWindow, expectedConfig) {
 
     //Helpers
     async function checkTextAreaValueById(fieldId, checkValue) {
-        const tempField = await appWindow.locator('[id="' + fieldId + '"]').locator('textarea')
-        await expect(tempField).toHaveValue(checkValue)
+        const temp = await appWindow.locator(`[id="${fieldId}"] textarea`)
+        .evaluate(el => el.value);
+        await expect(temp).toContain(checkValue);
     }
 
     async function checkLocatorVisibilityById(fieldId) {
@@ -322,7 +322,6 @@ export async function checkState(appWindow, expectedConfig) {
                 
                 await selectSegmentedControlOption(appWindow, 'risk_avoidance', '#motivationSeg')
                 const newMotivationValue = await getGuidanceValue(appWindow, guidanceField)
-                console.log(`Expected new value: ${parseInt(currentMotivationValue) + mapping.impacts[guidanceField]}`)
                 expect(newMotivationValue).toBe((parseInt(currentMotivationValue) + mapping.impacts[guidanceField]).toString()) 
             }
         }

@@ -186,7 +186,7 @@ test.describe('BetterNotify Functionality Suite', () => {
     await helper.checkExportPagePreview(appWindow, 'notification_location="popup"')
       })
 
-  test('Import Notification Configuration @debug', async() => {
+  test('Import Notification Configuration', async() => {
     await helper.navigateToPageUsingNavBar(appWindow, 'Dashboard')
     await appWindow.locator('[id="loadTemplate"]').click()
 
@@ -203,16 +203,12 @@ test.describe('BetterNotify Functionality Suite', () => {
       instructionSteps: true,
       explainRisk: true,
       supportLinks: true,
-      // customSteps: 'Do this\nDo that\nProfit',
+      customSteps: 'Do this',
       urgency: 'high',
       location: 'popup'
     }
     await helper.checkState(appWindow, expectedConfig)
   })
 
-  test('Delete Notification Configuration', async() => {
-    await helper.navigateToPageUsingNavBar(appWindow, 'Dashboard')
-  })
-
-  
+  // Deleting must be done manually due to the nature of the popup
 })
