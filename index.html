@@ -131,10 +131,12 @@
           </div>
 
           <div class="field" id="customContentField">
-            <label>Custom content overrides</label>
+            <label><input id="ckCustomContent" type="checkbox" /> Custom content overrides</label>
             <div class="sectionNote">
-              Use these fields when you want to override the default generated content for a custom notification type or audience.
+              Override the default generated content for a custom notification type or audience.
             </div>
+
+            <div id="customContentWrap" class="hidden">
 
             <div id="customStepsWrap" class="hidden" style="margin-top:10px;">
               <label for="customStepsInput">Custom step-by-step instructions</label>
@@ -208,6 +210,8 @@
                 style="min-height:110px;"
               ></textarea>
             </div>
+
+            </div><!-- end customContentWrap -->
           </div>
 
           <div class="field" data-type="segmentGroup">
