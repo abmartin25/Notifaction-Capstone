@@ -85,17 +85,134 @@ test.describe('BetterNotify Functionality Suite', () => {
     
   })
 
-  // Content of Builder
+  // Builder Tests
+  test('Ensure Checkbox Functionality', async() => {
+    await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
+    const checkboxMappings = ["ckInstructionSteps", "ckDirectAction", "ckExplainVuln", "ckExplainRisk", "ckContextBackground", "ckTimeEst", 
+                              "ckTransparency", "ckConsequences", "ckSupportLinks", "ckPreferredDecision", "ckAiTone"];
+
+    for (const checkboxId of checkboxMappings) {
+    const isChecked = await helper.getCheckboxStateById(appWindow, checkboxId)
+    await helper.checkCheckboxSpecifiedStateById(appWindow, checkboxId, isChecked)
+    await helper.clickCheckboxById(appWindow, checkboxId)
+    await helper.checkCheckboxSpecifiedStateById(appWindow, checkboxId, !isChecked)
+    await helper.clickCheckboxById(appWindow, checkboxId)
+    }
+
+    // Do the schedule:
+    const scheduleChecked = await helper.getCheckboxStateById(appWindow, "ckSchedule")
+    await helper.checkCheckboxSpecifiedStateById(appWindow, "ckSchedule", scheduleChecked)
+    await helper.clickCheckboxById(appWindow, "ckSchedule")
+    await helper.checkCheckboxSpecifiedStateById(appWindow, "ckSchedule", !scheduleChecked)
+    
+    const showOnBootupChecked = await helper.getCheckboxStateById(appWindow, "ckShowOnBootup")
+    await helper.checkCheckboxSpecifiedStateById(appWindow, "ckShowOnBootup", showOnBootupChecked)
+    await helper.clickCheckboxById(appWindow, "ckShowOnBootup")
+    await helper.checkCheckboxSpecifiedStateById(appWindow, "ckShowOnBootup", !showOnBootupChecked)
+    await helper.clickCheckboxById(appWindow, "ckShowOnBootup")
+    
+    const showDuringTaskChecked = await helper.getCheckboxStateById(appWindow, "ckShowDuringTask")
+    await helper.checkCheckboxSpecifiedStateById(appWindow, "ckShowDuringTask", showDuringTaskChecked)
+    await helper.clickCheckboxById(appWindow, "ckShowDuringTask")
+    await helper.checkCheckboxSpecifiedStateById(appWindow, "ckShowDuringTask", !showDuringTaskChecked)
+    await helper.clickCheckboxById(appWindow, "ckShowDuringTask")
+    
+    await helper.clickCheckboxById(appWindow, "ckSchedule")
+
+  })
+
+  test('Ensure Segmented Control Functionality', async() => {
+    await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
+    const segmentedControlMappings = [
+      { name: 'Motivation framing', options: ['risk_avoidance', 'personal_impact', 'social_norm', 'compliance'] , locator: '#motivationSeg' },
+      { name: 'Urgency', options: ['low', 'med', 'high'] , locator: '#urgencySeg' },
+      { name: 'Mode of interaction', options: ['click_box', 'slider', 'toggle'] , locator: '#interactionSeg' },
+      { name: 'User workflow', options: ['banner', 'popup', 'inline', 'modal'] , locator: '#locationSeg' },
+      { name: 'User agency', options: ['must_do', 'remind_later', 'not_urgent'] , locator: '#agencySeg' },
+    ]
+    for (const control of segmentedControlMappings) {
+      for (const option of control.options) {
+        await helper.selectSegmentedControlOption(appWindow, option, control.locator)
+        await helper.checkButtonHaveClassOn(appWindow, control.name, option, control.locator)
+      }
+    }
+    for (const control of segmentedControlMappings) {
+      await helper.selectSegmentedControlOption(appWindow, control.options[0], control.locator)
+    }
+  })
+
+  test('Ensure Framework Guidance Scores Functionality', async() => {
+    await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
+    const guidanceMappings = [
+      'ckInstructionSteps', 'ckDirectAction','ckExplainVuln', 'ckExplainRisk', 'ckContextBackground', 'ckTimeEst',
+      'ckTransparency', 'ckConsequences', 'ckSupportLinks', 'ckPreferredDecision', 'ckAiTone', 'risk_avoidance', 'Message'
+    ]
+    for (const mapping of guidanceMappings) {
+      await helper.checkGuidanceValueByMapping(appWindow, mapping)
+    }
+  })
 
   // Ensure configuration matches default when page is launched
-  test('Builder Default Configuration @debug', async() => {
+  test('Builder Default Configuration', async() => {
     await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
     const defaultConfig = getDefaultState()
     await helper.checkState(appWindow, defaultConfig)
   })
 
+  // Saving & Loading
 
-  // Content of Export
+
+  test('Create & Export Notification', async() => {
+    await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
+    await helper.modifyTextFieldByLabel(appWindow, 'Title', 'input', 'Automated Testing Notification')
+    await helper.modifyTextFieldByLabel(appWindow, 'Message', 'textarea', 'This notification was created during automated testing.')
+    await helper.selectSegmentedControlOption(appWindow, 'compliance', '#motivationSeg')
+    await helper.clickCheckboxById(appWindow, 'ckInstructionSteps')
+    await helper.clickCheckboxById(appWindow, 'ckExplainRisk')
+    await helper.clickCheckboxById(appWindow, 'ckSupportLinks')
+    await helper.modifyTextFieldById(appWindow, 'customStepsInput', 'Do this\nDo that\nProfit')
+    await helper.selectSegmentedControlOption(appWindow, 'high', '#urgencySeg')
+    await helper.selectSegmentedControlOption(appWindow, 'popup', '#locationSeg')
+    await appWindow.locator('[id="saveTemplate"]').click()
+    await helper.modifyTextFieldById(appWindow, 'saveTemplateName', 'Automated Testing Notification')
+    await appWindow.locator('[id="saveModalConfirm"]').click()
+
+    await helper.navigateToPageUsingNavBar(appWindow, 'Export')
+    await helper.checkExportPagePreview(appWindow, 'Automated Testing Notification')
+    await helper.checkExportPagePreview(appWindow, 'This notification was created during automated testing.')
+    await helper.checkExportPagePreview(appWindow, 'motivation="compliance"')
+    await helper.checkExportPagePreview(appWindow, 'include_steps=true')
+    await helper.checkExportPagePreview(appWindow, 'urgency=high')
+    await helper.checkExportPagePreview(appWindow, 'notification_location="popup"')
+      })
+
+  test('Import Notification Configuration @debug', async() => {
+    await helper.navigateToPageUsingNavBar(appWindow, 'Dashboard')
+    await appWindow.locator('[id="loadTemplate"]').click()
+
+    const loadTestModal = await appWindow.locator('[id="loadModalList"]').getByText('Automated Testing Notification', { exact: true }).locator('xpath=ancestor::div[2]')
+    await expect(loadTestModal).toBeVisible()
+    const loadButton = loadTestModal.getByText('Load')
+    await loadButton.click()
+
+    const defaultConfig = getDefaultState()
+    const expectedConfig = { ...defaultConfig, 
+      title: 'Automated Testing Notification',
+      message: 'This notification was created during automated testing.',
+      motivation: 'compliance',
+      instructionSteps: true,
+      explainRisk: true,
+      supportLinks: true,
+      // customSteps: 'Do this\nDo that\nProfit',
+      urgency: 'high',
+      location: 'popup'
+    }
+    await helper.checkState(appWindow, expectedConfig)
+  })
+
+  test('Delete Notification Configuration', async() => {
+    await helper.navigateToPageUsingNavBar(appWindow, 'Dashboard')
+  })
 
   
 })

@@ -53,7 +53,7 @@ DEFAULT_STATE = {
 
     # new
     "customSteps": "",
-    "customVulnerability": "",
+    "customVuln": "",
     "customRisk": "",
     "customContext": "",
     "customConsequences": "",
