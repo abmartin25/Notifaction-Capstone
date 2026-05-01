@@ -1274,7 +1274,9 @@ async function populateLoadModal() {
 
 function loadStateFromTemplate(config) {
   Object.assign(state, config);
-  // console.log("Loaded template config:", config);
+  if (state.instructionSteps || state.explainVuln || state.explainRisk || state.contextBackground ||state.transparency || state.consequences || state.supportLinks) {
+    state.customContent = true;
+  }
   syncConfigPanel();
   render();
 }
