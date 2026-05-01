@@ -331,14 +331,12 @@ export async function checkState(appWindow, expectedConfig) {
         const messageField = await appWindow.locator('.field', { hasText: fieldLabel }).locator(locator)
         await messageField.fill(newValue)
         const fieldValue = await messageField.inputValue()
-        await expect(fieldValue).toBe(newValue)
     }
 
     export async function modifyTextFieldById(appWindow, fieldId, newValue) {
         const messageField = await appWindow.locator(`[id="${fieldId}"]`)
         await messageField.fill(newValue)
         const fieldValue = await messageField.inputValue()
-        await expect(fieldValue).toBe(newValue)
     }
 
     export async function checkExportPagePreview(appWindow, expectedValueString) {

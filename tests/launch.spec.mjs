@@ -152,6 +152,20 @@ test.describe('BetterNotify Functionality Suite', () => {
     }
   })
 
+  test('Ensure Limits to Text Fields', async() => {
+    await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
+    const textFieldMappings = [
+      { label: 'Title', type: 'input', maxLength: 50 },
+      { label: 'Message', type: 'textarea', maxLength: 100 },
+    ]
+    for (const field of textFieldMappings) {
+      await helper.modifyTextFieldByLabel(appWindow, field.label, field.type, 'a'.repeat(field.maxLength*2))
+      const fieldValue = await appWindow.locator('.field', { hasText: field.label }).locator(field.type).inputValue()
+      expect(fieldValue.length).toBeLessThanOrEqual(field.maxLength)
+      await helper.modifyTextFieldByLabel(appWindow, field.label, field.type, '')
+    }
+  })
+
   // Ensure configuration matches default when page is launched
   test('Builder Default Configuration', async() => {
     await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
@@ -160,8 +174,6 @@ test.describe('BetterNotify Functionality Suite', () => {
   })
 
   // Saving & Loading
-
-
   test('Create & Export Notification @debug', async() => {
     await helper.navigateToPageUsingNavBar(appWindow, 'Builder')
     await helper.modifyTextFieldByLabel(appWindow, 'Title', 'input', 'Automated Testing Notification')

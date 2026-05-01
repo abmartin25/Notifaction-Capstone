@@ -2,9 +2,6 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const pendingNotifications = {};
-// const express = require("express");
-// const app = express();
-// const {PythonShell} = require('python-shell');
 
 const {
   saveTemplate,
@@ -102,11 +99,9 @@ function startServer() {
         }
 
         const { targetDevice, notification } = body;
-
         if (!pendingNotifications[targetDevice]) {
           pendingNotifications[targetDevice] = [];
         }
-
         pendingNotifications[targetDevice].push(notification);
 
         return sendJson(res, 200, {
@@ -128,9 +123,6 @@ function startServer() {
 
       return sendJson(res, 200, notifications);
     }
-
-    // Passing to PythonShell
-    // if
 
     // GET /api/templates/:id — load template with config
     const matchId = url.match(/^\/api\/templates\/(\d+)$/);

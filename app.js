@@ -193,11 +193,6 @@ function setupCheckboxInputs() {
           .getElementById(customInputId)
           .classList.toggle("hidden", !state[key]);
       }
-      // if (key === "customContent") {
-      //   document
-      //     .getElementById("customContentWrap")
-      //     .classList.toggle("hidden", !state.customContent);
-      // }
       render();
     });
   });
@@ -211,11 +206,6 @@ function syncCheckboxInputs() {
         .getElementById(customInputId)
         .classList.toggle("hidden", !state[key]);
     }
-    // if (key === "customContent") {
-    //   document
-    //     .getElementById("customContentWrap")
-    //     .classList.toggle("hidden", !state.customContent);
-    // }
     render();
   });
 }
@@ -1163,32 +1153,6 @@ function syncTransparency() {
   wrap.textContent = getTransparencyText(state.context);
 }
 
-// function setupCustomContentToggles() {
-//   const mappings = [
-//     ["ckInstructionSteps", "customStepsWrap"],
-//     ["ckExplainVuln", "customVulnWrap"],
-//     ["ckExplainRisk", "customRiskWrap"],
-//     ["ckContextBackground", "customContextWrap"],
-//     ["ckTransparency", "customTransparencyWrap"],
-//     ["ckConsequences", "customConsequencesWrap"],
-//     ["ckSupportLinks", "customLinksWrap"],
-//   ];
-
-//   mappings.forEach(([checkboxId, wrapId]) => {
-//     const checkbox = document.getElementById(checkboxId);
-//     const wrap = document.getElementById(wrapId);
-
-//     if (!checkbox || !wrap) return;
-
-//     // const syncVisibility = () => {
-//     //   wrap.classList.toggle("hidden", !checkbox.checked);
-//     // };
-
-//     // checkbox.addEventListener("change", syncVisibility);
-//     // syncVisibility();
-//   });
-// }
-
 function setupSaveLoad() {
   document.getElementById("saveTemplate").addEventListener("click", () => {
     const nameInput = document.getElementById("saveTemplateName");
@@ -1313,120 +1277,6 @@ function loadStateFromTemplate(config) {
   Object.assign(state, config);
   // console.log("Loaded template config:", config);
   syncConfigPanel();
-
-  // Head changes I need to resolve
-  // document.getElementById("titleInput").value = state.title || "";
-  // document.getElementById("msgInput").value = state.message || "";
-
-  // const ugSelect = document.getElementById("userGroup");
-  // const ugOptions = Array.from(ugSelect.options).map((o) => o.value);
-  // if (ugOptions.includes(state.userGroup)) {
-  //   ugSelect.value = state.userGroup;
-  //   document.getElementById("userGroupCustomWrap").classList.add("hidden");
-  // } else {
-  //   ugSelect.value = "__custom__";
-  //   document.getElementById("userGroupCustomWrap").classList.remove("hidden");
-  //   document.getElementById("userGroupCustom").value = state.userGroup;
-  // }
-
-  // const ctxSelect = document.getElementById("context");
-  // const ctxOptions = Array.from(ctxSelect.options).map((o) => o.value);
-  // if (ctxOptions.includes(state.context)) {
-  //   ctxSelect.value = state.context;
-  //   document.getElementById("contextCustomWrap").classList.add("hidden");
-  // } else {
-  //   ctxSelect.value = "__custom__";
-  //   document.getElementById("contextCustomWrap").classList.remove("hidden");
-  //   document.getElementById("contextCustom").value = state.context;
-  // }
-
-  // const checkboxMappings = [
-  //   ["ckInstructionSteps", "instructionSteps"],
-  //   ["ckDirectAction", "directAction"],
-  //   ["ckExplainVuln", "explainVuln"],
-  //   ["ckExplainRisk", "explainRisk"],
-  //   ["ckContextBackground", "contextBackground"],
-  //   ["ckTimeEst", "timeEst"],
-  //   ["ckTransparency", "transparency"],
-  //   ["ckConsequences", "consequences"],
-  //   ["ckSupportLinks", "supportLinks"],
-  //   ["ckPreferredDecision", "preferredDecision"],
-  //   ["ckAiTone", "aiTone"],
-  //   ["ckSchedule", "schedule"],
-  //   ["ckShowOnBootup", "showOnBootup"],
-  //   ["ckShowDuringTask", "showDuringTask"],
-  // ];
-
-  // checkboxMappings.forEach(([id, key]) => {
-  //   document.getElementById(id).checked = !!state[key];
-  // });
-
-  // document
-  //   .getElementById("scheduleWrap")
-  //   .classList.toggle("hidden", !state.schedule);
-  // document.getElementById("deployDate").value = state.deployDate || "";
-  // document.getElementById("deployHour").value = state.deployHour || "09:00";
-  // document.getElementById("deployWindow").value = state.deployWindow || "";
-
-  // document.getElementById("customStepsInput").value = state.customSteps || "";
-  // document.getElementById("customVulnInput").value =
-  //   state.customVuln || "";
-  // document.getElementById("customRiskInput").value = state.customRisk || "";
-  // document.getElementById("customContextInput").value =
-  //   state.customContext || "";
-  // document.getElementById("customConsequencesInput").value =
-  //   state.customConsequences || "";
-  // document.getElementById("customLinksInput").value = state.customLinks || "";
-
-  // document
-  //   .getElementById("customStepsWrap")
-  //   .classList.toggle("hidden", !state.instructionSteps);
-  // document
-  //   .getElementById("customVulnWrap")
-  //   .classList.toggle("hidden", !state.explainVuln);
-  // document
-  //   .getElementById("customRiskWrap")
-  //   .classList.toggle("hidden", !state.explainRisk);
-  // document
-  //   .getElementById("customContextWrap")
-  //   .classList.toggle("hidden", !state.contextBackground);
-  // document
-  //   .getElementById("customConsequencesWrap")
-  //   .classList.toggle("hidden", !state.consequences);
-  // document
-  //   .getElementById("customLinksWrap")
-  //   .classList.toggle("hidden", !state.supportLinks);
-
-  // document.getElementById("customTransparencyInput").value =
-  //   state.customTransparency || "";
-
-  // document
-  //   .getElementById("customTransparencyWrap")
-  //   .classList.toggle("hidden", !state.transparency);
-
-  // function restoreSeg(containerId, dataAttr, value) {
-  //   const container = document.getElementById(containerId);
-  //   container.querySelectorAll("button").forEach((b) => {
-  //     b.classList.toggle("on", b.dataset[dataAttr] === value);
-  //   });
-  // }
-
-  // restoreSeg("motivationSeg", "m", state.motivation);
-  // restoreSeg("urgencySeg", "u", state.urgency);
-  // restoreSeg("interactionSeg", "i", state.interaction);
-  // restoreSeg("locationSeg", "l", state.location);
-  // restoreSeg("agencySeg", "a", state.agency);
-
-  // const locationDescs = {
-  //   banner: "Appears at the top or bottom of the screen; non-blocking.",
-  //   popup: "Appears in the center of the screen; requires user interaction.",
-  //   inline: "Appears within the page content; contextual and subtle.",
-  //   modal: "Overlays the full screen; blocks all other interaction.",
-  // };
-
-  // document.getElementById("locationDesc").textContent =
-  //   locationDescs[state.location] || "";
-
   render();
 }
 
@@ -1652,9 +1502,7 @@ function init() {
   setupPreviewInteractions();
   setupSaveLoad();
   setupNotificationLaunch();
-  // setupCustomContentToggles();
   setupInlineNotificationReceiver();
-  // setupCustomContentInputs();
   setupExportActions();
   startNotificationPolling();
   render();
