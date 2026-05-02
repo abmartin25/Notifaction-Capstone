@@ -18,6 +18,11 @@ Additionally, this project requires:
 To run the basic SDK:
 npm start
 
+If get error with npm start run:
+1. rm -rf node_modules package-lock.json
+2. npx electron-rebuild
+3. npm start
+
 To run the testing suite which ensures functionality:
 npx playwright test
 -- debug: Allows stepping through tests
